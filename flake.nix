@@ -2180,6 +2180,9 @@ README
                           cmakeFlags = (old.cmakeFlags or []) ++ [
                             # Disable HSA image support to avoid OpenCL device lib dependency
                             "-DIMAGE_SUPPORT=OFF"
+                            # Set GPU targets for HSA runtime shaders
+                            "-DAMDGPU_TARGETS=gfx1151"
+                            "-DGPU_TARGETS=gfx1151"
                           ];
                         });
                 
