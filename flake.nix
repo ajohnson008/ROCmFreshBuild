@@ -574,6 +574,261 @@ SYSTEMD_SERVICE
               *) usage ;;
             esac
           '';
+          
+          # ========================================================================
+          # STAGE 5: Binary Symbol Scanner (NVIDIA Isolation Layer 4)
+          # ========================================================================
+          binary-scanner = pkgs.writeShellScriptBin "binary-scanner" ''
+            set -euo pipefail
+            
+            echo "🔍 Scanning binaries for NVIDIA contamination..."
+            echo ""
+            
+            target_dir="$1"
+            
+            # Forbidden patterns (regex)
+            patterns="nvidia|cuda[A-Z]|nv[A-Z_]|cublas|cudnn|libcuda|libnvidia"
+            
+            contaminated=0
+            scanned=0
+            
+            # Find all executables and shared libraries
+            while IFS= read -r file; do
+              # Check if it's an ELF binary
+              if file -b "$file" 2>/dev/null | grep -q "ELF"; then
+                scanned=$((scanned + 1))
+                
+                # Check dynamic symbols
+                if ${pkgs.binutils}/bin/nm -D "$file" 2>/dev/null | grep -iE "$patterns" > /dev/null; then
+                  echo "❌ CONTAMINATION in $file (dynamic symbols):"
+                  ${pkgs.binutils}/bin/nm -D "$file" 2>/dev/null | grep -iE "$patterns" | head -5
+                  contaminated=1
+                fi
+                
+                # Check embedded strings
+                if ${pkgs.binutils}/bin/strings "$file" 2>/dev/null | grep -iE "$patterns" > /dev/null; then
+                  echo "❌ CONTAMINATION in $file (embedded strings):"
+                  ${pkgs.binutils}/bin/strings "$file" 2>/dev/null | grep -iE "$patterns" | head -5
+                  contaminated=1
+                fi
+              fi
+            done < <(find "$target_dir" -type f 2>/dev/null)
+            
+            echo ""
+            echo "Scanned $scanned ELF binaries"
+            
+            if [ $contaminated -eq 1 ]; then
+              echo ""
+              echo "❌❌❌ BINARY SCAN FAILED ❌❌❌"
+              echo "NVIDIA symbols detected in output binaries."
+              echo "This is a CRITICAL FAILURE."
+              exit 1
+            fi
+            
+            echo "✅ Binary scan passed - no NVIDIA contamination detected"
+          '';
+          
+          # ========================================================================
+          # STAGE 5: SBOM Generator (Software Bill of Materials)
+          # ========================================================================
+          sbom-generator = pkgs.writeShellScriptBin "sbom-generator" ''
+            set -euo pipefail
+            
+            echo "📋 Generating Software Bill of Materials..."
+            echo ""
+            
+            target="$1"
+            output_dir="''${2:-.}"
+            
+            # Get complete dependency closure
+            closure=$(${pkgs.nix}/bin/nix-store -qR "$target" 2>/dev/null | sort)
+            pkg_count=$(echo "$closure" | wc -l)
+            
+            echo "Analyzing $pkg_count packages in closure..."
+            
+            # Create output directory
+            mkdir -p "$output_dir"
+            
+            # Generate SPDX 2.3 format
+            cat > "$output_dir/SBOM.spdx.json" << SPDX_HEADER
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "TheRockBuilder-v6.0",
+  "documentNamespace": "https://rockbuilder.ai/sbom/v6.0/$(date +%s)",
+  "creationInfo": {
+    "created": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+    "creators": ["Tool: TheRockBuilder-SBOM-Generator-v6.0"]
+  },
+  "packages": [
+SPDX_HEADER
+            
+            # Add each package
+            first=true
+            while IFS= read -r path; do
+              [ -z "$path" ] && continue
+              
+              pkg_name=$(basename "$path" | sed 's/^[a-z0-9]*-//')
+              pkg_hash=$(basename "$path" | cut -d'-' -f1)
+              
+              if [ "$first" = false ]; then
+                echo "," >> "$output_dir/SBOM.spdx.json"
+              fi
+              first=false
+              
+              cat >> "$output_dir/SBOM.spdx.json" << PACKAGE
+    {
+      "SPDXID": "SPDXRef-$pkg_hash",
+      "name": "$pkg_name",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "nix",
+          "referenceLocator": "$path"
+        }
+      ]
+    }
+PACKAGE
+            done <<< "$closure"
+            
+            # Close JSON
+            cat >> "$output_dir/SBOM.spdx.json" << SPDX_FOOTER
+  ]
+}
+SPDX_FOOTER
+            
+            echo ""
+            echo "✅ SBOM generated successfully!"
+            echo "   Output: $output_dir/SBOM.spdx.json"
+            echo "   Packages: $pkg_count"
+          '';
+          
+          # ========================================================================
+          # STAGE 5: Reproducibility Test
+          # ========================================================================
+          reproducibility-test = pkgs.writeShellScriptBin "reproducibility-test" ''
+            set -euo pipefail
+            
+            echo "🔄 Testing build reproducibility..."
+            echo ""
+            
+            component="''${1:-.#gcc14}"
+            
+            echo "Component: $component"
+            echo "This test will build 3 times and compare hashes."
+            echo ""
+            
+            # Build 1
+            echo "Build 1/3..."
+            nix build "$component" -o result-1 --rebuild 2>/dev/null
+            hash1=$(${pkgs.nix}/bin/nix-store -q --hash ./result-1)
+            echo "  Hash: $hash1"
+            
+            # Build 2
+            echo "Build 2/3..."
+            nix build "$component" -o result-2 --rebuild 2>/dev/null
+            hash2=$(${pkgs.nix}/bin/nix-store -q --hash ./result-2)
+            echo "  Hash: $hash2"
+            
+            # Build 3
+            echo "Build 3/3..."
+            nix build "$component" -o result-3 --rebuild 2>/dev/null
+            hash3=$(${pkgs.nix}/bin/nix-store -q --hash ./result-3)
+            echo "  Hash: $hash3"
+            
+            # Cleanup
+            rm -f result-1 result-2 result-3
+            
+            echo ""
+            echo "Results:"
+            echo "  Build 1: $hash1"
+            echo "  Build 2: $hash2"
+            echo "  Build 3: $hash3"
+            echo ""
+            
+            if [ "$hash1" = "$hash2" ] && [ "$hash2" = "$hash3" ]; then
+              echo "✅ REPRODUCIBILITY TEST PASSED"
+              echo "   All three builds produced identical outputs"
+              exit 0
+            else
+              echo "❌ REPRODUCIBILITY TEST FAILED"
+              echo "   Builds produced different outputs"
+              exit 1
+            fi
+          '';
+          
+          # ========================================================================
+          # STAGE 5: Integration Test Suite
+          # ========================================================================
+          integration-test = pkgs.writeShellScriptBin "integration-test" ''
+            set -euo pipefail
+            
+            echo "╔══════════════════════════════════════════════════════════╗"
+            echo "║  TheRockBuilder v6.0 Integration Test Suite              ║"
+            echo "╚══════════════════════════════════════════════════════════╝"
+            echo ""
+            
+            failed=0
+            passed=0
+            
+            run_test() {
+              local name="$1"
+              local cmd="$2"
+              
+              echo -n "Testing: $name... "
+              if eval "$cmd" > /dev/null 2>&1; then
+                echo "✅ PASS"
+                passed=$((passed + 1))
+              else
+                echo "❌ FAIL"
+                failed=$((failed + 1))
+              fi
+            }
+            
+            # Test 1: NVIDIA Isolation Layer 1 (Poisoned packages)
+            echo ""
+            echo "🛡️  NVIDIA Isolation Tests:"
+            run_test "Layer 1 (Poisoned packages)" "nix eval .#packages.x86_64-linux.gcc14 2>/dev/null"
+            
+            # Test 2: Dependency Auditor
+            run_test "Layer 2 (Dependency audit)" "nix run .#dependency-auditor -- \$(nix build --print-out-paths .#rocm-core 2>/dev/null)"
+            
+            # Test 3: Binary Scanner  
+            run_test "Layer 4 (Binary scanner)" "nix run .#binary-scanner -- \$(nix build --print-out-paths .#rocm-core 2>/dev/null)"
+            
+            # Test 4: Component builds
+            echo ""
+            echo "🏗️  Component Build Tests:"
+            run_test "ROCm Core" "nix build .#rocm-core"
+            run_test "PyTorch ROCm" "nix build .#pytorch-rocm"
+            run_test "vLLM" "nix build .#vllm"
+            run_test "llama.cpp" "nix build .#llamacpp-base"
+            run_test "AI Stack" "nix build .#ai-stack"
+            
+            # Test 5: SBOM Generation
+            echo ""
+            echo "📋 Safety System Tests:"
+            run_test "SBOM Generation" "nix run .#sbom-generator -- \$(nix build --print-out-paths .#rocm-core 2>/dev/null) /tmp"
+            
+            # Summary
+            echo ""
+            echo "════════════════════════════════════════════════════════════"
+            echo "Results: $passed passed, $failed failed"
+            echo ""
+            
+            if [ $failed -eq 0 ]; then
+              echo "✅ ALL TESTS PASSED"
+              exit 0
+            else
+              echo "❌ SOME TESTS FAILED"
+              exit 1
+            fi
+          '';
         };
 
         # ==========================================================================
