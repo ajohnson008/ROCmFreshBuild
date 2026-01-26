@@ -1,0 +1,25 @@
+these 3 derivations will be built:
+  /nix/store/gzm7am39h59wbill39c9xcg2w9rssjdw-rocm-runtime-7.2.0.drv
+  /nix/store/jsmwib9hn8ypb5x6ywlyzy90fwz63gzx-clr-7.2.0.drv
+  /nix/store/mpy6q8r6r1v1n6wdn0r4gl4kr20pkw1y-rocm-core-7.2.0.drv
+building '/nix/store/jsmwib9hn8ypb5x6ywlyzy90fwz63gzx-clr-7.2.0.drv'...
+building '/nix/store/gzm7am39h59wbill39c9xcg2w9rssjdw-rocm-runtime-7.2.0.drv'...
+rocm-runtime> Running phase: unpackPhase
+rocm-runtime> unpacking source archive /nix/store/lbzd6dvxagdvqbcp044qhczh4gqzqkv9-source
+clr> Running phase: unpackPhase
+clr> unpacking source archive /nix/store/xw8m19c4ijcqpz3cc9s9avpmd3rx0fmc-source
+rocm-runtime> unpacker appears to have produced no directories
+error: Cannot build '/nix/store/gzm7am39h59wbill39c9xcg2w9rssjdw-rocm-runtime-7.2.0.drv'.
+       Reason: builder failed with exit code 1.
+       Output paths:
+         /nix/store/slg3j8h8zyrpjprcbjj8j6gn783g874h-rocm-runtime-7.2.0
+       Last 3 log lines:
+       > Running phase: unpackPhase
+       > unpacking source archive /nix/store/lbzd6dvxagdvqbcp044qhczh4gqzqkv9-source
+       > unpacker appears to have produced no directories
+       For full logs, run:
+         nix log /nix/store/gzm7am39h59wbill39c9xcg2w9rssjdw-rocm-runtime-7.2.0.drv
+error: Cannot build '/nix/store/mpy6q8r6r1v1n6wdn0r4gl4kr20pkw1y-rocm-core-7.2.0.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/m68jcxzx5zjdi12ikdbm0l64003hz6y0-rocm-core-7.2.0

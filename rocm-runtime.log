@@ -1,0 +1,1 @@
+error: flake 'git+file:///home/thenexussidekick/code/test/prd3' does not provide attribute 'packages.x86_64-linux.rocm-runtime', 'legacyPackages.x86_64-linux.rocm-runtime' or 'rocm-runtime'

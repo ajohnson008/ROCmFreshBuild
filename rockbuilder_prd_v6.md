@@ -1,25 +1,27 @@
-# TheRockBuilder PRD v6.0: Production-Grade Nix Reconstruction with Advanced Safety Systems
+# TheRockBuilder PRD v6.1: Production-Grade Nix Reconstruction with 12-Step AI Pipeline
 
 **Project Code**: THE_ROCK_BUILDER_REBOOT  
 **Target Platform**: AMD Strix Halo (gfx1151) on GMKtec EVO-X2  
 **Build Platform**: AMD Threadripper 3960X (24C/48T, 64GB RAM, RTX 3080 Ti)  
 **Build System**: Nix Flakes (Nix 2.31.2+)  
-**Version**: 6.0 (Supersedes v5.0)  
+**Version**: 6.1 (Supersedes v6.0)  
 **Document Date**: January 26, 2026
 
 ---
 
 ## 1. Executive Summary
 
-TheRockBuilder v6.0 is a **production-hardened, air-gapped AI infrastructure build system** designed to compile a bit-for-bit reproducible AI stack for AMD Strix Halo architecture. This version introduces:
+TheRockBuilder v6.1 is a **production-hardened, air-gapped AI infrastructure build system** designed to compile a bit-for-bit reproducible AI stack for AMD Strix Halo architecture. This version introduces:
 
+- **12-Step AI Pipeline**: Strict integration order from NumPy → PyTorch → vLLM → ONNX Runtime
+- **Zen 2 Safety Protocol**: Mandatory AVX-512 blocking to prevent crashes on Threadripper 3960X host
+- **LPDDR5X/UMA Optimization**: Unified Memory Access tuning for Strix Halo's 128GB unified memory
 - **Quad-Layer NVIDIA Isolation**: Prevents any CUDA contamination from builder's RTX 3080 Ti
-- **Integrated llama.cpp**: Optimized local inference alongside vLLM production stack
+- **Integrated llama.cpp**: Dual variants (GPU with UMA, CPU without AVX-512) for maximum flexibility
 - **Advanced Safety Systems**: Pre-flight validation, build checkpointing, and intelligent error recovery
 - **Threadripper Optimization**: Parallel builds utilizing all 48 threads with memory-aware scheduling
-- **Graduated Complexity**: Six-stage build progression with independent validation at each level
 
-Unlike v5.0's pure focus on reproducibility, v6.0 emphasizes **developer experience, build safety, and operational resilience** while maintaining strict reproducibility guarantees.
+Unlike v6.0's six-stage approach, v6.1 enforces a **strict 12-step build pipeline** with explicit version pinning from the PyTorch 2.10.0 compatibility matrix, ensuring stability on Zen 2 CPUs while maximizing Strix Halo performance.
 
 ---
 
@@ -46,16 +48,76 @@ All components must be pinned to these exact versions. **No deviations permitted
 - **Kernel**: Linux 6.18.6 (XNACK retry support required)
 - **GPU**: Radeon 890M integrated (gfx1151)
 
-### 2.4 AI Stack Versions
+### 2.4 AI Stack Versions (PyTorch 2.10.0 Compatibility Matrix)
+
+**Foundation Layer**:
 - **ROCm**: 7.2.0
-- **PyTorch**: 2.10.0 (ROCm backend only)
-- **vLLM**: 0.14.0
-- **llama.cpp**: Commit a33e6a0d (January 2025, ROCm 6.2+ support branch)
+- **NumPy**: 1.26.4 (last version with full BLAS/LAPACK compatibility for PyTorch 2.10)
+
+**Core ML Framework**:
+- **PyTorch**: 2.10.0 (ROCm backend only, `USE_ROCM=1`, `USE_CUDA=0`)
+- **TorchVision**: 0.20.0 (strict PyTorch 2.10.0 compatibility)
+- **Torchaudio**: 2.5.0 (FFmpeg 6.x compatible, SoX 14.4.2)
+
+**Attention & Transformer Stack**:
+- **FlashAttention-2**: 2.7.0 (ROCm 7.x compatible, `MIOPEN_ENABLE_LOGGING=1`)
+- **xFormers**: 0.0.29 (must link FlashAttention-2, `XFORMERS_DISABLE_FLASH_ATTN=0`)
+
+**Optimization & Distributed**:
+- **DeepSpeed**: 0.16.0 (**CRITICAL**: `DS_BUILD_AVX512=0` for Zen 2 safety)
+- **Bitsandbytes**: 0.45.0 (HIPified source, `BNB_CUDA_VERSION=720`)
+
+**Inference Stack**:
+- **vLLM**: 0.14.0 (`VLLM_TARGET_DEVICE=rocm`)
+- **llama.cpp (GPU)**: Commit a33e6a0d (`-DGGML_HIP_UMA=ON` for Strix Halo UMA)
+- **llama.cpp (CPU)**: Commit a33e6a0d (**CRITICAL**: `GGML_AVX512=OFF` for Zen 2 safety)
+- **ONNX Runtime**: 1.20.0 (**CRITICAL**: `-Donnxruntime_ENABLE_AVX512=OFF`)
 
 ### 2.5 Quantization Standards
 - **Primary**: Q4_K_M (optimal for 64-128GB VRAM)
 - **High Quality**: Q5_K_M (for smaller models)
 - **Maximum Quality**: Q8_0 (near-fp16, critical tasks only)
+
+### 2.6 Zen 2 Safety Protocol (MANDATORY)
+
+**Background**: The AMD Threadripper 3960X build host uses the Zen 2 microarchitecture, which **does not support AVX-512 instructions**. If any component emits AVX-512 during JIT compilation or runtime, the system will crash with an illegal instruction signal (SIGILL).
+
+**Enforcement**: The following flags are **NON-NEGOTIABLE** for all builds:
+
+| Component | Safety Flag | Consequence if Omitted |
+|-----------|-------------|------------------------|
+| DeepSpeed | `DS_BUILD_AVX512=0` | JIT kernel crash during distributed training |
+| llama.cpp (CPU) | `GGML_AVX512=OFF` | SIGILL on CPU inference path |
+| ONNX Runtime | `-Donnxruntime_ENABLE_AVX512=OFF` | SIGILL on ONNX model execution |
+
+**Validation**: The pre-flight validator (Section 4.2.1) MUST check for AVX-512 symbols in all binaries:
+```bash
+# Forbidden AVX-512 patterns
+objdump -d $binary | grep -E 'zmm[0-9]+|vpbroadcast[qd]|vpmull[qd]'
+# Must return empty for all Zen 2-safe binaries
+```
+
+**Note**: The target Strix Halo platform (Zen 5) DOES support AVX-512, but we build on Zen 2. Binaries must be safe for the BUILD platform, not just the target.
+
+### 2.7 LPDDR5X Unified Memory Architecture
+
+**Strix Halo Memory Model**: The target platform uses 128GB LPDDR5X in a Unified Memory Architecture (UMA), where CPU and GPU share the same physical memory pool. This enables:
+
+- **Zero-copy tensor sharing**: No PCIe transfers between CPU and GPU
+- **Larger model contexts**: Full 128GB available for KV cache
+- **Efficient memory-mapped models**: mmap directly usable by GPU
+
+**Required Optimizations**:
+
+| Component | UMA Flag | Effect |
+|-----------|----------|--------|
+| llama.cpp (GPU) | `-DGGML_HIP_UMA=ON` | Enables unified memory allocator |
+| vLLM | `VLLM_USE_UNIFIED_MEMORY=1` | KV cache in unified pool |
+| PyTorch | `PYTORCH_HIP_ALLOC_CONF=expandable_segments:True` | Dynamic unified allocation |
+
+**Memory Bandwidth**: LPDDR5X @ 8533 MT/s provides ~270 GB/s, which is:
+- 3x faster than DDR5-4800 (desktop)
+- Comparable to HBM2 in bandwidth-limited workloads
 
 ---
 
@@ -73,13 +135,17 @@ All components must be pinned to these exact versions. **No deviations permitted
 
 **Organization**:
 ```
-flake.nix (lines 1-50):      Inputs, system boilerplate
-flake.nix (lines 51-200):    Core derivations (GCC, ROCm, PyTorch, vLLM)
-flake.nix (lines 201-350):   llama.cpp derivations
-flake.nix (lines 351-500):   Tooling (orchestrator, SBOM, scanners)
-flake.nix (lines 501-700):   Safety systems (validators, auditors)
-flake.nix (lines 701-900):   Outputs (packages, devShells, apps)
-flake.nix (lines 901-1000):  Tests and verification
+flake.nix (lines 1-50):       Inputs, system boilerplate
+flake.nix (lines 51-150):     GCC 14.2.1 overlay
+flake.nix (lines 151-350):    ROCm 7.2.0 stack (17 packages)
+flake.nix (lines 351-500):    NumPy + PyTorch + TorchVision + Torchaudio
+flake.nix (lines 501-700):    FlashAttention-2 + xFormers + DeepSpeed
+flake.nix (lines 701-850):    Bitsandbytes + vLLM + llama.cpp (GPU/CPU)
+flake.nix (lines 851-1000):   ONNX Runtime + Zen 2 safety wrappers
+flake.nix (lines 1001-1150):  Tooling (orchestrator, SBOM, scanners)
+flake.nix (lines 1151-1300):  Safety systems (validators, auditors)
+flake.nix (lines 1301-1450):  Outputs (packages, devShells, apps)
+flake.nix (lines 1451-1600):  Tests and 12-step validation
 ```
 
 ### 3.2 Quad-Layer NVIDIA Isolation Protocol
@@ -167,79 +233,404 @@ cores = 2                    # 2 threads per job (48 total)
 
 ---
 
-## 4. Component Specifications
+## 4. Component Specifications (12-Step Pipeline)
+
+### 4.0 Pipeline Summary Table
+
+| Step | Component | Version | Critical Flags | Zen 2 Safe |
+|------|-----------|---------|----------------|------------|
+| 0 | ROCm | 7.2.0 | `AMDGPU_TARGETS=gfx1151` | ✅ |
+| 1 | NumPy | 1.26.4 | `NPY_BLAS_ORDER=openblas` | ✅ |
+| 2 | PyTorch | 2.10.0 | `USE_ROCM=1`, `USE_CUDA=0`, `PYTORCH_ROCM_ARCH=gfx1151` | ✅ |
+| 3 | TorchVision | 0.20.0 | `FORCE_CUDA=0` | ✅ |
+| 4 | Torchaudio | 2.5.0 | `USE_ROCM=1`, `USE_FFMPEG=1` | ✅ |
+| 5 | FlashAttention-2 | 2.7.0 | `MIOPEN_ENABLE_LOGGING=1` | ✅ |
+| 6 | xFormers | 0.0.29 | `XFORMERS_DISABLE_FLASH_ATTN=0` | ✅ |
+| 7 | DeepSpeed | 0.16.0 | **`DS_BUILD_AVX512=0`** | ⚠️ CRITICAL |
+| 8 | Bitsandbytes | 0.45.0 | `BNB_CUDA_VERSION=720` (HIPified) | ✅ |
+| 9 | vLLM | 0.14.0 | `VLLM_TARGET_DEVICE=rocm` | ✅ |
+| 10 | llama.cpp (GPU) | a33e6a0d | **`GGML_HIP_UMA=ON`** | ✅ |
+| 11 | llama.cpp (CPU) | a33e6a0d | **`GGML_AVX512=OFF`** | ⚠️ CRITICAL |
+| 12 | ONNX Runtime | 1.20.0 | **`-Donnxruntime_ENABLE_AVX512=OFF`** | ⚠️ CRITICAL |
+
+**Legend**:
+- ✅ = Safe for Zen 2 by default
+- ⚠️ CRITICAL = Requires explicit flag to prevent Zen 2 crash
 
 ### 4.1 Core AI Stack
 
-#### 4.1.1 ROCm 7.2.0
+**Pipeline Integration Order** (STRICT - DO NOT REORDER):
+```
+Step 1:  NumPy 1.26.4         → Mathematical foundation
+Step 2:  PyTorch 2.10.0       → Core ML framework
+Step 3:  TorchVision 0.20.0   → Vision model support
+Step 4:  Torchaudio 2.5.0     → Audio model support
+Step 5:  FlashAttention-2     → Optimized attention kernels
+Step 6:  xFormers 0.0.29      → Composable Transformer blocks
+Step 7:  DeepSpeed 0.16.0     → Distributed training (ZEN 2 SAFE)
+Step 8:  Bitsandbytes 0.45.0  → 8-bit quantization
+Step 9:  vLLM 0.14.0          → Production inference server
+Step 10: llama.cpp (GPU)      → ROCm UMA inference
+Step 11: llama.cpp (CPU)      → CPU fallback (ZEN 2 SAFE)
+Step 12: ONNX Runtime 1.20.0  → Interop inference (ZEN 2 SAFE)
+```
+
+#### 4.1.0 ROCm 7.2.0 (Foundation - Pre-Pipeline)
 **Requirements**:
 - GCC 14.2.1 (strict dependency)
 - No CUDA headers in include path
 - HIP runtime for gfx1151
+
+**Sub-Components** (17 packages in overlay):
+```
+rocm-cmake, rocm-runtime, rocm-device-libs, clr (HIP),
+hipcc, rocminfo, rocm-smi, rocblas, hipblas, rocsolver,
+rocsparse, rocfft, rocrand, miopen, rccl, composable_kernel,
+rocm-core (meta-package)
+```
 
 **Validation**:
 - `/opt/rocm/bin/rocminfo` shows gfx1151
 - `hipcc --version` reports 7.2.0
 - No symbols matching `cuda*` in any .so file
 
-#### 4.1.2 PyTorch 2.10.0 (ROCm Backend)
+#### 4.1.1 NumPy 1.26.4 (Step 1)
+**Role**: Mathematical foundation for all numerical operations
+
 **Build Configuration**:
 ```
-USE_CUDA=0
-USE_ROCM=1
-PYTORCH_ROCM_ARCH=gfx1151
-BUILD_CAFFE2=0              # Reduce build time
-BUILD_TEST=0                # Skip tests during build
+NPY_BLAS_ORDER=openblas
+NPY_LAPACK_ORDER=openblas
+OPENBLAS_NUM_THREADS=1       # Prevent thread oversubscription
+```
+
+**Critical Validation** (MUST pass in checkPhase):
+```python
+import numpy as np
+from numpy.linalg import inv, svd
+
+# Verify BLAS linking
+config = np.__config__.show()
+assert 'openblas' in str(config).lower(), "BLAS not linked!"
+
+# Verify LAPACK linking  
+a = np.random.rand(100, 100)
+u, s, vh = svd(a)  # Requires LAPACK
+assert s.shape == (100,), "LAPACK SVD failed!"
+```
+
+**Memory**: ~2GB during build
+**Duration**: ~15 minutes
+
+#### 4.1.2 PyTorch 2.10.0 (Step 2)
+**Role**: Core ML framework with ROCm backend
+
+**Build Configuration**:
+```bash
+USE_CUDA=0                   # CRITICAL: No CUDA
+USE_ROCM=1                   # ROCm backend only
+PYTORCH_ROCM_ARCH=gfx1151    # Strix Halo target
+BUILD_CAFFE2=0               # Reduce build time
+BUILD_TEST=0                 # Skip tests during build
+MAX_JOBS=4                   # Memory-constrained (see 4.2.4)
+```
+
+**UMA Optimization** (runtime):
+```bash
+PYTORCH_HIP_ALLOC_CONF=expandable_segments:True
 ```
 
 **Memory Requirements**:
 - Peak build: ~45GB RAM
-- Orchestrator must throttle concurrent jobs
+- Orchestrator MUST throttle concurrent jobs
 
 **Validation**:
 ```python
 import torch
 assert torch.version.hip == "7.2.0"
-assert not torch.cuda.is_available()  # Must be False
-assert torch.cuda.get_device_name(0) == "gfx1151"  # ROCm device
+assert not torch.cuda.is_available()  # Must be False (ROCm masquerades as CUDA API)
+assert "gfx1151" in torch.cuda.get_device_name(0).lower()
 ```
 
-#### 4.1.3 vLLM 0.14.0
-**Purpose**: Batched inference, production API server
+**Duration**: ~4 hours
 
-**Optimizations**:
+#### 4.1.3 TorchVision 0.20.0 (Step 3)
+**Role**: Vision model support (ResNet, ViT, CLIP, etc.)
+
+**Build Configuration**:
+```bash
+FORCE_CUDA=0                 # Use ROCm path
+TORCH_CUDA_ARCH_LIST=""      # Empty (not building CUDA)
+WITH_PNG=1                   # libpng support
+WITH_JPEG=1                  # libjpeg-turbo support
+```
+
+**Strict Compatibility**:
+- MUST match PyTorch 2.10.0 exactly
+- Version mismatch will cause `ImportError` at runtime
+
+**Validation**:
+```python
+import torchvision
+assert torchvision.__version__.startswith("0.20")
+from torchvision import models
+model = models.resnet18()
+assert model is not None
+```
+
+**Duration**: ~30 minutes
+
+#### 4.1.4 Torchaudio 2.5.0 (Step 4)
+**Role**: Audio model support (Whisper, speech models)
+
+**Build Configuration**:
+```bash
+USE_ROCM=1
+USE_CUDA=0
+USE_FFMPEG=1                 # FFmpeg 6.x backend
+USE_SOX=1                    # SoX 14.4.2 for effects
+BUILD_SOX=0                  # Use system SoX (avoid conflicts)
+```
+
+**Dependency Resolution**:
+- FFmpeg must be 6.x (not 7.x - API incompatible)
+- SoX must be isolated from system libraries
+- Use `LD_LIBRARY_PATH` override in wrapper script
+
+**Validation**:
+```python
+import torchaudio
+assert torchaudio.__version__.startswith("2.5")
+# Test FFmpeg backend
+backend = torchaudio.get_audio_backend()
+assert backend in ["ffmpeg", "sox"]
+```
+
+**Duration**: ~20 minutes
+
+#### 4.1.5 FlashAttention-2 2.7.0 (Step 5)
+**Role**: Optimized attention kernels for Transformer models
+
+**Build Configuration**:
+```bash
+MIOPEN_ENABLE_LOGGING=1      # REQUIRED: Debug ROCm backend issues
+FLASH_ATTENTION_FORCE_BUILD=1
+MAX_JOBS=2                   # Memory-intensive compilation
+```
+
+**ROCm Specifics**:
+- Uses MIOpen backend (not cuDNN)
+- Requires composable_kernel from ROCm 7.2.0
+- gfx1151 kernels generated at build time
+
+**Validation**:
+```python
+from flash_attn import flash_attn_func
+import torch
+q = torch.randn(2, 8, 128, 64, device='cuda', dtype=torch.float16)
+k = torch.randn(2, 8, 128, 64, device='cuda', dtype=torch.float16)
+v = torch.randn(2, 8, 128, 64, device='cuda', dtype=torch.float16)
+out = flash_attn_func(q, k, v)  # Should use ROCm backend
+assert out.shape == (2, 8, 128, 64)
+```
+
+**Duration**: ~45 minutes
+
+#### 4.1.6 xFormers 0.0.29 (Step 6)
+**Role**: Composable Transformer building blocks with memory-efficient attention
+
+**Build Configuration**:
+```bash
+XFORMERS_DISABLE_FLASH_ATTN=0    # MUST link against FlashAttention-2
+FORCE_CUDA=0
+XFORMERS_FORCE_BUILD=1
+```
+
+**Critical Dependency**:
+- MUST be built AFTER FlashAttention-2 (Step 5)
+- Links against flash_attn library for optimized kernels
+- Will fall back to naive attention if `XFORMERS_DISABLE_FLASH_ATTN=1`
+
+**Validation**:
+```python
+import xformers
+from xformers.ops import memory_efficient_attention
+assert hasattr(xformers.ops, 'memory_efficient_attention')
+# Verify FlashAttention linkage
+assert not xformers._is_flash_disabled()
+```
+
+**Duration**: ~30 minutes
+
+#### 4.1.7 DeepSpeed 0.16.0 (Step 7) ⚠️ ZEN 2 CRITICAL
+**Role**: Distributed training and inference optimization (ZeRO, inference kernels)
+
+**Build Configuration**:
+```bash
+DS_BUILD_AVX512=0            # ⚠️ CRITICAL: Zen 2 has NO AVX-512!
+DS_BUILD_CUDA=0              # No CUDA
+DS_BUILD_EVOFORMER_ATTN=0    # Optional, reduce build time
+DS_BUILD_SPARSE_ATTN=1       # Sparse attention kernels
+```
+
+**Zen 2 Safety Rationale**:
+DeepSpeed's JIT compiler will emit AVX-512 instructions (ZMM registers) for optimized kernels if `DS_BUILD_AVX512=1`. The Threadripper 3960X (Zen 2) will **SIGILL crash** on any AVX-512 instruction.
+
+**Validation**:
+```bash
+# Binary must NOT contain AVX-512 instructions
+objdump -d $(python -c "import deepspeed; print(deepspeed.__path__[0])")/ops/*.so | grep -c 'zmm'
+# Expected: 0
+```
+
+```python
+import deepspeed
+assert deepspeed.__version__ == "0.16.0"
+```
+
+**Duration**: ~25 minutes
+
+#### 4.1.8 Bitsandbytes 0.45.0 (Step 8)
+**Role**: 8-bit and 4-bit quantization for inference optimization
+
+**Build Configuration**:
+```bash
+BNB_CUDA_VERSION=720         # Maps to ROCm 7.2.0 compatibility
+CUDA_HOME=""                 # Force HIP path
+```
+
+**Source**: Use HIPified fork (ROCm-compatible bitsandbytes)
+- Repository: `ROCm/bitsandbytes` or `TimDettmers/bitsandbytes` with ROCm patches
+- The HIPified source replaces CUDA intrinsics with HIP equivalents
+
+**Validation**:
+```python
+import bitsandbytes as bnb
+assert bnb.COMPILED_WITH_CUDA == False  # HIP build
+linear = bnb.nn.Linear8bitLt(64, 64)
+assert linear is not None
+```
+
+**Duration**: ~15 minutes
+
+#### 4.1.9 vLLM 0.14.0 (Step 9)
+**Role**: Production inference server with continuous batching
+
+**Build Configuration**:
+```bash
+VLLM_TARGET_DEVICE=rocm      # ROCm backend
+VLLM_USE_UNIFIED_MEMORY=1    # Strix Halo UMA optimization
+MAX_JOBS=4
+```
+
+**UMA Optimizations**:
 - Max batch size: 128 (unified memory advantage)
-- KV cache: 64GB allocation
+- KV cache: 64GB allocation (uses unified pool)
 - Continuous batching enabled
+- PagedAttention with 128GB addressable memory
 
-#### 4.1.4 llama.cpp (ROCm/HIP Backend)
-**Purpose**: Local inference, interactive use, quantized models
-
-**Build Variants**:
-1. **llama-server**: HTTP API, batch processing focus
-2. **llama-cli**: Interactive shell, low-latency focus
-3. **llama-quantize**: Model conversion utilities
-
-**Backend Selection**:
-- Use ROCm/HIP (not CLBlast/OpenCL)
-- Static link ROCm libraries to avoid runtime deps
-
-**Optimizations**:
+**Validation**:
+```bash
+vllm serve --help  # Must show ROCm options
+python -c "from vllm import LLM; print('vLLM OK')"
 ```
+
+**Duration**: ~45 minutes
+
+#### 4.1.10 llama.cpp GPU Variant (Step 10)
+**Role**: GPU-accelerated local inference with UMA optimization
+
+**Build Configuration**:
+```cmake
 CMAKE_BUILD_TYPE=Release
-LLAMA_HIPBLAS=ON
-LLAMA_NATIVE=ON              # Native CPU optimizations
+GGML_HIPBLAS=ON              # ROCm/HIP backend
+GGML_HIP_UMA=ON              # ⭐ Strix Halo UMA optimization
+GGML_NATIVE=ON               # Native CPU optimizations
 AMDGPU_TARGETS=gfx1151
 ```
 
-**Context Length**:
-- Default: 32k tokens
-- Extended: 128k tokens (utilizing full 128GB)
+**UMA Optimization Rationale**:
+`GGML_HIP_UMA=ON` enables unified memory allocations that:
+- Eliminate CPU→GPU memory copies
+- Allow models larger than "GPU VRAM" (uses full 128GB)
+- Enable zero-copy mmap for GGUF files
 
-**Model Loading**:
-- mmap enabled (zero-copy from disk)
-- Huge pages support
-- Pre-warm weights on first load
+**Variants Built**:
+1. `llama-server-gpu`: HTTP API, batch processing
+2. `llama-cli-gpu`: Interactive shell
+3. `llama-quantize`: Model conversion (shared with CPU)
+
+**Validation**:
+```bash
+./llama-cli-gpu --version
+# Should show: ROCm/HIP backend, gfx1151
+./llama-server-gpu --help | grep -i rocm
+```
+
+**Duration**: ~30 minutes
+
+#### 4.1.11 llama.cpp CPU Variant (Step 11) ⚠️ ZEN 2 CRITICAL
+**Role**: CPU fallback for non-GPU tasks and Zen 2 host compatibility
+
+**Build Configuration**:
+```cmake
+CMAKE_BUILD_TYPE=Release
+GGML_HIPBLAS=OFF             # No GPU
+GGML_AVX512=OFF              # ⚠️ CRITICAL: Zen 2 safety!
+GGML_AVX2=ON                 # Zen 2 supports AVX2
+GGML_FMA=ON                  # Zen 2 supports FMA
+GGML_F16C=ON                 # Zen 2 supports F16C
+GGML_NATIVE=OFF              # Don't auto-detect (might enable AVX-512)
+```
+
+**Zen 2 Safety Rationale**:
+The Threadripper 3960X (Zen 2) supports AVX2 but NOT AVX-512. If `GGML_AVX512=ON`, the CPU variant will emit illegal instructions and crash.
+
+**Variants Built**:
+1. `llama-cli-cpu`: Interactive shell (CPU only)
+2. `llama-server-cpu`: HTTP API (CPU only)
+
+**Validation**:
+```bash
+# Verify no AVX-512 instructions
+objdump -d ./llama-cli-cpu | grep -c 'zmm'
+# Expected: 0
+
+./llama-cli-cpu --version
+# Should NOT mention AVX-512
+```
+
+**Duration**: ~20 minutes
+
+#### 4.1.12 ONNX Runtime 1.20.0 (Step 12) ⚠️ ZEN 2 CRITICAL
+**Role**: Interoperable model inference for ONNX format models
+
+**Build Configuration**:
+```cmake
+-Donnxruntime_USE_ROCM=ON
+-Donnxruntime_ROCM_HOME=/opt/rocm
+-Donnxruntime_ENABLE_AVX512=OFF   # ⚠️ CRITICAL: Zen 2 safety!
+-Donnxruntime_USE_CUDA=OFF
+-DCMAKE_BUILD_TYPE=Release
+```
+
+**Zen 2 Safety Rationale**:
+ONNX Runtime's CPU execution provider can emit AVX-512 for optimized kernels. With `-Donnxruntime_ENABLE_AVX512=OFF`, it falls back to AVX2.
+
+**Validation**:
+```bash
+# Verify no AVX-512 instructions in CPU provider
+objdump -d libonnxruntime.so | grep -c 'zmm'
+# Expected: 0
+```
+
+```python
+import onnxruntime as ort
+assert "ROCMExecutionProvider" in ort.get_available_providers()
+print(ort.get_device())  # Should show ROCm device
+```
+
+**Duration**: ~40 minutes
 
 ### 4.2 Safety & Validation Systems
 
@@ -353,7 +744,7 @@ Phase 5: Integration testing (all cores, 15 min)
 ### 4.3 Deployment Systems
 
 #### 4.3.1 Offline Bundle Creator (bundle-creator)
-**Output**: `rockbuilder-bundle-v6.0.tar.zst`
+**Output**: `rockbuilder-bundle-v6.1.tar.zst`
 
 **Contents**:
 1. Full Nix store closure (exported as NARs)
@@ -376,9 +767,9 @@ Phase 5: Integration testing (all cores, 15 min)
 
 ---
 
-## 5. Six-Stage Build Progression
+## 5. Eight-Stage Build Progression (12-Step Pipeline)
 
-**Philosophy**: Graduated complexity with independent validation at each stage.
+**Philosophy**: Graduated complexity with strict component ordering and Zen 2 safety validation at each stage.
 
 ### Stage 1: Minimal Viable Flake (Lines 1-150)
 **Components**:
@@ -398,7 +789,7 @@ Phase 5: Integration testing (all cores, 15 min)
 
 ### Stage 2: ROCm Foundation (Lines 151-350)
 **Components**:
-- ROCm 7.2.0 derivation
+- ROCm 7.2.0 stack (all 17 packages)
 - NVIDIA isolation Layer 1 (poisoned packages)
 - Dependency auditor
 - gfx1151 optimization flags
@@ -412,73 +803,163 @@ Phase 5: Integration testing (all cores, 15 min)
 **Duration**: ~2 hours
 **Lines of Code**: ~200 additional
 
-### Stage 3: Python + PyTorch (Lines 351-550)
+### Stage 3: ML Framework Foundation (Lines 351-600) ⭐ EXPANDED
+**Pipeline Steps**: 1-4 (NumPy → PyTorch → TorchVision → Torchaudio)
+
 **Components**:
 - Python 3.11 environment
+- NumPy 1.26.4 with BLAS/LAPACK validation
 - PyTorch 2.10.0 with ROCm backend
+- TorchVision 0.20.0 (PyTorch-compatible)
+- Torchaudio 2.5.0 (FFmpeg/SoX resolved)
 - Build orchestrator (basic version)
 - Memory monitoring
 
 **Validation**:
-- PyTorch imports successfully
-- `torch.version.hip == "7.2.0"`
-- No OOM kills during build
-- Symbol scanner passes
+```bash
+# NumPy BLAS/LAPACK check (MUST pass)
+python -c "import numpy as np; np.show_config()" | grep -i openblas
 
-**Duration**: ~4 hours
-**Lines of Code**: ~200 additional
+# PyTorch ROCm check
+python -c "import torch; assert torch.version.hip == '7.2.0'"
 
-### Stage 4: AI Stack Integration (Lines 551-750)
+# TorchVision compatibility
+python -c "import torch, torchvision; assert torchvision.__version__.startswith('0.20')"
+
+# Torchaudio backend
+python -c "import torchaudio; print(torchaudio.get_audio_backend())"
+```
+
+**Duration**: ~5 hours (NumPy 15min + PyTorch 4hr + TorchVision 30min + Torchaudio 20min)
+**Lines of Code**: ~250 additional
+
+### Stage 4: Attention & Optimization Stack (Lines 601-800) ⭐ NEW
+**Pipeline Steps**: 5-7 (FlashAttention-2 → xFormers → DeepSpeed)
+
 **Components**:
-- vLLM 0.14.0
-- llama.cpp (server + cli)
-- Model management utilities
-- Integration tests
+- FlashAttention-2 2.7.0 (MIOPEN_ENABLE_LOGGING=1)
+- xFormers 0.0.29 (linked to FlashAttention-2)
+- DeepSpeed 0.16.0 (**DS_BUILD_AVX512=0** for Zen 2)
 
 **Validation**:
-- vLLM runs simple inference
-- llama-server responds to HTTP requests
-- Both use ROCm backend
-- No CUDA symbols anywhere
+```bash
+# FlashAttention import
+python -c "from flash_attn import flash_attn_func; print('FlashAttn OK')"
 
-**Duration**: ~2 hours
+# xFormers FlashAttention linkage
+python -c "import xformers; assert not xformers._is_flash_disabled()"
+
+# DeepSpeed AVX-512 safety check (CRITICAL)
+objdump -d $(python -c "import deepspeed; print(deepspeed.__path__[0])")/ops/*.so 2>/dev/null | grep -c 'zmm'
+# Expected: 0 (no AVX-512 instructions)
+```
+
+**Duration**: ~1.5 hours (FlashAttn 45min + xFormers 30min + DeepSpeed 25min)
 **Lines of Code**: ~200 additional
 
-### Stage 5: Safety & Tooling (Lines 751-950)
+### Stage 5: Quantization & Inference Stack (Lines 801-1000) ⭐ EXPANDED
+**Pipeline Steps**: 8-12 (Bitsandbytes → vLLM → llama.cpp GPU → llama.cpp CPU → ONNX Runtime)
+
+**Components**:
+- Bitsandbytes 0.45.0 (HIPified, BNB_CUDA_VERSION=720)
+- vLLM 0.14.0 (VLLM_TARGET_DEVICE=rocm, UMA enabled)
+- llama.cpp GPU variant (GGML_HIP_UMA=ON for Strix Halo)
+- llama.cpp CPU variant (**GGML_AVX512=OFF** for Zen 2)
+- ONNX Runtime 1.20.0 (**-Donnxruntime_ENABLE_AVX512=OFF**)
+- Model management utilities
+
+**Validation**:
+```bash
+# Bitsandbytes HIP check
+python -c "import bitsandbytes as bnb; assert not bnb.COMPILED_WITH_CUDA"
+
+# vLLM ROCm check
+python -c "from vllm import LLM; print('vLLM OK')"
+
+# llama.cpp GPU UMA
+./llama-cli-gpu --version | grep -i rocm
+
+# llama.cpp CPU Zen 2 safety (CRITICAL)
+objdump -d ./llama-cli-cpu | grep -c 'zmm'
+# Expected: 0
+
+# ONNX Runtime providers
+python -c "import onnxruntime as ort; assert 'ROCMExecutionProvider' in ort.get_available_providers()"
+
+# ONNX Runtime Zen 2 safety (CRITICAL)
+objdump -d $(python -c "import onnxruntime; print(onnxruntime.__path__[0])")/*.so | grep -c 'zmm'
+# Expected: 0
+```
+
+**Duration**: ~2.5 hours (Bitsandbytes 15min + vLLM 45min + llama GPU 30min + llama CPU 20min + ONNX 40min)
+**Lines of Code**: ~200 additional
+
+### Stage 6: Safety & Tooling (Lines 1001-1200)
 **Components**:
 - Enhanced build orchestrator
 - SBOM generator with CVE auditing
 - Reproducibility tests
-- Pre-flight validator
+- Pre-flight validator (including Zen 2 AVX-512 checks)
 - All four NVIDIA isolation layers
+- Zen 2 Safety Protocol enforcement
 
 **Validation**:
 - Reproducibility test passes (3 identical builds)
 - SBOM generates without errors
 - CVE report created
 - All safety checks pass
+- **Zen 2 AVX-512 audit passes** (all 3 critical components verified)
 
 **Duration**: ~1 hour
 **Lines of Code**: ~200 additional
 
-### Stage 6: DevShell + Deployment (Lines 951-1100)
+### Stage 7: DevShell + Integration (Lines 1201-1400)
 **Components**:
 - Complete devShell with aliases
-- Offline bundle creator
+- VS Code task configurations
+- Integration test suite (all 12 components)
 - Documentation generation
+
+**Validation**:
+- All devShell aliases work
+- Integration tests pass for all 12 pipeline steps
+- Documentation renders correctly
+
+**Duration**: ~45 minutes
+**Lines of Code**: ~200 additional
+
+### Stage 8: Deployment Bundle (Lines 1401-1600)
+**Components**:
+- Offline bundle creator
 - Systemd service templates
-- Final integration tests
+- Target system validator
+- Final smoke tests
 
 **Validation**:
 - Bundle creation completes
 - Installer script tested in VM
-- All devShell aliases work
-- Full system test passes
+- Full system test passes on target platform
+- Zen 2 safety verified on build host
 
-**Duration**: ~1 hour
-**Lines of Code**: ~150 additional
+**Duration**: ~30 minutes
+**Lines of Code**: ~200 additional
 
-**Total**: ~1100 lines, ~11 hours build time (first build), ~3 hours (cached rebuilds)
+---
+
+### Build Time Summary
+
+| Stage | Components | Duration | Cumulative |
+|-------|------------|----------|------------|
+| 1 | GCC 14.2.1 | 30 min | 30 min |
+| 2 | ROCm 7.2.0 (17 pkgs) | 2 hr | 2.5 hr |
+| 3 | NumPy/PyTorch/TorchVision/Torchaudio | 5 hr | 7.5 hr |
+| 4 | FlashAttn/xFormers/DeepSpeed | 1.5 hr | 9 hr |
+| 5 | Bitsandbytes/vLLM/llama.cpp/ONNX | 2.5 hr | 11.5 hr |
+| 6 | Safety systems | 1 hr | 12.5 hr |
+| 7 | DevShell + Integration | 45 min | 13.25 hr |
+| 8 | Deployment bundle | 30 min | **~13.75 hr** |
+
+**Total**: ~1600 lines, ~13-14 hours build time (first build), ~4 hours (cached rebuilds)
 
 ---
 
@@ -590,34 +1071,157 @@ rollback-to-stage <N>  # Reset to stage N's flake.nix
 
 ## 7. Testing & Validation
 
-### 7.1 Unit Tests (Per Component)
+### 7.1 Unit Tests (12-Step Pipeline Smoke Tests)
 
-**GCC 14.2.1**:
-- Version verification
-- C++20 feature compilation test
-- ROCm compatibility test
+**Step 0: ROCm 7.2.0**:
+```bash
+rocminfo | grep -i "gfx1151"
+hipcc --version | grep "7.2.0"
+```
 
-**ROCm 7.2.0**:
-- `rocminfo` output parsing
-- HIP runtime initialization
-- gfx1151 detection
+**Step 1: NumPy 1.26.4**:
+```python
+import numpy as np
+config = np.__config__.show()
+assert 'openblas' in str(config).lower()
+np.linalg.svd(np.random.rand(100, 100))  # LAPACK test
+```
 
-**PyTorch 2.10.0**:
-- Import test
-- ROCm backend verification
-- Simple tensor operation on GPU
+**Step 2: PyTorch 2.10.0**:
+```python
+import torch
+assert torch.version.hip == "7.2.0"
+assert not torch.cuda.is_available()
+x = torch.randn(100, 100, device='cuda')  # ROCm via CUDA API
+```
 
-**vLLM 0.14.0**:
-- Server startup
-- Simple completion request
-- Batch processing test
+**Step 3: TorchVision 0.20.0**:
+```python
+import torchvision
+assert torchvision.__version__.startswith("0.20")
+from torchvision.models import resnet18
+model = resnet18()
+```
 
-**llama.cpp**:
-- Model loading (GGUF format)
-- Single inference
-- HTTP API test
+**Step 4: Torchaudio 2.5.0**:
+```python
+import torchaudio
+assert torchaudio.__version__.startswith("2.5")
+backend = torchaudio.get_audio_backend()
+```
 
-### 7.2 Integration Tests
+**Step 5: FlashAttention-2 2.7.0**:
+```python
+from flash_attn import flash_attn_func
+import torch
+q = torch.randn(1, 4, 64, 32, device='cuda', dtype=torch.float16)
+out = flash_attn_func(q, q, q)
+```
+
+**Step 6: xFormers 0.0.29**:
+```python
+import xformers
+from xformers.ops import memory_efficient_attention
+assert not xformers._is_flash_disabled()
+```
+
+**Step 7: DeepSpeed 0.16.0** ⚠️ Zen 2 Critical:
+```bash
+# Binary check (MUST return 0)
+objdump -d $(python -c "import deepspeed; print(deepspeed.__path__[0])")/ops/*.so 2>/dev/null | grep -c 'zmm'
+```
+```python
+import deepspeed
+assert deepspeed.__version__ == "0.16.0"
+```
+
+**Step 8: Bitsandbytes 0.45.0**:
+```python
+import bitsandbytes as bnb
+assert not bnb.COMPILED_WITH_CUDA
+linear = bnb.nn.Linear8bitLt(64, 64)
+```
+
+**Step 9: vLLM 0.14.0**:
+```bash
+vllm serve --help | grep -i rocm
+python -c "from vllm import LLM"
+```
+
+**Step 10: llama.cpp GPU**:
+```bash
+./llama-cli-gpu --version | grep -i rocm
+./llama-server-gpu --help | head -5
+```
+
+**Step 11: llama.cpp CPU** ⚠️ Zen 2 Critical:
+```bash
+# Binary check (MUST return 0)
+objdump -d ./llama-cli-cpu | grep -c 'zmm'
+./llama-cli-cpu --version
+```
+
+**Step 12: ONNX Runtime 1.20.0** ⚠️ Zen 2 Critical:
+```bash
+# Binary check (MUST return 0)
+objdump -d $(python -c "import onnxruntime; print(onnxruntime.__path__[0])")/*.so 2>/dev/null | grep -c 'zmm'
+```
+```python
+import onnxruntime as ort
+assert "ROCMExecutionProvider" in ort.get_available_providers()
+```
+
+### 7.2 Zen 2 Safety Protocol Validation
+
+**Automated AVX-512 Audit** (run after Stage 5):
+```bash
+#!/bin/bash
+# zen2-safety-audit.sh
+set -e
+
+echo "=== Zen 2 Safety Protocol Audit ==="
+
+FAIL=0
+
+# Check DeepSpeed
+DS_COUNT=$(objdump -d $(python -c "import deepspeed; print(deepspeed.__path__[0])")/ops/*.so 2>/dev/null | grep -c 'zmm' || echo 0)
+if [ "$DS_COUNT" -gt 0 ]; then
+  echo "❌ FAIL: DeepSpeed contains $DS_COUNT AVX-512 instructions"
+  FAIL=1
+else
+  echo "✅ PASS: DeepSpeed is Zen 2 safe"
+fi
+
+# Check llama.cpp CPU
+LLAMA_COUNT=$(objdump -d ./llama-cli-cpu 2>/dev/null | grep -c 'zmm' || echo 0)
+if [ "$LLAMA_COUNT" -gt 0 ]; then
+  echo "❌ FAIL: llama.cpp CPU contains $LLAMA_COUNT AVX-512 instructions"
+  FAIL=1
+else
+  echo "✅ PASS: llama.cpp CPU is Zen 2 safe"
+fi
+
+# Check ONNX Runtime
+ORT_COUNT=$(objdump -d $(python -c "import onnxruntime; print(onnxruntime.__path__[0])")/*.so 2>/dev/null | grep -c 'zmm' || echo 0)
+if [ "$ORT_COUNT" -gt 0 ]; then
+  echo "❌ FAIL: ONNX Runtime contains $ORT_COUNT AVX-512 instructions"
+  FAIL=1
+else
+  echo "✅ PASS: ONNX Runtime is Zen 2 safe"
+fi
+
+if [ "$FAIL" -eq 1 ]; then
+  echo ""
+  echo "🚨 ZEN 2 SAFETY AUDIT FAILED 🚨"
+  echo "The build host (Threadripper 3960X) will crash on AVX-512 instructions."
+  exit 1
+else
+  echo ""
+  echo "✅ All Zen 2 safety checks passed"
+fi
+```
+
+### 7.3 Integration Tests
 
 **NVIDIA Isolation Validation**:
 1. Attempt to access `/dev/nvidia0` in sandbox → Expect: Failure
@@ -720,12 +1324,13 @@ rollback-to-stage <N>  # Reset to stage N's flake.nix
 
 ### 9.1 Build System
 
-- ✅ Completes all 6 stages without manual intervention
+- ✅ Completes all 8 stages without manual intervention
+- ✅ All 12 pipeline steps build and validate successfully
 - ✅ No NVIDIA contamination detected in any binary
 - ✅ Bit-for-bit reproducible (3 builds, identical hashes)
 - ✅ No OOM kills during build (on 64GB system)
-- ✅ Build time < 10 hours (first build, no cache)
-- ✅ Build time < 3 hours (with partial cache)
+- ✅ Build time < 14 hours (first build, no cache)
+- ✅ Build time < 4 hours (with partial cache)
 
 ### 9.2 Safety Systems
 
@@ -734,14 +1339,22 @@ rollback-to-stage <N>  # Reset to stage N's flake.nix
 - ✅ Binary scanner finds 100% of contaminated binaries
 - ✅ Build orchestrator prevents OOM (tested under memory pressure)
 - ✅ Reproducibility test passes 10/10 runs
+- ✅ **Zen 2 Safety Audit passes** (DeepSpeed, llama-cpu, ONNX Runtime all AVX-512 free)
 
-### 9.3 AI Stack Functionality
+### 9.3 AI Stack Functionality (12-Step Pipeline)
 
+- ✅ NumPy BLAS/LAPACK validation passes
 - ✅ PyTorch recognizes gfx1151 via ROCm backend
+- ✅ TorchVision/Torchaudio import without version mismatch
+- ✅ FlashAttention-2 runs attention kernels on ROCm
+- ✅ xFormers links to FlashAttention-2 (not disabled)
+- ✅ DeepSpeed builds without AVX-512 (Zen 2 safe)
+- ✅ Bitsandbytes uses HIP backend (not CUDA)
 - ✅ vLLM serves completions via HTTP API
-- ✅ llama.cpp loads and runs GGUF models
+- ✅ llama.cpp GPU uses UMA optimization on Strix Halo
+- ✅ llama.cpp CPU builds without AVX-512 (Zen 2 safe)
+- ✅ ONNX Runtime provides ROCMExecutionProvider
 - ✅ All components use ROCm (no CPU fallback)
-- ✅ Memory usage within expected bounds
 
 ### 9.4 Deployment
 
@@ -749,20 +1362,26 @@ rollback-to-stage <N>  # Reset to stage N's flake.nix
 - ✅ All systemd services start successfully
 - ✅ Inference workloads run at expected performance
 - ✅ SBOM generated with < 5 Critical CVEs
+- ✅ Bundle size < 35GB compressed
 
 ### 9.5 Developer Experience
 
-- ✅ VS Code tasks work for all stages
+- ✅ VS Code tasks work for all 8 stages
 - ✅ Error messages are actionable and specific
 - ✅ Failed builds can be debugged interactively
 - ✅ Rollback to previous stage takes < 5 minutes
 - ✅ Documentation answers common questions
+- ✅ Zen 2 safety audit script available in devShell
 
 ---
 
 ## 10. Risk Management
 
 ### 10.1 Known Risks
+
+**Risk**: AVX-512 instructions crash Threadripper 3960X (Zen 2) host  
+**Mitigation**: Mandatory `DS_BUILD_AVX512=0`, `GGML_AVX512=OFF`, `-Donnxruntime_ENABLE_AVX512=OFF` flags  
+**Fallback**: Zen 2 Safety Audit script catches any violations before deployment
 
 **Risk**: PyTorch build OOM kills on 64GB system  
 **Mitigation**: Build orchestrator throttles to 1 job max for PyTorch  
@@ -775,6 +1394,10 @@ rollback-to-stage <N>  # Reset to stage N's flake.nix
 **Risk**: NVIDIA contamination slips through all 4 layers  
 **Mitigation**: Binary scanner as final gate, fails build  
 **Fallback**: Manual inspection of binaries, rebuild from clean state
+
+**Risk**: FlashAttention-2/xFormers build failures due to MIOpen version mismatch  
+**Mitigation**: Pin ROCm 7.2.0 composable_kernel version  
+**Fallback**: Disable FlashAttention linkage in xFormers (`XFORMERS_DISABLE_FLASH_ATTN=1`)
 
 **Risk**: llama.cpp ROCm backend broken for gfx1151  
 **Mitigation**: Pin to known-good commit with gfx1151 support  
@@ -800,17 +1423,26 @@ rollback-to-stage <N>  # Reset to stage N's flake.nix
 
 ---
 
-## 11. Future Enhancements (Post-v6.0)
+## 11. Future Enhancements (Post-v6.1)
 
-### 11.1 Planned for v6.1
+### 11.1 Completed in v6.1 (This Release)
+- ✅ **12-Step AI Pipeline**: Strict build order from NumPy to ONNX Runtime
+- ✅ **Zen 2 Safety Protocol**: AVX-512 blocking for Threadripper 3960X
+- ✅ **LPDDR5X/UMA Optimization**: Unified memory tuning for Strix Halo
+- ✅ **Expanded Component Matrix**: PyTorch 2.10.0 compatibility versions pinned
+- ✅ **Per-Component Smoke Tests**: All 12 pipeline steps validated
+
+### 11.2 Planned for v6.2
 - **Multi-GPU Support**: Build for systems with multiple Strix Halo chips
 - **Model Registry**: Centralized GGUF model management with automatic quantization
 - **Monitoring Dashboard**: Web UI showing build progress, memory usage, errors
+- **Zen 5 Optimizations**: Enable AVX-512 on target platform (Strix Halo) for inference
 
-### 11.2 Research Items
+### 11.3 Research Items
 - **Distributed Builds**: Nix remote builders to parallelize across multiple machines
 - **Incremental Builds**: Cache intermediate compilation artifacts, not just final outputs
 - **Cross-Compilation**: Build on x86_64 for aarch64 AMD chips
+- **ROCm 7.3 Migration**: Evaluate breaking changes and new gfx1151 optimizations
 
 ---
 
@@ -818,13 +1450,20 @@ rollback-to-stage <N>  # Reset to stage N's flake.nix
 
 ### 12.1 Glossary
 
+- **AVX-512**: Advanced Vector Extensions 512-bit, SIMD instruction set NOT supported on Zen 2
 - **gfx1151**: AMD GPU architecture identifier for Strix Halo
-- **XNACK**: Memory page retry mechanism for unified memory architectures
-- **GTT**: Graphics Translation Table, GPU memory management
-- **PSI**: Pressure Stall Information, Linux kernel memory pressure metrics
+- **HIPify**: Process of converting CUDA code to HIP (ROCm-compatible)
+- **LPDDR5X**: Low Power DDR5 Extended, high-bandwidth unified memory in Strix Halo
+- **MIOpen**: AMD's deep learning primitives library (ROCm equivalent of cuDNN)
 - **NAR**: Nix Archive, serialized package format for store paths
+- **PSI**: Pressure Stall Information, Linux kernel memory pressure metrics
 - **SBOM**: Software Bill of Materials, security inventory
+- **UMA**: Unified Memory Architecture, CPU and GPU share physical memory
+- **XNACK**: Memory page retry mechanism for unified memory architectures
+- **Zen 2**: AMD CPU microarchitecture (Threadripper 3960X), lacks AVX-512
+- **Zen 5**: AMD CPU microarchitecture (Strix Halo), supports AVX-512
 - **GGUF**: GPT-Generated Unified Format, llama.cpp model format
+- **GTT**: Graphics Translation Table, GPU memory management
 
 ### 12.2 References
 
@@ -832,11 +1471,16 @@ rollback-to-stage <N>  # Reset to stage N's flake.nix
 - ROCm Documentation: https://rocm.docs.amd.com/
 - PyTorch ROCm Guide: https://pytorch.org/get-started/locally/#linux-rocm
 - llama.cpp ROCm Backend: https://github.com/ggerganov/llama.cpp/discussions/1627
+- FlashAttention-2 ROCm: https://github.com/Dao-AILab/flash-attention
+- xFormers: https://github.com/facebookresearch/xformers
+- DeepSpeed: https://github.com/microsoft/DeepSpeed
+- ONNX Runtime ROCm: https://onnxruntime.ai/docs/execution-providers/ROCm-ExecutionProvider.html
 
 ### 12.3 Version History
 
 - **v5.0**: Initial pure Nix implementation
 - **v6.0**: Added quad-layer isolation, llama.cpp, safety systems, Threadripper optimization
+- **v6.1**: 12-step AI pipeline, Zen 2 safety protocol (AVX-512 blocking), LPDDR5X/UMA optimization, PyTorch 2.10.0 compatibility matrix
 
 ---
 

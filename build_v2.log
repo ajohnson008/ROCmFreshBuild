@@ -1,0 +1,45 @@
+these 4 derivations will be built:
+  /nix/store/nhk4rxfx0yd4sm22qb816h8ap8h5ac77-source.drv
+  /nix/store/dqxl2lwsgbamlimk4a8fn1lkmbs3qcnx-rocm-runtime-7.2.0.drv
+  /nix/store/k0r054z7gnvfnsmk1brnnn4l9i1x54lb-clr-7.2.0.drv
+  /nix/store/jy968z261lg4186jvba4jsk257dj0a2h-rocm-core-7.2.0.drv
+building '/nix/store/k0r054z7gnvfnsmk1brnnn4l9i1x54lb-clr-7.2.0.drv'...
+building '/nix/store/nhk4rxfx0yd4sm22qb816h8ap8h5ac77-source.drv'...
+source> 
+source> trying https://github.com/ROCm/ROCR-Runtime/archive/rocm-7.2.0.tar.gz
+source>   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+source>                                  Dload  Upload   Total   Spent    Left  Speed
+clr> Running phase: unpackPhase
+clr> unpacking source archive /nix/store/xw8m19c4ijcqpz3cc9s9avpmd3rx0fmc-source
+clr> source root is source
+clr> Running phase: patchPhase
+clr> patching script interpreter paths in
+clr> No arguments supplied to patchShebangs
+clr> patching script interpreter paths in hipamd/src
+clr> hipamd/src/hip_embed_pch.sh: interpreter directive changed from "#!/bin/bash" to "/nix/store/mjhcjikhxps97mq5z54j4gjjfzgmsir5-bash-5.2p37/bin/bash"
+clr> hipamd/src/hip_prof_gen.py: interpreter directive changed from "#!/usr/bin/python" to "/nix/store/dksjvr69ckglyw1k2ss1qgshhcix73p8-python3-3.12.8/bin/python"
+clr> substituteStream() in derivation clr-7.2.0: WARNING: '--replace' is deprecated, use --replace-{fail,warn,quiet}. (file 'hipamd/CMakeLists.txt')
+clr> substituteStream() in derivation clr-7.2.0: ERROR: pattern HIP_USE_RUNTIME_UNBUNDLER\,\ false doesn't match anything in file 'rocclr/utils/flags.hpp'
+error: Cannot build '/nix/store/k0r054z7gnvfnsmk1brnnn4l9i1x54lb-clr-7.2.0.drv'.
+       Reason: builder failed with exit code 1.
+       Output paths:
+         /nix/store/2drw25ahn4b80vky37lskd54nvrfy2z5-clr-7.2.0
+         /nix/store/3rmwmp80bb03169z4xpms1ckqbmhilpm-clr-7.2.0-icd
+       Last 11 log lines:
+       > Running phase: unpackPhase
+       > unpacking source archive /nix/store/xw8m19c4ijcqpz3cc9s9avpmd3rx0fmc-source
+       > source root is source
+       > Running phase: patchPhase
+       > patching script interpreter paths in
+       > No arguments supplied to patchShebangs
+       > patching script interpreter paths in hipamd/src
+       > hipamd/src/hip_embed_pch.sh: interpreter directive changed from "#!/bin/bash" to "/nix/store/mjhcjikhxps97mq5z54j4gjjfzgmsir5-bash-5.2p37/bin/bash"
+       > hipamd/src/hip_prof_gen.py: interpreter directive changed from "#!/usr/bin/python" to "/nix/store/dksjvr69ckglyw1k2ss1qgshhcix73p8-python3-3.12.8/bin/python"
+       > substituteStream() in derivation clr-7.2.0: WARNING: '--replace' is deprecated, use --replace-{fail,warn,quiet}. (file 'hipamd/CMakeLists.txt')
+       > substituteStream() in derivation clr-7.2.0: ERROR: pattern HIP_USE_RUNTIME_UNBUNDLER\,\ false doesn't match anything in file 'rocclr/utils/flags.hpp'
+       For full logs, run:
+         nix log /nix/store/k0r054z7gnvfnsmk1brnnn4l9i1x54lb-clr-7.2.0.drv
+error: Cannot build '/nix/store/jy968z261lg4186jvba4jsk257dj0a2h-rocm-core-7.2.0.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/f6dky36k37cik6j3asvk9yh5qapyjpqw-rocm-core-7.2.0

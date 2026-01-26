@@ -1,0 +1,188 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "TheRockBuilder-v6.0",
+  "documentNamespace": "https://rockbuilder.ai/sbom/v6.0/1769416984",
+  "creationInfo": {
+    "created": "2026-01-26T08:43:04Z",
+    "creators": ["Tool: TheRockBuilder-SBOM-Generator-v6.0"]
+  },
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-2745pvn6cv32yn9gp2rlqiqhqgs01pb5",
+      "name": "libunistring-1.2",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "nix",
+          "referenceLocator": "/nix/store/2745pvn6cv32yn9gp2rlqiqhqgs01pb5-libunistring-1.2"
+        }
+      ]
+    }
+,
+    {
+      "SPDXID": "SPDXRef-4vvcph91jp7hp0g0y01v0x8fdav7da92",
+      "name": "theRockBuilder-ai-stack-v6.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "nix",
+          "referenceLocator": "/nix/store/4vvcph91jp7hp0g0y01v0x8fdav7da92-theRockBuilder-ai-stack-v6.0"
+        }
+      ]
+    }
+,
+    {
+      "SPDXID": "SPDXRef-5m9amsvvh2z8sl7jrnc87hzy21glw6k1",
+      "name": "glibc-2.40-66",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "nix",
+          "referenceLocator": "/nix/store/5m9amsvvh2z8sl7jrnc87hzy21glw6k1-glibc-2.40-66"
+        }
+      ]
+    }
+,
+    {
+      "SPDXID": "SPDXRef-9922yphhrmk850lrc1v2rx57c33xdxgn",
+      "name": "pytorch-rocm-placeholder-2.10.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "nix",
+          "referenceLocator": "/nix/store/9922yphhrmk850lrc1v2rx57c33xdxgn-pytorch-rocm-placeholder-2.10.0"
+        }
+      ]
+    }
+,
+    {
+      "SPDXID": "SPDXRef-a4dvzi0nf06c3rvzvj5f7yifq5n1v1bk",
+      "name": "llama-cpp-placeholder-2025-01-26",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "nix",
+          "referenceLocator": "/nix/store/a4dvzi0nf06c3rvzvj5f7yifq5n1v1bk-llama-cpp-placeholder-2025-01-26"
+        }
+      ]
+    }
+,
+    {
+      "SPDXID": "SPDXRef-c47b963idja6h1d8n91pf28v2jcq96kp",
+      "name": "libidn2-2.3.7",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "nix",
+          "referenceLocator": "/nix/store/c47b963idja6h1d8n91pf28v2jcq96kp-libidn2-2.3.7"
+        }
+      ]
+    }
+,
+    {
+      "SPDXID": "SPDXRef-jhpr8mb82hilffv9ppx681zfww5wg21h",
+      "name": "model-manager",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "nix",
+          "referenceLocator": "/nix/store/jhpr8mb82hilffv9ppx681zfww5wg21h-model-manager"
+        }
+      ]
+    }
+,
+    {
+      "SPDXID": "SPDXRef-lwr3j0gsl2wdars8qdjnkg8csmqfr4la",
+      "name": "rocm-core-placeholder-7.2.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "nix",
+          "referenceLocator": "/nix/store/lwr3j0gsl2wdars8qdjnkg8csmqfr4la-rocm-core-placeholder-7.2.0"
+        }
+      ]
+    }
+,
+    {
+      "SPDXID": "SPDXRef-mjhcjikhxps97mq5z54j4gjjfzgmsir5",
+      "name": "bash-5.2p37",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "nix",
+          "referenceLocator": "/nix/store/mjhcjikhxps97mq5z54j4gjjfzgmsir5-bash-5.2p37"
+        }
+      ]
+    }
+,
+    {
+      "SPDXID": "SPDXRef-wzf05nhk42qbc1qmxk06z7023zm61sic",
+      "name": "vllm-placeholder-0.14.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "nix",
+          "referenceLocator": "/nix/store/wzf05nhk42qbc1qmxk06z7023zm61sic-vllm-placeholder-0.14.0"
+        }
+      ]
+    }
+,
+    {
+      "SPDXID": "SPDXRef-y4d9iir0yqmrcswaqfi368d8m1rkv14s",
+      "name": "xgcc-13.3.0-libgcc",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "nix",
+          "referenceLocator": "/nix/store/y4d9iir0yqmrcswaqfi368d8m1rkv14s-xgcc-13.3.0-libgcc"
+        }
+      ]
+    }
+  ]
+}

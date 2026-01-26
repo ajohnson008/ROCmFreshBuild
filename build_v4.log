@@ -1,0 +1,51 @@
+these 3 derivations will be built:
+  /nix/store/hvvmd6gwrmvlg02kx726fv1p6a50zz7g-rocm-runtime-7.2.0.drv
+  /nix/store/jsmwib9hn8ypb5x6ywlyzy90fwz63gzx-clr-7.2.0.drv
+  /nix/store/n7kw14cs01wyi2h7s81s9vj259anhy4x-rocm-core-7.2.0.drv
+building '/nix/store/jsmwib9hn8ypb5x6ywlyzy90fwz63gzx-clr-7.2.0.drv'...
+building '/nix/store/hvvmd6gwrmvlg02kx726fv1p6a50zz7g-rocm-runtime-7.2.0.drv'...
+rocm-runtime> Running phase: unpackPhase
+rocm-runtime> unpacking source archive /nix/store/lbzd6dvxagdvqbcp044qhczh4gqzqkv9-source
+clr> Running phase: unpackPhase
+clr> unpacking source archive /nix/store/xw8m19c4ijcqpz3cc9s9avpmd3rx0fmc-source
+rocm-runtime> source root is source/runtime
+rocm-runtime> Running phase: patchPhase
+rocm-runtime> applying patch /nix/store/k06k3sz98shigy0kc724c3wvjllmcvjc-extend-isa-compatibility-check.patch
+rocm-runtime> can't find file to patch at input line 3
+rocm-runtime> Perhaps you used the wrong -p or --strip option?
+rocm-runtime> The text leading up to this was:
+rocm-runtime> --------------------------
+rocm-runtime> |--- src/core/runtime/isa.cpp
+rocm-runtime> |+++ src/core/runtime/isa.cpp
+rocm-runtime> --------------------------
+rocm-runtime> File to patch:
+rocm-runtime> Skip this patch? [y]
+rocm-runtime> Skipping patch.
+rocm-runtime> 2 out of 2 hunks ignored
+error: Cannot build '/nix/store/hvvmd6gwrmvlg02kx726fv1p6a50zz7g-rocm-runtime-7.2.0.drv'.
+       Reason: builder failed with exit code 1.
+       Output paths:
+         /nix/store/mlrcabcqcfplnn1vjj59cryxzrghlvrg-rocm-runtime-7.2.0
+       Last 16 log lines:
+       > Running phase: unpackPhase
+       > unpacking source archive /nix/store/lbzd6dvxagdvqbcp044qhczh4gqzqkv9-source
+       > source root is source/runtime
+       > Running phase: patchPhase
+       > applying patch /nix/store/k06k3sz98shigy0kc724c3wvjllmcvjc-extend-isa-compatibility-check.patch
+       > can't find file to patch at input line 3
+       > Perhaps you used the wrong -p or --strip option?
+       > The text leading up to this was:
+       > --------------------------
+       > |--- src/core/runtime/isa.cpp
+       > |+++ src/core/runtime/isa.cpp
+       > --------------------------
+       > File to patch:
+       > Skip this patch? [y]
+       > Skipping patch.
+       > 2 out of 2 hunks ignored
+       For full logs, run:
+         nix log /nix/store/hvvmd6gwrmvlg02kx726fv1p6a50zz7g-rocm-runtime-7.2.0.drv
+error: Cannot build '/nix/store/n7kw14cs01wyi2h7s81s9vj259anhy4x-rocm-core-7.2.0.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/7gcy8q87vh9pacdfynah0jrh63prg1xs-rocm-core-7.2.0
