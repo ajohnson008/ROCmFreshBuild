@@ -2213,6 +2213,10 @@ README
                     "-DAMDGPU_TARGETS=gfx1151"
                     "-DGPU_TARGETS=gfx1151"
                   ];
+
+                  # Ensure the newer rocm-comgr from ROCm 7.2.0 is used at configure
+                  # time so CMake's find_package(amd_comgr) finds version >= 3.0
+                  buildInputs = (old.buildInputs or []) ++ [ final.rocm-comgr ];
                 });        
         # hipcc - HIP compiler driver
         hipcc = prev.rocmPackages.hipcc.overrideAttrs (old: {
