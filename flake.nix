@@ -2178,12 +2178,8 @@ README
                           patches = []; # Disable old patches
                           postPatch = ""; # Clear old postPatch
                           cmakeFlags = (old.cmakeFlags or []) ++ [
-                            # Disable GPU library usage for OpenCL blit shader compilation
-                            # since device libs aren't available yet (circular dependency with clr)
-                            "-DCMAKE_CXX_FLAGS=-nogpulib"
-                            "-DCMAKE_C_FLAGS=-nogpulib"
-                            # Set CMAKE_PREFIX_PATH to find llvm for device libs
-                            "-DCMAKE_PREFIX_PATH=${final.llvm}"
+                            # Disable HSA image support to avoid OpenCL device lib dependency
+                            "-DIMAGE_SUPPORT=OFF"
                           ];
                         });
                 
