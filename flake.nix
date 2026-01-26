@@ -2176,7 +2176,10 @@ README
                           };
                           sourceRoot = "source";
                           patches = []; # Disable old patches
-                          postPatch = ""; # Clear old postPatch
+                          postPatch = ''
+                            # Disable HSA runtime blit shaders to avoid GPU target issues
+                            sed -i 's/add_subdirectory(blit_shaders)/# add_subdirectory(blit_shaders)/' runtime/hsa-runtime/core/runtime/CMakeLists.txt
+                          '';
                           cmakeFlags = (old.cmakeFlags or []) ++ [
                             # Disable HSA image support to avoid OpenCL device lib dependency
                             "-DIMAGE_SUPPORT=OFF"
