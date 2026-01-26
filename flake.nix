@@ -2148,7 +2148,7 @@ README
             owner = "ROCm";
             repo = "llvm-project";
             rev = "rocm-7.2.0";
-            hash = "sha256-D0O+e1v6Oq7N57x3hK/WOfvO60R6Vsc4+o1U4f6+O2M=";
+            hash = "sha256-0gsd2arvvxwvnmdkynmfy3849sban9rmbmb88vvbvg1zlv93hqg8";
           };
           sourceRoot = "source/amd/device-libs";
         });
@@ -2160,7 +2160,7 @@ README
             owner = "ROCm";
             repo = "llvm-project";
             rev = "rocm-7.2.0";
-            hash = "sha256-D0O+e1v6Oq7N57x3hK/WOfvO60R6Vsc4+o1U4f6+O2M=";
+            hash = "sha256-0gsd2arvvxwvnmdkynmfy3849sban9rmbmb88vvbvg1zlv93hqg8";
           };
           sourceRoot = "source/amd/comgr";
         });
@@ -2172,7 +2172,7 @@ README
             owner = "ROCm";
             repo = "llvm-project";
             rev = "rocm-7.2.0";
-            hash = "sha256-D0O+e1v6Oq7N57x3hK/WOfvO60R6Vsc4+o1U4f6+O2M=";
+            hash = "sha256-0gsd2arvvxwvnmdkynmfy3849sban9rmbmb88vvbvg1zlv93hqg8";
           };
           sourceRoot = "source/amd/hipcc";
         });
