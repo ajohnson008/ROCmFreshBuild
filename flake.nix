@@ -2182,6 +2182,7 @@ README
                             "-DIMAGE_SUPPORT=OFF"
                             # Disable HSA runtime blit shaders to avoid GPU target compilation issues
                             "-DBUILD_AMD_BLIT_SHADERS=OFF"
+                            "-DUSE_HSAKMT_SHADERS=OFF"
                           ];
                         });
                 
