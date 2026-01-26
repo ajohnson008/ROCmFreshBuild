@@ -20,3 +20,9 @@
       url = "https://github.com/ROCm/clr/archive/2e88525d05192094bc39d4c76f24327f506ede38.tar.gz";
       sha256 = "0p5pcs4ld882irlzf0jfykc53hff39gfyjvf1g63bmr51ghqwgfg";
     };
+    llvm-project = {
+      url = "https://github.com/ROCm/llvm-project/archive/3098435244119c38f6100dbd8d61e56c942a3c00.tar.gz";
+      sha256 = "1g8hnn54q50gc0rv8dryirhlyz0gbgxqzmvvhxwd6lv3aamp3w13";
+    };
+  };
+}
