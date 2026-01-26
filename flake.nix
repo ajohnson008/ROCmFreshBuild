@@ -37,7 +37,10 @@
         # Create pkgs with our overlays
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ self.overlays.default ];
+          overlays = [ 
+            self.overlays.default 
+            (import ./rocm-overlay.nix) 
+          ];
           config = {
             allowUnfree = true;  # Required for some build tools
             allowBroken = true;  # Required for ROCm 7.2.0 overrides
