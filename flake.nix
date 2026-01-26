@@ -2177,6 +2177,12 @@ README
                           sourceRoot = "source";
                           patches = []; # Disable old patches
                           postPatch = ""; # Clear old postPatch
+                          cmakeFlags = (old.cmakeFlags or []) ++ [
+                            # Disable GPU library usage for OpenCL blit shader compilation
+                            # since device libs aren't available yet (circular dependency with clr)
+                            "-DCMAKE_CXX_FLAGS=-nogpulib"
+                            "-DCMAKE_C_FLAGS=-nogpulib"
+                          ];
                         });
                 
                         # hsakmt - Thunk library (now integrated into ROCR-Runtime)
