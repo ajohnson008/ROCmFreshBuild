@@ -50,11 +50,23 @@
         "type": "github"
       }
     },
+    "pinned-rocm": {
+      "locked": {
+        "path": "./pinned-rocm",
+        "type": "path"
+      },
+      "original": {
+        "path": "./pinned-rocm",
+        "type": "path"
+      },
+      "parent": []
+    },
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
-        "nixpkgs-unstable": "nixpkgs-unstable"
+        "nixpkgs-unstable": "nixpkgs-unstable",
+        "pinned-rocm": "pinned-rocm"
       }
     },
     "systems": {
