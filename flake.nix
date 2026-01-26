@@ -2147,7 +2147,7 @@ README
           src = final.fetchFromGitHub {
             owner = "ROCm";
             repo = "llvm-project";
-            rev = "rocm-7.2.0";
+            rev = "3098435244119c38f6100dbd8d61e56c942a3c00";
             hash = "sha256-0gsd2arvvxwvnmdkynmfy3849sban9rmbmb88vvbvg1zlv93hqg8";
           };
           sourceRoot = "source/amd/device-libs";
@@ -2171,7 +2171,7 @@ README
           src = final.fetchFromGitHub {
             owner = "ROCm";
             repo = "llvm-project";
-            rev = "rocm-7.2.0";
+            rev = "3098435244119c38f6100dbd8d61e56c942a3c00";
             hash = "sha256-0gsd2arvvxwvnmdkynmfy3849sban9rmbmb88vvbvg1zlv93hqg8";
           };
           sourceRoot = "source/amd/hipcc";
