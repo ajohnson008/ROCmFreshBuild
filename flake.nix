@@ -2165,6 +2165,18 @@ README
           sourceRoot = "source/amd/comgr";
         });
         
+        # hipcc - HIP compiler driver (moved early to provide ROCm 7.2.0 clang)
+        hipcc = prev.rocmPackages.hipcc.overrideAttrs (old: {
+          version = "7.2.0";
+          src = final.fetchFromGitHub {
+            owner = "ROCm";
+            repo = "llvm-project";
+            rev = "rocm-7.2.0";
+            hash = "sha256-D0O+e1v6Oq7N57x3hK/WOfvO60R6Vsc4+o1U4f6+O2M=";
+          };
+          sourceRoot = "source/amd/hipcc";
+        });
+        
                         # rocm-runtime (ROCR) - HSA runtime
                         rocm-runtime = prev.rocmPackages.rocm-runtime.overrideAttrs (old: {
                           version = "7.2.0";
@@ -2177,6 +2189,8 @@ README
                           sourceRoot = "source";
                           patches = []; # Disable old patches
                           postPatch = ""; # Clear old postPatch
+                          # Use ROCm 7.2.0 clang instead of 6.0.2
+                          buildInputs = (old.buildInputs or []) ++ [ final.hipcc ];
                           cmakeFlags = (old.cmakeFlags or []) ++ [
                             # Disable HSA image support to avoid OpenCL device lib dependency
                             "-DIMAGE_SUPPORT=OFF"
@@ -2225,17 +2239,6 @@ README
                   # time so CMake's find_package(amd_comgr) finds version >= 3.0
                   buildInputs = (old.buildInputs or []) ++ [ final.rocm-comgr ];
                 });        
-        # hipcc - HIP compiler driver
-        hipcc = prev.rocmPackages.hipcc.overrideAttrs (old: {
-          version = "7.2.0";
-          src = final.fetchFromGitHub {
-            owner = "ROCm";
-            repo = "llvm-project";
-            rev = "rocm-7.2.0";
-            hash = "sha256-D0O+e1v6Oq7N57x3hK/WOfvO60R6Vsc4+o1U4f6+O2M=";
-          };
-          sourceRoot = "source/amd/hipcc";
-        });
         
         # rocminfo - System info tool
         rocminfo = prev.rocmPackages.rocminfo.overrideAttrs (old: {
