@@ -1,0 +1,166 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    // ============================================================
+    // STAGE BUILD TASKS
+    // ============================================================
+    {
+      "label": "Stage 1: Build GCC 14",
+      "type": "shell",
+      "command": "nix build .#gcc14",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Build GCC 14.2.0 - ROCm foundation compiler"
+    },
+    {
+      "label": "Stage 2: Build ROCm",
+      "type": "shell",
+      "command": "nix build .#rocm-core",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Build ROCm 7.2.0 core with gfx1151 support"
+    },
+    {
+      "label": "Stage 3: Build PyTorch",
+      "type": "shell",
+      "command": "nix build .#pytorch-rocm",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Build PyTorch 2.10.0 with ROCm backend"
+    },
+    {
+      "label": "Stage 4: Build vLLM",
+      "type": "shell",
+      "command": "nix build .#vllm",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Build vLLM 0.14.0 for high-throughput inference"
+    },
+    {
+      "label": "Stage 4: Build llama.cpp",
+      "type": "shell",
+      "command": "nix build .#llamacpp-base",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Build llama.cpp with HIP/ROCm backend"
+    },
+    {
+      "label": "Build: Complete AI Stack",
+      "type": "shell",
+      "command": "nix build .#ai-stack",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "detail": "Build complete AI stack with all components"
+    },
+
+    // ============================================================
+    // TEST TASKS
+    // ============================================================
+    {
+      "label": "Test: NVIDIA Isolation",
+      "type": "shell",
+      "command": "nix run .#integration-test",
+      "group": "test",
+      "problemMatcher": [],
+      "detail": "Verify all 4 NVIDIA isolation layers are active"
+    },
+    {
+      "label": "Test: Dependency Audit",
+      "type": "shell",
+      "command": "nix run .#dependency-auditor -- $(nix build --print-out-paths .#ai-stack 2>/dev/null)",
+      "group": "test",
+      "problemMatcher": [],
+      "detail": "Audit dependency graph for NVIDIA contamination"
+    },
+    {
+      "label": "Test: Binary Scan",
+      "type": "shell",
+      "command": "nix run .#binary-scanner -- $(nix build --print-out-paths .#ai-stack 2>/dev/null)",
+      "group": "test",
+      "problemMatcher": [],
+      "detail": "Scan all binaries for NVIDIA/CUDA symbols"
+    },
+    {
+      "label": "Test: Full Integration",
+      "type": "shell",
+      "command": "nix run .#integration-test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "detail": "Run full integration test suite"
+    },
+
+    // ============================================================
+    // VALIDATION TASKS
+    // ============================================================
+    {
+      "label": "Validate: Pre-Flight Check",
+      "type": "shell",
+      "command": "nix flake check && echo '✅ Pre-flight validation passed'",
+      "group": "none",
+      "problemMatcher": [],
+      "detail": "Run all pre-flight checks"
+    },
+    {
+      "label": "Validate: Flake Show",
+      "type": "shell",
+      "command": "nix flake show",
+      "group": "none",
+      "problemMatcher": [],
+      "detail": "Display all flake outputs"
+    },
+
+    // ============================================================
+    // DEPLOYMENT TASKS
+    // ============================================================
+    {
+      "label": "Package: Create Bundle",
+      "type": "shell",
+      "command": "nix run .#bundle-creator",
+      "group": "none",
+      "problemMatcher": [],
+      "detail": "Create offline deployment bundle"
+    },
+    {
+      "label": "Generate: SBOM",
+      "type": "shell",
+      "command": "nix run .#sbom-generator -- $(nix build --print-out-paths .#ai-stack 2>/dev/null) .",
+      "group": "none",
+      "problemMatcher": [],
+      "detail": "Generate Software Bill of Materials (SPDX 2.3)"
+    },
+
+    // ============================================================
+    // UTILITY TASKS
+    // ============================================================
+    {
+      "label": "Utility: Enter DevShell",
+      "type": "shell",
+      "command": "nix develop",
+      "group": "none",
+      "problemMatcher": [],
+      "detail": "Enter the TheRockBuilder development shell"
+    },
+    {
+      "label": "Utility: Garbage Collect",
+      "type": "shell",
+      "command": "nix-collect-garbage -d && echo '✅ Garbage collection complete'",
+      "group": "none",
+      "problemMatcher": [],
+      "detail": "Remove old Nix store paths to free disk space"
+    },
+    {
+      "label": "Utility: System Status",
+      "type": "shell",
+      "command": "echo '💻 System Status:' && echo '   CPU: '$(nproc)' threads' && echo '   RAM: '$(free -h | grep Mem: | awk '{print $2}')' total' && echo '   Disk: '$(df -h . | tail -1 | awk '{print $4}')' free'",
+      "group": "none",
+      "problemMatcher": [],
+      "detail": "Display current system resources"
+    }
+  ]
+}
