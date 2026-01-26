@@ -2182,6 +2182,8 @@ README
                             # since device libs aren't available yet (circular dependency with clr)
                             "-DCMAKE_CXX_FLAGS=-nogpulib"
                             "-DCMAKE_C_FLAGS=-nogpulib"
+                            # Set CMAKE_PREFIX_PATH to find llvm for device libs
+                            "-DCMAKE_PREFIX_PATH=${final.llvm}"
                           ];
                         });
                 
