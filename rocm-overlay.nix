@@ -74,7 +74,11 @@ final: prev: {
       };
       nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ final.git ];
       patches = [];
-      postPatch = "patchShebangs .";
+      postPatch = ''
+        patchShebangs .
+        # Fix clang path in hip_embed_pch.sh to use clang from PATH instead of hardcoded LLVM dev path
+        substituteInPlace hipamd/src/hip_embed_pch.sh --replace '$4/bin/clang' 'clang'
+      '';
       cmakeFlags = (old.cmakeFlags or []) ++ [
         "-DCMAKE_PREFIX_PATH=${finalScope.rocm-device-libs}"
       ];
