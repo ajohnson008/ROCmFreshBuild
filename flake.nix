@@ -40,6 +40,34 @@
           let
             pkgs = mkPkgs target;
             targetPackages = {
+              # Direct exposure of ROCm libraries for the build driver
+              migraphx = pkgs.rocmPackages.migraphx;
+              miopen = pkgs.rocmPackages.miopen;
+              rccl = pkgs.rocmPackages.rccl;
+              rocblas = pkgs.rocmPackages.rocblas;
+              rocfft = pkgs.rocmPackages.rocfft;
+              rocprim = pkgs.rocmPackages.rocprim;
+              rocrand = pkgs.rocmPackages.rocrand;
+              rocsparse = pkgs.rocmPackages.rocsparse;
+              rocsolver = pkgs.rocmPackages.rocsolver;
+              rocthrust = pkgs.rocmPackages.rocthrust;
+              hipblas = pkgs.rocmPackages.hipblas;
+              hipcub = pkgs.rocmPackages.hipcub;
+              hipfft = pkgs.rocmPackages.hipfft;
+              hiprand = pkgs.rocmPackages.hiprand;
+              hipsparse = pkgs.rocmPackages.hipsparse;
+              hipsolver = pkgs.rocmPackages.hipsolver;
+              composable_kernel = pkgs.rocmPackages.composable_kernel;
+              hipify = pkgs.rocmPackages.hipify;
+              rocm-smi = pkgs.rocmPackages.rocm-smi;
+              amdsmi = pkgs.rocmPackages.amdsmi;
+              hip = pkgs.hip;
+              rocm-llvm = pkgs.rocm-llvm;
+              rocm-device-libs = pkgs.rocm-device-libs;
+              rocminfo = pkgs.rocminfo;
+              # Expose the set itself for resolution of nested attributes
+              rocmPackages = targetPackages;
+
 
         # ==========================================================================
         # PACKAGES - 12-Step AI Pipeline (PRD v6.1)

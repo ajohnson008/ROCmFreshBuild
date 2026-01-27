@@ -1,8 +1,8 @@
 {
   "rocm_release": "7.2.0",
   "manifest_sha256": "f9c961920db4154dc1ad8b2023351e2972e6800695c39c8e7d531888202bfc61",
-  "lock_sha256": "e3f9f080e2d1c4754024f645570fb7b09829904b82392c97d2122248f00db65c",
-  "generated_at": "2026-01-27T21:49:23.740258+00:00",
+  "lock_sha256": "2820d7c95be3907c2ca2cf8645dcae2ad7dfbaec343d92dd6af01b5088910606",
+  "generated_at": "2026-01-27T21:55:14.166151+00:00",
   "projects": [
     {
       "name": "ROCm/AMDMIGraphX",

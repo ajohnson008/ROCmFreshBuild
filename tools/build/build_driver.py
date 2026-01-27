@@ -33,11 +33,39 @@ NIX_ATTRS = {
     # Toolchain
     "gcc14": ".#gcc14",
     
-    # ROCm Core
+    # ROCm Core & Runtimes
     "rocm-cmake": ".#rocm-cmake",
     "ROCR-Runtime": ".#rocm-runtime",
     "clr": ".#clr",
     "rocm-core": ".#rocm-core",
+    "rocm-device-libs": ".#rocm-device-libs",
+    "rocminfo": ".#rocminfo",
+    "amdsmi": ".#amdsmi",
+    "llvm-project": ".#rocm-llvm",
+    "HIP": ".#hip",
+    
+    # Libraries
+    "AMDMIGraphX": ".#migraphx",
+    "MIOpen": ".#miopen",
+    "rccl": ".#rccl",
+    "rocBLAS": ".#rocblas",
+    "rocFFT": ".#rocfft",
+    "rocPRIM": ".#rocprim",
+    "rocRAND": ".#rocrand",
+    "rocSPARSE": ".#rocsparse",
+    "rocSOLVER": ".#rocsolver",
+    "rocThrust": ".#rocthrust",
+    "hipBLAS": ".#hipblas",
+    "hipCUB": ".#hipcub",
+    "hipFFT": ".#hipfft",
+    "hipRAND": ".#hiprand",
+    "hipSPARSE": ".#hipsparse",
+    "hipSOLVER": ".#hipsolver",
+    "composable_kernel": ".#composable_kernel",
+    
+    # Tools
+    "HIPIFY": ".#hipify",
+    "rocm_smi_lib": ".#rocm-smi",
     
     # Python packages
     "numpy": ".#numpy",
