@@ -1,30 +1,67 @@
-# Qodana Global Configurations
-# This file contains global configuration for Qodana code quality analysis
-
-version: "1.0"
-
+# Global configuration must be nested under 'global' key per Qodana 2025.3+ schema
+# https://www.jetbrains.com/help/qodana/global-configuration.html
 global:
+  version: "1.0"
+  
   inspections:
-    - name: "Security"
+    # Critical security inspections - ALWAYS enabled
+    security:
       enabled: true
-      severity: "ERROR"
-    - name: "CodeSmell"
+      severity: ERROR
+      inspections:
+        - name: "CommandInjection"
+        - name: "PathTraversal"
+        - name: "SqlInjection"
+        - name: "UnvalidatedRedirect"
+    
+    # C/C++ specific rules for ROCm codebase
+    cpp:
       enabled: true
-      severity: "WARNING"
-  exclude:
-    - "**/node_modules/**"
-    - "**/build/**"
-    - "**/dist/**"
-    - "**/.git/**"
-    - "**/__pycache__/**"
+      severity: WARNING
+      inspections:
+        - name: "ClangTidy"
+          options:
+            checks:
+              - "-*,clang-analyzer-*"
+              - "bugprone-*"
+              - "cert-*"
+              - "misc-*"
+              - "performance-*"
+              - "portability-*"
+    
+    # Python build script rules
+    python:
+      enabled: true
+      severity: WARNING
+      inspections:
+        - name: "PyUnresolvedReferences"
+        - name: "PyTypeChecker"
+        - name: "PyCompatibilityInspection"
+        - name: "PyIncorrectDocstring"
+    
+    # Shell script validation for build scripts
+    shell:
+      enabled: true
+      severity: WARNING
+      inspections:
+        - name: "BashParsing"
+        - name: "ShellCheck"
+    
+  # Shared exclusion patterns across all projects
+  sharedExclusions:
+    - "**/node_modules/**/*"
+    - "**/.venv/**/*"
+    - "**/venv/**/*"
+    - "**/__pycache__/**/*"
     - "**/*.pyc"
-    - "**/result/**"
-    - "**/mirrors/**"
-    - "**/pinned/**"
-    - "**/runs/**"
-    - "**/repos/**"
-  include:
-    - "**/*.py"
-    - "**/*.sh"
-    - "**/*.nix"
-    - "**/*.md"
+    - "**/*.pyo"
+    - "**/dist/**/*"
+    - "**/build/**/*"
+    - "**/.mypy_cache/**/*"
+    - "**/.pytest_cache/**/*"
+  
+  # Quality gate thresholds
+  qualityGate:
+    criticalIssues: 0    # Fail on any critical issues
+    highIssues: 10       # Warning threshold
+    mediumIssues: 50     # Info threshold

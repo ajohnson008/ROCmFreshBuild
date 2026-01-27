@@ -1,0 +1,90 @@
+name: Qodana Code Analysis
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - '**/*.py'
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.sh'
+      - '.qodana/**'
+      - 'qodana*.yaml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**/*.py'
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.sh'
+      - '.qodana/**'
+      - 'qodana*.yaml'
+  workflow_dispatch:
+
+concurrency:
+  group: qodana-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qodana-analysis:
+    runs-on: ubuntu-24.04
+    
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+      statuses: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+      
+      - name: Install minimal build dependencies (for analysis only)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            gcc-14 \
+            g++-14 \
+            libssl-dev \
+            zlib1g-dev
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
+      
+      - name: Generate compilation database (simulated)
+        run: |
+          mkdir -p build
+          echo '{"directory": ".", "command": "gcc-14 -c dummy.c", "file": "dummy.c"}' > build/compile_commands.json
+      
+      - name: Qodana analysis
+        uses: JetBrains/qodana-action@v2025.2
+        with:
+          linter: jetbrains/qodana-cpp:2025.3
+          additional-cache-key: rocm-build-7.2.0
+          args: --save-report --show-report
+          token: ${{ secrets.QODANA_TOKEN }}
+      
+      - name: Upload Qodana report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qodana-report
+          path: ${{ github.workspace }}/.qodana/results/
+          retention-days: 30
+      
+      - name: Fail on critical issues (offline build safety)
+        if: failure()
+        run: |
+          echo "Qodana detected critical issues that would compromise offline build integrity"
+          echo "Review report at: .qodana/results/"
+          exit 1

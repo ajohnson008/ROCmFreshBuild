@@ -1,0 +1,9 @@
+# Qodana cache and temporary files
+cache/
+results/
+tmp/
+log/
+profile/
+linter/
+plugins/
+system/
