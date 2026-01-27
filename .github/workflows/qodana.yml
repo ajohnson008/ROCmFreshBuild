@@ -11,14 +11,15 @@ on:
       - '.qodana/**'
       - 'qodana*.yaml'
   pull_request:
-    branches: [ main ]
-    paths:
+    name: Qodana Code Quality Analysis
+
       - '**/*.py'
       - '**/*.cpp'
       - '**/*.h'
       - '**/*.sh'
       - '.qodana/**'
       - 'qodana*.yaml'
+
   workflow_dispatch:
 
 concurrency:
