@@ -71,7 +71,6 @@
 
         # ==========================================================================
         # PACKAGES - 12-Step AI Pipeline (PRD v6.1)
-        # ==========================================================================
           # Default to complete AI stack
           default = targetPackages.ai-stack;
           
