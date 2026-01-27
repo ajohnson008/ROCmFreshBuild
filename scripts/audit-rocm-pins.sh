@@ -39,12 +39,20 @@ echo "Checking flake.nix for ROCm 7.2.0 references..."
 echo ""
 
 # Count ROCm 7.2.0 references in fetchFromGitHub calls
-rocm_refs=$(grep -c 'rev = "rocm-7.2.0"' "$FLAKE_NIX" || echo "0")
+rocm_refs=$(grep -c 'rev = "rocm-7.2.0"' "$FLAKE_NIX" || true)
 echo "✅ Found $rocm_refs derivations using rev=\"rocm-7.2.0\""
+
+# Check pinned-rocm/sources.nix if it exists
+PINNED_SOURCES="$PROJECT_ROOT/pinned-rocm/sources.nix"
+if [ -f "$PINNED_SOURCES" ]; then
+  pinned_refs=$(grep -c 'github.com/ROCm' "$PINNED_SOURCES" || true)
+  echo "✅ Found $pinned_refs ROCm source pins in pinned-rocm/sources.nix"
+  rocm_refs=$((rocm_refs + pinned_refs))
+fi
 
 # Check for rocm-libraries (monorepo) usage
 if grep -q 'repo = "rocm-libraries"' "$FLAKE_NIX"; then
-  lib_count=$(grep -c 'repo = "rocm-libraries"' "$FLAKE_NIX" || echo "0")
+  lib_count=$(grep -c 'repo = "rocm-libraries"' "$FLAKE_NIX" || true)
   echo "✅ Found $lib_count derivations using rocm-libraries monorepo"
 fi
 

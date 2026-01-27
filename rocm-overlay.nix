@@ -3,18 +3,18 @@ final: prev: {
   rocmPackages = prev.rocmPackages.overrideScope (finalScope: prevScope: {
 
     # Toolchain Bootstrap: Override LLVM & Clang with ROCm 7.2 Source
-    llvm = prevScope.llvm.overrideAttrs (old: {
-      version = "7.2.0";
-      src = final.fetchgit {
-        name = "llvm-src";
-        url = "https://github.com/ROCm/llvm-project";
-        rev = "3098435244119c38f6100dbd8d61e56c942a3c00";
-        sha256 = "1g8hnn54q50gc0rv8dryirhlyz0gbgxqzmvvhxwd6lv3aamp3w13";
-        fetchSubmodules = true;
-      };
-      # Ensure Strix Halo target is built
-      cmakeFlags = (old.cmakeFlags or []) ++ [ "-DLLVM_TARGETS_TO_BUILD=AMDGPU;X86" ];
-    });
+    # llvm = prevScope.llvm.overrideAttrs (old: {
+    #   version = "7.2.0";
+    #   src = final.fetchgit {
+    #     name = "llvm-src";
+    #     url = "https://github.com/ROCm/llvm-project";
+    #     rev = "3098435244119c38f6100dbd8d61e56c942a3c00";
+    #     sha256 = "1g8hnn54q50gc0rv8dryirhlyz0gbgxqzmvvhxwd6lv3aamp3w13";
+    #     fetchSubmodules = true;
+    #   };
+    #   # Ensure Strix Halo target is built
+    #   cmakeFlags = (old.cmakeFlags or []) ++ [ "-DLLVM_TARGETS_TO_BUILD=AMDGPU;X86" ];
+    # });
 
     clang = prevScope.clang.overrideAttrs (old: {
       version = "7.2.0";
@@ -286,7 +286,7 @@ final: prev: {
         name = "rocm-comgr-src";
         url = "https://github.com/ROCm/ROCm-CompilerSupport";
         rev = "3844d353072869fc00c0a9cd8e1bee6f48bf2d99";
-        sha256 = "0000000000000000000000000000000000000000000000000000";
+        sha256 = "sha256-jyt3pkIvPOJd6p+5GdKbLKoEFSHu3cfK65bzVbLc7+g=";
         fetchSubmodules = true;
       };
       patches = [];
@@ -302,9 +302,10 @@ final: prev: {
         name = "rocm-device-libs-src";
         url = "https://github.com/ROCm/ROCm-Device-Libs";
         rev = "1915fc612c243bdbc656608ecba3fa9618d6afc3";
-        sha256 = "0000000000000000000000000000000000000000000000000000";
+        sha256 = "sha256-7RGjcVQlV+kFR2Dbrx4umUUQEIryZH9Jae80u19y0kg=";
         fetchSubmodules = true;
       };
+      dontPatch = true;
       patches = [];
     });
     rocm-runtime = prevScope.rocm-runtime.overrideAttrs (old: {
@@ -313,7 +314,7 @@ final: prev: {
         name = "rocm-runtime-src";
         url = "https://github.com/ROCm/ROCR-Runtime";
         rev = "51e6956eb97475f6139c6cf88b51fbebea4c987b";
-        sha256 = "0000000000000000000000000000000000000000000000000000";
+        sha256 = "sha256-6xELKQ/uqAoorsCR/H7d8iNK7LsVNsW2DRRZo5cU7UM=";
         fetchSubmodules = true;
       };
       patches = [];
@@ -344,7 +345,7 @@ final: prev: {
         name = "clr-src";
         url = "https://github.com/ROCm/clr";
         rev = "2e88525d05192094bc39d4c76f24327f506ede38";
-        sha256 = "0000000000000000000000000000000000000000000000000000";
+        sha256 = "sha256-zz2O4Qsl1zXMC25L714azsFR2PROAvdpjgKhRolmt1w=";
         fetchSubmodules = true;
       };
       patches = [];
@@ -367,7 +368,7 @@ final: prev: {
         name = "hip-common-src";
         url = "https://github.com/ROCm/HIP";
         rev = "04d503ec19aa637e2982220dd81913223c759cf4";
-        sha256 = "0000000000000000000000000000000000000000000000000000";
+        sha256 = "sha256-eQ+jHc6MlZePPIwJQMB8NKiEcE26i83+U21vKgfGFFM=";
         fetchSubmodules = true;
       };
       patches = [];
@@ -408,7 +409,7 @@ final: prev: {
         name = "rocminfo-src";
         url = "https://github.com/ROCm/rocminfo";
         rev = "38bb1027d33ba6c9a7337ebe7c4032c02d6919e2";
-        sha256 = "0000000000000000000000000000000000000000000000000000";
+        sha256 = "sha256-Md91iH2YWU7ziNE//xxKuk2RrXdujO9mY6SZY5R9TqA=";
         fetchSubmodules = true;
       };
     });
@@ -419,6 +420,7 @@ final: prev: {
     };
     
   });
+  rocm-cmake = final.rocmPackages.rocm-cmake;
   rocm-runtime = final.rocmPackages.rocm-runtime;
   clr = final.rocmPackages.clr;
   shellHook = ''

@@ -194,6 +194,35 @@ nix build .#llama-server
 
 ---
 
+## 🛠️ Advanced Orchestration
+
+TheRockBuilder provides high-level tools for build orchestration and environment preparation.
+
+### Build Kickoff
+Use `scripts/kickoff.sh` as the primary entry point for common workflows:
+```bash
+./scripts/kickoff.sh full         # Full prep-full + build-full
+./scripts/kickoff.sh prep-full    # Preparation phases only
+./scripts/kickoff.sh build-full   # Main build only
+./scripts/kickoff.sh --dry-run full # Plan build phases without executing
+```
+
+### Deterministic Preparation
+Run ALL preparation stages (preflight, invariants, evaluation, archive) with:
+```bash
+./rb prep full
+```
+This produces a detailed report in `runs/prep_full_report.json`.
+
+### Linting & Formatting
+Verify script quality and formatting:
+```bash
+./scripts/lint.sh
+```
+*Note: Requires `shellcheck` and `shfmt`. Use `nix shell nixpkgs#shellcheck nixpkgs#shfmt -c ./scripts/lint.sh` if not installed.*
+
+---
+
 ## 📖 Documentation
 
 | Document | Purpose | Audience |

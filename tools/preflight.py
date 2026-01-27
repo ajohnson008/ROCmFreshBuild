@@ -351,6 +351,11 @@ def run_preflight(
 
     kfd = Path("/dev/kfd")
     dri = Path("/dev/dri")
+    
+    # Test hook for mocking missing devices
+    if os.environ.get("TEST_PREFLIGHT_MOCK_KFD_MISSING"):
+        kfd = Path("/dev/non_existent_kfd_mock")
+
     if kfd.exists() and dri.exists():
         add_check(
             "rocm_devices",
@@ -361,8 +366,8 @@ def run_preflight(
     else:
         add_check(
             "rocm_devices",
-            "WARN",
-            "ROCm device nodes missing (build OK, runtime may fail)",
+            "FAIL",
+            "ROCm device nodes missing (/dev/kfd or /dev/dri missing)",
             {"/dev/kfd": kfd.exists(), "/dev/dri": dri.exists()},
         )
 
@@ -371,7 +376,7 @@ def run_preflight(
     if missing_groups:
         add_check(
             "user_groups",
-            "WARN",
+            "FAIL",
             "User missing video/render groups",
             {"missing": missing_groups, "groups": sorted(groups)},
         )

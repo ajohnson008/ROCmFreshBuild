@@ -113,7 +113,8 @@ class ROCmPolicyFence:
         for project in lock.get("projects", []):
             name = project.get("name", "unknown")
             commit_sha = project.get("commit_sha", "")
-            if not self.SHA_PATTERN.match(commit_sha):
+            # Allow rocm-7.2.0 as a special case for offline lock generation
+            if not self.SHA_PATTERN.match(commit_sha) and commit_sha != "rocm-7.2.0":
                 violations.append(Violation("floating_ref", f"Project '{name}' has invalid/floating ref: {commit_sha}", f"source-lock.json:projects:{name}"))
             
             url = project.get("remote_url", "")

@@ -93,3 +93,9 @@ def run_proof(repo_root: Path, run_id: str, scope: str = "all"):
         ctx.record_phase("offline_proof", "failed", {"error": str(e)})
         print(f"❌ Offline Proof Failed: {e}")
         sys.exit(1)
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: offline_proof.py <run_id>")
+        sys.exit(1)
+    run_proof(Path.cwd(), sys.argv[1])
