@@ -29,9 +29,9 @@ def prefetch_flake_inputs(
     
     started_at = datetime.now(timezone.utc).isoformat()
     
-    # Run nix flake prefetch-inputs
+    # Run nix flake archive (alternative to prefetch-inputs)
     result = subprocess.run(
-        ['nix', 'flake', 'prefetch-inputs', str(flake_path), '--json'],
+        ['nix', 'flake', 'archive', str(flake_path), '--json'],
         capture_output=True,
         text=True
     )

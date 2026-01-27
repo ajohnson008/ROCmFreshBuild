@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-01-27T04:05:09.087309+00:00",
-  "source_lock_sha256": "11ff2feacbb729a72f0b1070698f5b11a924a5335570317e262ad46aef9927d1",
+  "generated_at": "2026-01-27T04:32:18.063866+00:00",
+  "source_lock_sha256": "9b97d47e22c0d2772c306d77f1d0b5eef76b97b8c15c6c71394712a4cef1fc17",
   "nodes": [
     {
       "id": "gcc14",
@@ -25,11 +25,6 @@
       "id": "HIPIFY",
       "kind": "rocm_repo",
       "path": "HIPIFY"
-    },
-    {
-      "id": "MIGraphX",
-      "kind": "rocm_repo",
-      "path": "MIGraphX"
     },
     {
       "id": "MIOpen",
@@ -548,12 +543,6 @@
     },
     {
       "from": "HIPIFY",
-      "to": "gcc14",
-      "reason": "C/C++ compiler requirement",
-      "class": "toolchain"
-    },
-    {
-      "from": "MIGraphX",
       "to": "gcc14",
       "reason": "C/C++ compiler requirement",
       "class": "toolchain"

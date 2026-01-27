@@ -8,3 +8,8 @@
     - [ ] Update `tools/rb` to implement `sync-mirrors`
     - [ ] Create `tools/jules/run_pass_a_prep.sh`
     - [ ] Verify execution flow
+- [ ] Debug ROCm Build Failure [/]
+    - [x] Force overrides for rocm-comgr, rocm-device-libs, rocm-cmake
+    - [x] Add version guardrails
+    - [x] Verify clr patch
+    - [/] Resume build

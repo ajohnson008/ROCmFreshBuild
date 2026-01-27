@@ -110,6 +110,21 @@ class RunManager:
         self.outputs: List[Output] = []
         self.started_at: Optional[str] = None
         
+        if self.run_id:
+            self.run_dir = self.runs_dir / self.run_id
+            self._load_status()
+            
+    def _load_status(self):
+        """Load status from status.json if exists"""
+        if self.run_dir and (self.run_dir / "status.json").exists():
+            try:
+                with open(self.run_dir / "status.json") as f:
+                    data = json.load(f)
+                    self.status = RunStatus(**data)
+                    self.started_at = self.status.started_at
+            except Exception as e:
+                print(f"Warning: Failed to load status: {e}", file=sys.stderr)
+        
     @staticmethod
     def generate_run_id() -> str:
         """Generate unique run ID: YYYYMMDD-HHMMSS-<random>"""

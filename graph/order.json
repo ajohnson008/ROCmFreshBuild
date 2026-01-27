@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-01-27T04:05:09.173532+00:00",
-  "graph_sha256": "11ff2feacbb729a72f0b1070698f5b11a924a5335570317e262ad46aef9927d1",
+  "generated_at": "2026-01-27T04:32:18.117141+00:00",
+  "graph_sha256": "9b97d47e22c0d2772c306d77f1d0b5eef76b97b8c15c6c71394712a4cef1fc17",
   "layers": [
     [
       "gcc14",
@@ -10,7 +10,6 @@
     [
       "AMDMIGraphX",
       "HIPIFY",
-      "MIGraphX",
       "MIVisionX",
       "ROCK-Kernel-Driver",
       "ROCT-Thunk-Interface",

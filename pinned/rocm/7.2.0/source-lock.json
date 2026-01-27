@@ -1,8 +1,8 @@
 {
   "rocm_release": "7.2.0",
-  "manifest_sha256": "8287fc986ed0cac2e8787e64a716ca1ef8c11d164da87fe4055a5946721551af",
-  "lock_sha256": "11ff2feacbb729a72f0b1070698f5b11a924a5335570317e262ad46aef9927d1",
-  "generated_at": "2026-01-27T04:05:02.349677+00:00",
+  "manifest_sha256": "f9c961920db4154dc1ad8b2023351e2972e6800695c39c8e7d531888202bfc61",
+  "lock_sha256": "9b97d47e22c0d2772c306d77f1d0b5eef76b97b8c15c6c71394712a4cef1fc17",
+  "generated_at": "2026-01-27T04:31:07.779989+00:00",
   "projects": [
     {
       "name": "ROCm/AMDMIGraphX",
@@ -23,13 +23,6 @@
       "remote_url": "https://github.com/ROCm/HIPIFY",
       "commit_sha": "e1441b5ae9148a8ee1bd79966d7da8f5a7e4451e",
       "path": "HIPIFY",
-      "revision_source": "default.xml"
-    },
-    {
-      "name": "ROCm/MIGraphX",
-      "remote_url": "https://github.com/ROCm/MIGraphX",
-      "commit_sha": "rocm-7.2.0",
-      "path": "MIGraphX",
       "revision_source": "default.xml"
     },
     {
@@ -56,7 +49,7 @@
     {
       "name": "ROCm/ROCT-Thunk-Interface",
       "remote_url": "https://github.com/ROCm/ROCT-Thunk-Interface",
-      "commit_sha": "rocm-7.2.0",
+      "commit_sha": "06a9b94adb940cc9a3a35c3945176f9c220affae",
       "path": "ROCT-Thunk-Interface",
       "revision_source": "default.xml"
     },
@@ -70,21 +63,21 @@
     {
       "name": "ROCm/ROCm-CompilerSupport",
       "remote_url": "https://github.com/ROCm/ROCm-CompilerSupport",
-      "commit_sha": "rocm-7.2.0",
+      "commit_sha": "3844d353072869fc00c0a9cd8e1bee6f48bf2d99",
       "path": "ROCm-CompilerSupport",
       "revision_source": "default.xml"
     },
     {
       "name": "ROCm/ROCm-Device-Libs",
       "remote_url": "https://github.com/ROCm/ROCm-Device-Libs",
-      "commit_sha": "rocm-7.2.0",
+      "commit_sha": "1915fc612c243bdbc656608ecba3fa9618d6afc3",
       "path": "ROCm-Device-Libs",
       "revision_source": "default.xml"
     },
     {
       "name": "ROCm/ROCm-OpenCL-Runtime",
       "remote_url": "https://github.com/ROCm/ROCm-OpenCL-Runtime",
-      "commit_sha": "rocm-7.2.0",
+      "commit_sha": "0cf1537e2863d463c165a79a380030d23345ceaa",
       "path": "ROCm-OpenCL-Runtime",
       "revision_source": "default.xml"
     },
@@ -308,7 +301,7 @@
     {
       "name": "RadeonOpenCompute/ROCK-Kernel-Driver",
       "remote_url": "https://github.com/RadeonOpenCompute/RadeonOpenCompute/ROCK-Kernel-Driver",
-      "commit_sha": "rocm-7.2.0",
+      "commit_sha": "6550db7c16e00633c05e703bfce5d0218ee7ec88",
       "path": "ROCK-Kernel-Driver",
       "revision_source": "default.xml"
     }

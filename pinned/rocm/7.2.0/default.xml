@@ -64,7 +64,6 @@
   <project name="ROCm/composable_kernel" path="composable_kernel" revision="rocm-7.2.0"/>
   <project name="ROCm/MIVisionX" path="MIVisionX" revision="rocm-7.2.0"/>
   <project name="ROCm/AMDMIGraphX" path="AMDMIGraphX" revision="rocm-7.2.0"/>
-  <project name="ROCm/MIGraphX" path="MIGraphX" revision="rocm-7.2.0"/>
   
   <!-- System Components -->
   <project name="ROCm/rocm-systems" path="rocm-systems" revision="rocm-7.2.0"/>

@@ -39,6 +39,17 @@
           inherit system;
           overlays = [ 
             self.overlays.default 
+            (final: prev: {
+              # Base ROCm 7.x on unstable nixpkgs to get modern LLVM/Clang
+              # This provides a 7.0.2 base with Clang 20
+              rocmPackages = (import nixpkgs-unstable { 
+                inherit system; 
+                config = { 
+                  allowUnfree = true; 
+                  allowBroken = true;
+                }; 
+              }).rocmPackages;
+            })
             (import ./rocm-overlay.nix) 
           ];
           config = {
@@ -220,6 +231,15 @@
             build_with_monitoring "$1" "$2"
           '';
           
+          # ========================================================================
+          # ROCm Components (Exposed for granular builds)
+          # ========================================================================
+          rocm-cmake = pkgs.rocmPackages.rocm-cmake;
+          rocm-runtime = pkgs.rocmPackages.rocm-runtime;
+          clr = pkgs.rocmPackages.clr;
+          rocm-comgr = pkgs.rocmPackages.rocm-comgr;
+          rocm-device-libs = pkgs.rocmPackages.rocm-device-libs;
+
           # ========================================================================
           # ROCm 7.2.0 Core - Built from source
           # https://github.com/ROCm/ROCm/archive/refs/tags/rocm-7.2.0.tar.gz
