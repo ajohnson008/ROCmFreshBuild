@@ -1,4 +1,5 @@
-# Python-specific Qodana Profile
+# Qodana Python Profile
+version: "1.0"
 
 inspections:
   # PEP 8 style guide

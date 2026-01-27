@@ -1,5 +1,5 @@
-# Default Qodana Profile
-# General code quality inspections
+# Qodana Default Profile
+version: "1.0"
 
 inspections:
   # Python inspections

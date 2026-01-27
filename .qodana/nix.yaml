@@ -1,4 +1,5 @@
-# Nix Language Qodana Profile
+# Qodana Nix Language Profile
+version: "1.0"
 
 inspections:
   # Nix language syntax and style

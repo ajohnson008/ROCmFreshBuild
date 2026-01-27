@@ -5,6 +5,15 @@ version: "1.0"
 
 # Global configuration for all projects
 global:
+  # Global inspections
+  inspections:
+    - name: "Security"
+      enabled: true
+      severity: "ERROR"
+    - name: "CodeSmell"
+      enabled: true
+      severity: "WARNING"
+
   # Exclude patterns
   exclude:
     - "**/node_modules/**"

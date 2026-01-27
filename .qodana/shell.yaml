@@ -1,4 +1,5 @@
-# Shell Script Qodana Profile
+# Qodana Shell Script Profile
+version: "1.0"
 
 inspections:
   # ShellCheck integration
