@@ -28,6 +28,14 @@
 - Report results to user
 
 ---
+## 🤖 Jules (The Operator)
+**Role:** Facility Maintenance & State Enforcement
+**Directives:**
+1.  **The "Clean Room" Rule:** Before any specialized agent (e.g., *Palladio*, *Scryer*) begins a major task, you must run the **State Enforcement Protocol** to ensure the workspace is clean.
+2.  **Tooling:**
+    - To prep the repo: `bash scripts/jules/enforce_nexus_state.sh`
+    - To fix simple linting/formatting: `just lint` (if available) or standard Python/Bash formatters.
+3.  **Failure Protocol:** If the State Enforcement script fails, you are NOT authorized to proceed with feature work. You must fix the hygiene or audit error first.
 
 ### Secondary: Claude Sonnet 4.5 (Documentation & Support)
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.11
 import sys
 import argparse
 import subprocess
@@ -12,13 +12,43 @@ from policy import policy_fence
 # We'll rely on imports inside conditions to avoid circular issues or early failures
 
 def sync_mirrors(repo_root):
-    # Call the mirror sync logic
-    # As per prompt, implement 'rb sync-mirrors'
-    # Use existing logic or placeholder
-    # Existing structure has mirrors/git etc.
-    print("Syncing mirrors (placeholder logic)...")
-    # For now, just ensure the dir exists
-    (repo_root / "mirrors").mkdir(exist_ok=True)
+    """
+    Executes mirror synchronization for git and blobs.
+    Streams output directly to console.
+    """
+    print("🚀 [rb] Starting Mirror Synchronization...")
+    
+    # Sync Git Mirrors
+    print("\n📦 [1/2] Syncing Git Mirrors...")
+    git_sync_cmd = [
+        "python3.11", 
+        "tools/mirror/sync_git_mirrors.py",
+        "--lock", "pinned/rocm/7.2.0/source-lock.json",
+        "--output", "mirrors/git",
+        "--workers", "4"
+    ]
+    try:
+        subprocess.run(git_sync_cmd, cwd=repo_root, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Git mirror sync failed with exit code {e.returncode}")
+        return False
+
+    # Sync Blobs
+    print("\n📦 [2/2] Syncing Blob Mirrors...")
+    blob_sync_cmd = [
+        "python3.11",
+        "tools/mirror/sync_blobs.py",
+        "--lock", "pinned/rocm/7.2.0/source-lock.json",
+        "--output", "mirrors/blobs",
+        "--workers", "4"
+    ]
+    try:
+        subprocess.run(blob_sync_cmd, cwd=repo_root, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Blob mirror sync failed with exit code {e.returncode}")
+        return False
+        
+    print("\n✅ Mirror Synchronization Complete")
     return True
 
 def prefetch_flake(repo_root):
