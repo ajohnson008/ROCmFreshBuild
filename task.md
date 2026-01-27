@@ -1,0 +1,10 @@
+- [ ] Phase A: Preflight Inventory [x]
+- [ ] Phase B: Unskippable Policy Gate [x]
+- [ ] Phase C: Mirror-only Enforcement [x]
+- [ ] Phase D: Offline Proof Gate [x]
+- [ ] Phase E: Tests + VS Code Tasks [x]
+- [ ] Phase F: Agent Playbooks Update [x]
+- [ ] Operationalize Pass A Prep Pipeline [/]
+    - [ ] Update `tools/rb` to implement `sync-mirrors`
+    - [ ] Create `tools/jules/run_pass_a_prep.sh`
+    - [ ] Verify execution flow
