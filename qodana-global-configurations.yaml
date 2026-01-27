@@ -48,17 +48,27 @@ global:
         - name: "ShellCheck"
     
   # Shared exclusion patterns across all projects
-  sharedExcludes:
-    - pattern: "**/node_modules/**/*"
-    - pattern: "**/.venv/**/*"
-    - pattern: "**/venv/**/*"
-    - pattern: "**/__pycache__/**/*"
-    - pattern: "**/*.pyc"
-    - pattern: "**/*.pyo"
-    - pattern: "**/dist/**/*"
-    - pattern: "**/build/**/*"
-    - pattern: "**/.mypy_cache/**/*"
-    - pattern: "**/.pytest_cache/**/*"
+  exclude:
+    - name: "node_modules"
+      pattern: "**/node_modules/**/*"
+    - name: ".venv"
+      pattern: "**/.venv/**/*"
+    - name: "venv"
+      pattern: "**/venv/**/*"
+    - name: "__pycache__"
+      pattern: "**/__pycache__/**/*"
+    - name: "pyc-files"
+      pattern: "**/*.pyc"
+    - name: "pyo-files"
+      pattern: "**/*.pyo"
+    - name: "dist"
+      pattern: "**/dist/**/*"
+    - name: "build"
+      pattern: "**/build/**/*"
+    - name: ".mypy_cache"
+      pattern: "**/.mypy_cache/**/*"
+    - name: ".pytest_cache"
+      pattern: "**/.pytest_cache/**/*"
   
   # Quality gate thresholds
   qualityGate:
