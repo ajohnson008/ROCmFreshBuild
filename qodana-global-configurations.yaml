@@ -1,77 +1,59 @@
-# Global configuration must be nested under 'global' key per Qodana 2025.3+ schema
-# https://www.jetbrains.com/help/qodana/global-configuration.html
 global:
   version: "1.0"
-  
   inspections:
-    # Critical security inspections - ALWAYS enabled
-    security:
+    - name: "CommandInjection"
       enabled: true
       severity: ERROR
-      inspections:
-        - name: "CommandInjection"
-        - name: "PathTraversal"
-        - name: "SqlInjection"
-        - name: "UnvalidatedRedirect"
-    
-    # C/C++ specific rules for ROCm codebase
-    cpp:
+    - name: "PathTraversal"
+      enabled: true
+      severity: ERROR
+    - name: "SqlInjection"
+      enabled: true
+      severity: ERROR
+    - name: "UnvalidatedRedirect"
+      enabled: true
+      severity: ERROR
+    - name: "ClangTidy"
       enabled: true
       severity: WARNING
-      inspections:
-        - name: "ClangTidy"
-          options:
-            checks:
-              - "-*,clang-analyzer-*"
-              - "bugprone-*"
-              - "cert-*"
-              - "misc-*"
-              - "performance-*"
-              - "portability-*"
-    
-    # Python build script rules
-    python:
+      options:
+        checks:
+          - "-*,clang-analyzer-*"
+          - "bugprone-*"
+          - "cert-*"
+          - "misc-*"
+          - "performance-*"
+          - "portability-*"
+    - name: "PyUnresolvedReferences"
       enabled: true
       severity: WARNING
-      inspections:
-        - name: "PyUnresolvedReferences"
-        - name: "PyTypeChecker"
-        - name: "PyCompatibilityInspection"
-        - name: "PyIncorrectDocstring"
-    
-    # Shell script validation for build scripts
-    shell:
+    - name: "PyTypeChecker"
       enabled: true
       severity: WARNING
-      inspections:
-        - name: "BashParsing"
-        - name: "ShellCheck"
-    
-  # Shared exclusion patterns across all projects
+    - name: "PyCompatibilityInspection"
+      enabled: true
+      severity: WARNING
+    - name: "PyIncorrectDocstring"
+      enabled: true
+      severity: WARNING
+    - name: "BashParsing"
+      enabled: true
+      severity: WARNING
+    - name: "ShellCheck"
+      enabled: true
+      severity: WARNING
   exclude:
-    - name: "node_modules"
-      pattern: "**/node_modules/**/*"
-    - name: ".venv"
-      pattern: "**/.venv/**/*"
-    - name: "venv"
-      pattern: "**/venv/**/*"
-    - name: "__pycache__"
-      pattern: "**/__pycache__/**/*"
-    - name: "pyc-files"
-      pattern: "**/*.pyc"
-    - name: "pyo-files"
-      pattern: "**/*.pyo"
-    - name: "dist"
-      pattern: "**/dist/**/*"
-    - name: "build"
-      pattern: "**/build/**/*"
-    - name: ".mypy_cache"
-      pattern: "**/.mypy_cache/**/*"
-    - name: ".pytest_cache"
-      pattern: "**/.pytest_cache/**/*"
-  
-  # Quality gate thresholds
+    - "**/node_modules/**/*"
+    - "**/.venv/**/*"
+    - "**/venv/**/*"
+    - "**/__pycache__/**/*"
+    - "**/*.pyc"
+    - "**/*.pyo"
+    - "**/dist/**/*"
+    - "**/build/**/*"
+    - "**/.mypy_cache/**/*"
+    - "**/.pytest_cache/**/*"
   qualityGate:
-    criticalIssues: 0    # Fail on any critical issues
-    highIssues: 10       # Warning threshold
-    mediumIssues: 50     # Info threshold
+    criticalIssues: 0
+    highIssues: 10
+    mediumIssues: 50
