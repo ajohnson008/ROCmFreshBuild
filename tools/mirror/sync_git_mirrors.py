@@ -162,6 +162,7 @@ class GitMirrorSync:
         """Sync all mirrors with bounded parallelism"""
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
+        # 1. Sync Git Repositories
         projects = self.source_lock.get('projects', [])
         statuses: List[MirrorStatus] = []
         
@@ -191,6 +192,24 @@ class GitMirrorSync:
                         error=str(e)[:500]
                     ))
                     print(f"  ❌ {proj['name']}: {e}")
+
+        # 2. Sync LLVM Project Tarball (Special case for ROCm 7.2.0)
+        # We need the full tarball for subdir extraction in Nix
+        llvm_rev = "3098435244119c38f6100dbd8d61e56c942a3c00"
+        cache_dir = self.output_dir.parent / "cache"
+        cache_dir.mkdir(exist_ok=True)
+        llvm_tarball = cache_dir / f"llvm-project-{llvm_rev}.tar.gz"
+        
+        if not llvm_tarball.exists():
+            print(f"Downloading LLVM project tarball ({llvm_rev})...")
+            url = f"https://github.com/ROCm/llvm-project/archive/{llvm_rev}.tar.gz"
+            try:
+                subprocess.run(['curl', '-fsSL', '-o', str(llvm_tarball), url], check=True)
+                print(f"  ✅ llvm-project tarball")
+            except subprocess.CalledProcessError as e:
+                print(f"  ❌ llvm-project tarball: {e}")
+        else:
+            print(f"  ✅ llvm-project tarball (cached)")
                     
         # Sort by name for determinism
         statuses.sort(key=lambda s: s.name)
