@@ -28,8 +28,9 @@ final: prev: {
       buildInputs = (old.buildInputs or []) ++ [ final.numactl.dev ];
       patches = [];
       postPatch = ''
-        # Fix shebang in blit shader generation script
+        # Fix shebang in shader generation scripts
         patchShebangs runtime/hsa-runtime/core/runtime/blit_shaders/create_blit_shader_header.sh
+        patchShebangs runtime/hsa-runtime/core/runtime/trap_handler/create_trap_handler_header.sh
       '';
       # Help the internal clang calls find device libs
       cmakeFlags = (old.cmakeFlags or []) ++ [
