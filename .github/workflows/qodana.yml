@@ -110,4 +110,4 @@ jobs:
         with:
           args: --skip-pull --analyze-only
         env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+          QODANA_TOKEN: ${{ secrets.QODANA_CONFIGURATIONS_TOKEN }}
