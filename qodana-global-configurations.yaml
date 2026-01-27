@@ -3,32 +3,28 @@
 
 version: "1.0"
 
-# Global inspections
-inspections:
-  - name: "Security"
-    enabled: true
-    severity: "ERROR"
-  - name: "CodeSmell"
-    enabled: true
-    severity: "WARNING"
-
-# Exclude patterns
-exclude:
-  - "**/node_modules/**"
-  - "**/build/**"
-  - "**/dist/**"
-  - "**/.git/**"
-  - "**/__pycache__/**"
-  - "**/*.pyc"
-  - "**/result/**"
-  - "**/mirrors/**"
-  - "**/pinned/**"
-  - "**/runs/**"
-  - "**/repos/**"
-
-# Include patterns
-include:
-  - "**/*.py"
-  - "**/*.sh"
-  - "**/*.nix"
-  - "**/*.md"
+global:
+  inspections:
+    - name: "Security"
+      enabled: true
+      severity: "ERROR"
+    - name: "CodeSmell"
+      enabled: true
+      severity: "WARNING"
+  exclude:
+    - "**/node_modules/**"
+    - "**/build/**"
+    - "**/dist/**"
+    - "**/.git/**"
+    - "**/__pycache__/**"
+    - "**/*.pyc"
+    - "**/result/**"
+    - "**/mirrors/**"
+    - "**/pinned/**"
+    - "**/runs/**"
+    - "**/repos/**"
+  include:
+    - "**/*.py"
+    - "**/*.sh"
+    - "**/*.nix"
+    - "**/*.md"
