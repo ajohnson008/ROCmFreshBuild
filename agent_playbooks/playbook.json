@@ -1,21 +1,33 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "ROCmFreshBuild Pass A Playbook",
-  "version": "1.0.0",
-  "description": "Agent orchestration playbook for mirror-first, DAG-driven, evidence-spined Pass A pipeline",
+  "version": "1.1.0",
+  "description": "Agent orchestration playbook for mirror-first, DAG-driven, evidence-spined Pass A pipeline (Option 1 Production-Grade)",
   "target_rocm": "7.2.0",
   "target_gpu": "gfx1151",
+  "documentation": {
+    "runbook": "agent_playbooks/README_RUNBOOK.md",
+    "checklists_dir": "agent_playbooks/checklists/",
+    "notes": "Refer to README and per-phase checklists for commands, evidence, and failure handling."
+  },
   "phases": [
     {
       "id": "policy-gate",
       "name": "Policy Fence Gate",
       "order": 0,
       "network_allowed": false,
-      "tool": "tools/policy/policy_fence.py",
-      "args": ["--repo-root", "."],
+      "tool": "tools/rb",
+      "args": [
+        "policy",
+        "verify",
+        "--strict"
+      ],
       "on_failure": "ABORT",
-      "evidence": ["policy-check.json"],
-      "description": "Hard-fail gate: ROCm 7.2.0 only, reject 6.x or drift"
+      "evidence": [
+        "reports/policy-report.json",
+        "receipt.json"
+      ],
+      "description": "Hard-fail gate: ROCm 7.2.0 only, reject 6.x or drift. Unskippable."
     },
     {
       "id": "mirror-sync",
@@ -24,18 +36,18 @@
       "network_allowed": true,
       "tools": [
         {
-          "name": "sync_git_mirrors.py",
-          "path": "tools/mirror/sync_git_mirrors.py",
-          "args": ["--lock", "pinned/rocm/7.2.0/source-lock.json", "--output", "mirrors/git", "--workers", "4"]
-        },
-        {
-          "name": "sync_blobs.py",
-          "path": "tools/mirror/sync_blobs.py",
-          "args": ["--lock", "pinned/rocm/7.2.0/source-lock.json", "--output", "mirrors/blobs", "--workers", "4"]
+          "name": "rb sync-mirrors",
+          "path": "tools/rb",
+          "args": [
+            "sync-mirrors"
+          ]
         }
       ],
       "on_failure": "RETRY_3",
-      "evidence": ["mirrors/git/index.json", "mirrors/blobs/index.json"],
+      "evidence": [
+        "mirrors/git/index.json",
+        "mirrors/blobs/index.json"
+      ],
       "description": "Network phase: sync all git repos and blobs to local mirrors"
     },
     {
@@ -43,59 +55,104 @@
       "name": "Flake Input Prefetch",
       "order": 2,
       "network_allowed": true,
-      "tool": "tools/prefetch/prefetch_flake_inputs.py",
-      "args": ["--flake", ".", "--repo-root", "."],
+      "tool": "tools/rb",
+      "args": [
+        "prefetch-flake-inputs"
+      ],
       "on_failure": "RETRY_3",
-      "evidence": ["prefetch-receipt.json"],
-      "description": "Network phase: prefetch all nix flake inputs"
+      "evidence": [
+        "prefetch-receipt.json"
+      ],
+      "description": "Network phase: prefetch all nix flake inputs (recursive)"
+    },
+    {
+      "id": "offline-proof",
+      "name": "Offline Proof Gate",
+      "order": 3,
+      "network_allowed": false,
+      "tool": "tools/rb",
+      "args": [
+        "offline-proof",
+        "--scope",
+        "all"
+      ],
+      "on_failure": "ABORT",
+      "evidence": [
+        "reports/offline-proof.json"
+      ],
+      "description": "Deterministic proof that graph eval and build can proceed without network."
     },
     {
       "id": "lock-generation",
       "name": "Source Lock Generation",
-      "order": 3,
+      "order": 4,
       "network_allowed": false,
       "tool": "tools/lock/gen_source_lock.py",
-      "args": ["--manifest", "pinned/rocm/7.2.0/default.xml", "--output", "pinned/rocm/7.2.0/source-lock.json", "--release", "7.2.0"],
+      "args": [
+        "--manifest",
+        "pinned/rocm/7.2.0/default.xml",
+        "--output",
+        "pinned/rocm/7.2.0/source-lock.json",
+        "--release",
+        "7.2.0"
+      ],
       "on_failure": "ABORT",
-      "evidence": ["pinned/rocm/7.2.0/source-lock.json"],
+      "evidence": [
+        "pinned/rocm/7.2.0/source-lock.json"
+      ],
       "description": "Offline: generate deterministic source lock from manifest"
     },
     {
       "id": "graph-extraction",
       "name": "Build Graph Extraction",
-      "order": 4,
+      "order": 5,
       "network_allowed": false,
       "tools": [
         {
           "name": "extract_graph.py",
           "path": "tools/graph/extract_graph.py",
-          "args": ["--source-lock", "pinned/rocm/7.2.0/source-lock.json", "--output", "graph/", "--overrides", "graph/overrides.yaml"]
-        },
-        {
-          "name": "toposort.py",
-          "path": "tools/graph/toposort.py",
-          "args": ["--graph", "graph/graph.json", "--output", "graph/order.json"]
+          "args": [
+            "--source-lock",
+            "pinned/rocm/7.2.0/source-lock.json",
+            "--output",
+            "graph/",
+            "--overrides",
+            "graph/overrides.yaml"
+          ]
         }
       ],
       "on_failure": "ABORT",
-      "evidence": ["graph/graph.json", "graph/order.json"],
+      "evidence": [
+        "graph/graph.json",
+        "graph/order.json"
+      ],
       "description": "Offline: extract DAG and compute topological build order"
     },
     {
       "id": "build-pass-a",
       "name": "Pass A Build Execution",
-      "order": 5,
+      "order": 6,
       "network_allowed": false,
       "tool": "tools/build/build_driver.py",
-      "args": ["--order", "graph/order.json", "--repo-root", ".", "--parallel", "1"],
+      "args": [
+        "--order",
+        "graph/order.json",
+        "--repo-root",
+        ".",
+        "--parallel",
+        "1"
+      ],
       "on_failure": "CHECKPOINT",
-      "evidence": ["runs/<run-id>/status.json", "runs/<run-id>/events.jsonl", "runs/<run-id>/receipt.json"],
+      "evidence": [
+        "runs/<run-id>/events.jsonl",
+        "runs/<run-id>/receipt.json"
+      ],
       "description": "Offline: execute build layers per DAG order with evidence spine"
     },
     {
       "id": "gator-mini-scan",
       "name": "Gator-Mini Scan (Deferred)",
-      "order": 6,
+      "order": 7,
       "network_allowed": false,
       "tool": null,
       "deferred": true,
@@ -119,7 +176,11 @@
     "RETRY_3": {
       "action": "retry",
       "max_attempts": 3,
-      "backoff_seconds": [10, 30, 60],
+      "backoff_seconds": [
+        10,
+        30,
+        60
+      ],
       "on_exhausted": "ABORT"
     },
     "CHECKPOINT": {
@@ -136,19 +197,39 @@
       "status.json",
       "events.jsonl",
       "receipt.json",
-      "summary.json"
+      "reports/policy-report.json",
+      "reports/offline-proof.json"
     ]
   },
   "constraints": {
     "rocm_version": {
-      "allowed": ["7.2.0"],
-      "forbidden": ["6.0.0", "6.1.0", "6.2.0", "6.3.0"],
-      "forbidden_patterns": ["6\\\\.\\\\d+"]
+      "allowed": [
+        "7.2.0"
+      ],
+      "forbidden": [
+        "6.0.0",
+        "6.1.0",
+        "6.2.0",
+        "6.3.0"
+      ],
+      "forbidden_patterns": [
+        "6\\\\.\\\\d+"
+      ]
     },
     "gpu_target": {
-      "pass_a": ["gfx1151"],
-      "pass_b_future": ["gfx1100", "gfx1101", "gfx90a", "gfx942"]
+      "pass_a": [
+        "gfx1151"
+      ],
+      "pass_b_future": [
+        "gfx1100",
+        "gfx1101",
+        "gfx90a",
+        "gfx942"
+      ]
     },
-    "network_phases": ["mirror-sync", "flake-prefetch"]
+    "network_phases": [
+      "mirror-sync",
+      "flake-prefetch"
+    ]
   }
 }
