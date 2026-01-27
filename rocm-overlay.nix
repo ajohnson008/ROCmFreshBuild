@@ -34,14 +34,11 @@ final: prev: {
         "-DROCM_DEVICE_LIB_DIR=${finalScope.rocm-device-libs}/lib"
         "-DCMAKE_C_FLAGS=-I${final.numactl.dev}/include"
         "-DCMAKE_CXX_FLAGS=-I${final.numactl.dev}/include"
+        # Disable HSA image support to avoid blit kernel compilation issues with OpenCL headers
+        "-DIMAGE_SUPPORT=OFF"
       ];
-      # Manual injection of device lib path for the bitcode compiler calls
+      # No longer need to patch blit_src since we're disabling image support
       preConfigure = (old.preConfigure or "") + ''
-        # Patch the blit kernel CMakeLists.txt to add device lib path to clang invocation
-        substituteInPlace runtime/hsa-runtime/image/blit_src/CMakeLists.txt \
-          --replace-fail \
-            '"-O2 -x cl -Xclang -finclude-default-header -cl-denorms-are-zero -cl-std=CL2.0' \
-            '"-O2 --rocm-device-lib-path=${finalScope.rocm-device-libs}/amdgcn/bitcode -x cl -Xclang -finclude-default-header -cl-denorms-are-zero -cl-std=CL2.0'
       '';
       postInstall = (old.postInstall or "") + ''
         if [[ "$out" == *"6.0.2"* ]]; then
