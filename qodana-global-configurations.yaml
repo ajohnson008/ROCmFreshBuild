@@ -1,59 +1,58 @@
-global:
-  version: "1.0"
-  inspections:
-    - name: "CommandInjection"
-      enabled: true
-      severity: ERROR
-    - name: "PathTraversal"
-      enabled: true
-      severity: ERROR
-    - name: "SqlInjection"
-      enabled: true
-      severity: ERROR
-    - name: "UnvalidatedRedirect"
-      enabled: true
-      severity: ERROR
-    - name: "ClangTidy"
-      enabled: true
-      severity: WARNING
-      options:
-        checks:
-          - "-*,clang-analyzer-*"
-          - "bugprone-*"
-          - "cert-*"
-          - "misc-*"
-          - "performance-*"
-          - "portability-*"
-    - name: "PyUnresolvedReferences"
-      enabled: true
-      severity: WARNING
-    - name: "PyTypeChecker"
-      enabled: true
-      severity: WARNING
-    - name: "PyCompatibilityInspection"
-      enabled: true
-      severity: WARNING
-    - name: "PyIncorrectDocstring"
-      enabled: true
-      severity: WARNING
-    - name: "BashParsing"
-      enabled: true
-      severity: WARNING
-    - name: "ShellCheck"
-      enabled: true
-      severity: WARNING
-  exclude:
-    - "**/node_modules/**/*"
-    - "**/.venv/**/*"
-    - "**/venv/**/*"
-    - "**/__pycache__/**/*"
-    - "**/*.pyc"
-    - "**/*.pyo"
-    - "**/dist/**/*"
-    - "**/build/**/*"
-    - "**/.mypy_cache/**/*"
-    - "**/.pytest_cache/**/*"
-  qualityGate:
-    criticalIssues: 0
-    highIssues: 10
-    mediumIssues: 50
+version: "1.0"
+inspections:
+  - name: "CommandInjection"
+    enabled: true
+    severity: ERROR
+  - name: "PathTraversal"
+    enabled: true
+    severity: ERROR
+  - name: "SqlInjection"
+    enabled: true
+    severity: ERROR
+  - name: "UnvalidatedRedirect"
+    enabled: true
+    severity: ERROR
+  - name: "ClangTidy"
+    enabled: true
+    severity: WARNING
+    options:
+      checks:
+        - "-*,clang-analyzer-*"
+        - "bugprone-*"
+        - "cert-*"
+        - "misc-*"
+        - "performance-*"
+        - "portability-*"
+  - name: "PyUnresolvedReferences"
+    enabled: true
+    severity: WARNING
+  - name: "PyTypeChecker"
+    enabled: true
+    severity: WARNING
+  - name: "PyCompatibilityInspection"
+    enabled: true
+    severity: WARNING
+  - name: "PyIncorrectDocstring"
+    enabled: true
+    severity: WARNING
+  - name: "BashParsing"
+    enabled: true
+    severity: WARNING
+  - name: "ShellCheck"
+    enabled: true
+    severity: WARNING
+exclude:
+  - "**/node_modules/**/*"
+  - "**/.venv/**/*"
+  - "**/venv/**/*"
+  - "**/__pycache__/**/*"
+  - "**/*.pyc"
+  - "**/*.pyo"
+  - "**/dist/**/*"
+  - "**/build/**/*"
+  - "**/.mypy_cache/**/*"
+  - "**/.pytest_cache/**/*"
+qualityGate:
+  criticalIssues: 0
+  highIssues: 10
+  mediumIssues: 50
