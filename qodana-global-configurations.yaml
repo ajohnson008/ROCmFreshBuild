@@ -3,51 +3,32 @@
 
 version: "1.0"
 
-# Global configuration for all projects
-global:
-  # Global inspections
-  inspections:
-    - name: "Security"
-      enabled: true
-      severity: "ERROR"
-    - name: "CodeSmell"
-      enabled: true
-      severity: "WARNING"
+# Global inspections
+inspections:
+  - name: "Security"
+    enabled: true
+    severity: "ERROR"
+  - name: "CodeSmell"
+    enabled: true
+    severity: "WARNING"
 
-  # Exclude patterns
-  exclude:
-    - "**/node_modules/**"
-    - "**/build/**"
-    - "**/dist/**"
-    - "**/.git/**"
-    - "**/__pycache__/**"
-    - "**/*.pyc"
-    - "**/result/**"
-    - "**/mirrors/**"
-    - "**/pinned/**"
-    - "**/runs/**"
-    - "**/repos/**"
+# Exclude patterns
+exclude:
+  - "**/node_modules/**"
+  - "**/build/**"
+  - "**/dist/**"
+  - "**/.git/**"
+  - "**/__pycache__/**"
+  - "**/*.pyc"
+  - "**/result/**"
+  - "**/mirrors/**"
+  - "**/pinned/**"
+  - "**/runs/**"
+  - "**/repos/**"
 
-  # Include patterns (if needed)
-  include:
-    - "**/*.py"
-    - "**/*.sh"
-    - "**/*.nix"
-    - "**/*.md"
-
-# Project-specific configurations
-projects:
-  - name: "TheRockBuilder"
-    path: "."
-    profile:
-      name: "Default"
-      path: ".qodana/default.yaml"
-
-# Inspection profiles
-profiles:
-  - name: "Python"
-    path: ".qodana/python.yaml"
-  - name: "Shell"
-    path: ".qodana/shell.yaml"
-  - name: "Nix"
-    path: ".qodana/nix.yaml"
+# Include patterns
+include:
+  - "**/*.py"
+  - "**/*.sh"
+  - "**/*.nix"
+  - "**/*.md"
