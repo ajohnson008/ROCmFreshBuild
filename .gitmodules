@@ -1,0 +1,15 @@
+[submodule "repos/ROCm"]
+	path = repos/ROCm
+	url = https://github.com/ROCmSoftwarePlatform/ROCm.git
+
+[submodule "repos/pytorch"]
+	path = repos/pytorch
+	url = https://github.com/pytorch/pytorch.git
+
+[submodule "repos/TheRock"]
+	path = repos/TheRock
+	url = https://github.com/TheKiserNexus/TheRock.git
+
+[submodule "repos/vllm"]
+	path = repos/vllm
+	url = https://github.com/vllm-project/vllm.git

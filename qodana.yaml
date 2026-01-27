@@ -1,0 +1,20 @@
+version: "1.0"
+
+project:
+  name: "TheRockBuilder"
+
+# Use the global configuration file
+include:
+  - qodana-global-configurations.yaml
+
+# Default profile
+profile:
+  name: "default"
+  path: ".qodana/default.yaml"
+
+# Exclude patterns (additional to global)
+exclude:
+  - "**/test/**"
+  - "**/*_test.py"
+  - "**/conftest.py"
+  - "**/migrations/**"
