@@ -1,118 +1,68 @@
 {
-  "inventory_version": "1.0.0",
-  "generated_at": "2026-01-26T14:30:00Z",
-  "repository": "TheKiserNexus/ROCmFreshBuild",
-  "flake": {
-    "description": "TheRockBuilder v6.1 - Production AMD ROCm AI Stack with 12-Step Pipeline",
-    "inputs": {
-      "nixpkgs": "github:NixOS/nixpkgs/nixos-24.11",
-      "nixpkgs-unstable": "github:NixOS/nixpkgs/nixos-unstable",
-      "flake-utils": "github:numtide/flake-utils",
-      "pinned-rocm": "path:./pinned-rocm"
-    },
-    "apps": [],
+  "flake_outputs": {
     "packages": [
       "default",
       "ai-stack",
-      "gcc14",
-      "dependency-auditor",
-      "build-orchestrator",
       "rocm-core",
-      "rocm-core-source-build",
-      "pytorch-rocm",
-      "vllm",
       "numpy",
+      "pytorch-rocm",
       "torchvision",
       "torchaudio",
       "flash-attention",
       "xformers",
       "deepspeed",
       "bitsandbytes",
+      "vllm",
       "llamacpp-gpu",
       "llamacpp-cpu",
       "onnxruntime",
       "model-manager",
-      "binary-scanner",
-      "sbom-generator",
-      "integration-test",
-      "reproducibility-test",
-      "bundle-creator",
-      "zen2-safety-audit"
+      "gcc14",
+      "dependency-auditor",
+      "build-orchestrator"
     ],
-    "checks": [],
-    "devShells": ["default"],
-    "overlays": ["default"]
-  },
-  "pinned_rocm": {
-    "location": "pinned-rocm/",
-    "files": ["flake.nix", "sources.nix", "fill-shas.sh"],
-    "pinned_repos": [
-      {
-        "name": "rocm-systems",
-        "repo": "ROCm/rocm-systems",
-        "rev": "da7ba12fd90f553f3d4629ffc9ca360545364ea0"
-      },
-      {
-        "name": "rocm-cmake",
-        "repo": "ROCm/rocm-cmake",
-        "rev": "f2657238cb71df839c97807d5b0cb2c184075227"
-      },
-      {
-        "name": "ROCR-Runtime",
-        "repo": "ROCm/ROCR-Runtime",
-        "rev": "51e6956eb97475f6139c6cf88b51fbebea4c987b"
-      },
-      {
-        "name": "clr",
-        "repo": "ROCm/clr",
-        "rev": "2e88525d05192094bc39d4c76f24327f506ede38"
-      },
-      {
-        "name": "llvm-project",
-        "repo": "ROCm/llvm-project",
-        "rev": "3098435244119c38f6100dbd8d61e56c942a3c00"
-      }
-    ]
+    "apps": [],
+    "checks": []
   },
   "scripts": {
-    "location": "scripts/",
-    "files": ["audit-rocm-pins.sh", "build_and_install.sh"]
+    "build_and_install.sh": {
+      "path": "./scripts/build_and_install.sh",
+      "description": "Builds the system config"
+    },
+    "audit-rocm-pins.sh": {
+      "path": "./scripts/audit-rocm-pins.sh",
+      "description": "Audits ROCm pin references in flake.nix"
+    },
+    "verify_sources.py": {
+      "path": "./verify_sources.py",
+      "description": "Python verification script"
+    },
+    "verify_sources_fast.sh": {
+      "path": "./verify_sources_fast.sh",
+      "description": "Fast verification shell script"
+    }
   },
-  "vscode_tasks": {
-    "location": ".vscode/tasks.json",
-    "task_count": 15,
-    "task_labels": [
-      "Stage 1: Build GCC 14",
-      "Stage 2: Build ROCm",
-      "Stage 3: Build PyTorch",
-      "Stage 4: Build vLLM",
-      "Stage 4: Build llama.cpp",
-      "Build: Complete AI Stack",
-      "Test: NVIDIA Isolation",
-      "Test: Dependency Audit",
-      "Test: Binary Scan",
-      "Test: Full Integration"
+  "filesystem_layout": {
+    "runs_dir_exists": false,
+    "mirrors_dir": "mirrors",
+    "pinned_dir": "pinned",
+    "log_files": [
+      "build.log",
+      "build_debug.log",
+      "build_verbose.log",
+      "rocm-device-libs.log",
+      "rocm-runtime.log",
+      "source.log"
     ]
   },
-  "logging_behavior": {
-    "build_logs": ["build.log", "build_debug.log", "build_verbose.log"],
-    "component_logs": ["rocm-device-libs.log", "rocm-runtime.log", "source.log"],
-    "structured_logging": false,
-    "evidence_spine": false
+  "policy_hooks": {
+    "existing": [
+      "scripts/audit-rocm-pins.sh"
+    ],
+    "status": "ad-hoc"
   },
-  "gaps": {
-    "policy_fence": "missing",
-    "manifest_archive": "missing",
-    "source_lock_json": "missing",
-    "mirror_system": "missing",
-    "graph_extraction": "missing",
-    "evidence_spine": "missing",
-    "run_manager": "missing",
-    "gator_contracts": "missing"
-  },
-  "rocm_version": {
-    "target": "7.2.0",
-    "enforcement": "none",
-    "gpu_target": "gfx1151"
+  "rocm_state": {
+    "pinned_version": "7.2.0 (directory exists)",
+    "enforcement": "weak (grep-based in audit script)"
   }
 }

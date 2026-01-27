@@ -1,81 +1,38 @@
 {
   "story_id": "mirror-missing-repo",
-  "title": "Mirror Sync Fails Due to Missing Repository",
+  "title": "Missing Mirrored Repository",
   "severity": "high",
   "phase": "mirror-sync",
   "trigger": {
-    "condition": "git_clone_failed",
-    "error_pattern": "Repository not found|fatal: Could not read from remote repository",
-    "affected_tool": "sync_git_mirrors.py"
+    "condition": "file_not_found",
+    "context": "git clone/checkout from mirror",
+    "affected_tool": "nix build / extract_graph.py"
   },
   "symptoms": [
-    "sync_git_mirrors.py exits with non-zero status",
-    "mirrors/git/index.json shows status=failed for one or more repos",
-    "Error log contains 'Repository not found' or similar"
+    "Build fails claiming repository not found in mirrors/git",
+    "Local path reference fails"
   ],
   "diagnosis_steps": [
     {
       "step": 1,
-      "action": "read_file",
-      "target": "mirrors/git/index.json",
-      "look_for": "entries with status='failed'"
-    },
-    {
-      "step": 2,
-      "action": "check_source_lock",
-      "target": "pinned/rocm/7.2.0/source-lock.json",
-      "look_for": "project URL that failed"
-    },
-    {
-      "step": 3,
-      "action": "verify_url",
-      "method": "curl -I <url>",
-      "expected": "HTTP 200 or redirect to valid repo"
+      "action": "verify_mirror_content",
+      "target": "mirrors/git/",
+      "look_for": "Directory matching repo name"
     }
   ],
   "resolution_options": [
     {
       "option": "A",
-      "condition": "Repo moved to new URL",
+      "condition": "Repo missing from mirror",
       "actions": [
-        "Update pinned/rocm/7.2.0/default.xml with new URL",
-        "Regenerate source-lock.json",
-        "Re-run mirror sync"
-      ]
-    },
-    {
-      "option": "B",
-      "condition": "Repo deleted or private",
-      "actions": [
-        "Check if repo is in archived ROCm releases",
-        "Find alternative source (GitHub mirror, archive.org)",
-        "Add to graph/overrides.yaml as unavailable if non-critical",
-        "If critical, ABORT and escalate to human"
-      ]
-    },
-    {
-      "option": "C",
-      "condition": "Transient network error",
-      "actions": [
-        "Wait 60 seconds",
-        "Re-run sync with --retry flag",
-        "If still failing after 3 retries, escalate"
+        "Do NOT fetch from upstream during build",
+        "Run 'rb sync-mirrors' to populate missing repo",
+        "Verify source-lock.json includes the repo"
       ]
     }
   ],
-  "evidence_to_preserve": [
-    "mirrors/git/index.json",
-    "stderr output from sync command",
-    "network connectivity test results"
-  ],
-  "escalation": {
-    "when": "All resolution options exhausted",
-    "to": "human operator",
-    "provide": [
-      "Failed repo URL",
-      "Error message",
-      "Attempted resolutions",
-      "Impact assessment (is this repo in critical path?)"
-    ]
-  }
+  "prohibited_actions": [
+    "DO NOT change source URL to github.com in lockfile",
+    "DO NOT run git clone manually from upstream"
+  ]
 }

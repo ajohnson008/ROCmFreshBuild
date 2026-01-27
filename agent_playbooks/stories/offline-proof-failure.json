@@ -1,0 +1,44 @@
+{
+    "story_id": "offline-proof-failure",
+    "title": "Offline Proof Gate Fails",
+    "severity": "critical",
+    "phase": "offline-proof",
+    "trigger": {
+        "condition": "proof_gate_failure",
+        "affected_tool": "tools/rb offline-proof"
+    },
+    "symptoms": [
+        "rb offline-proof command exits with non-zero",
+        "Report shows status: failed"
+    ],
+    "diagnosis_steps": [
+        {
+            "step": 1,
+            "action": "check_error",
+            "target": "reports/offline-proof.json",
+            "look_for": "error message"
+        }
+    ],
+    "resolution_options": [
+        {
+            "option": "A",
+            "condition": "Failure due to network attempt",
+            "actions": [
+                "See restricted-eval-violation story"
+            ]
+        },
+        {
+            "option": "B",
+            "condition": "Failure due to missing input",
+            "actions": [
+                "Check if 'flake-prefetch' phase completed successfully",
+                "Check if 'mirror-sync' phase completed successfully",
+                "Re-run sync/prefetch phases"
+            ]
+        }
+    ],
+    "prohibited_actions": [
+        "DO NOT proceed to build-pass-a",
+        "DO NOT run build with --no-sandbox or network allowed"
+    ]
+}

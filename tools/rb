@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+import sys
+import argparse
+import subprocess
+from pathlib import Path
+
+# Add tools dir to path
+sys.path.append(str(Path(__file__).parent))
+
+from policy import policy_fence
+# from tooling import prefetch # Placeholder if needed, or inline
+# We'll rely on imports inside conditions to avoid circular issues or early failures
+
+def sync_mirrors(repo_root):
+    # Call the mirror sync logic
+    # As per prompt, implement 'rb sync-mirrors'
+    # Use existing logic or placeholder
+    # Existing structure has mirrors/git etc.
+    print("Syncing mirrors (placeholder logic)...")
+    # For now, just ensure the dir exists
+    (repo_root / "mirrors").mkdir(exist_ok=True)
+    return True
+
+def prefetch_flake(repo_root):
+    print("Prefetching flake inputs (recursive)...")
+    cmd = ["nix", "flake", "prefetch", "--extra-experimental-features", "nix-command flakes"]
+    subprocess.run(cmd, cwd=repo_root, check=True)
+
+def main():
+    parser = argparse.ArgumentParser(description="TheRockBuilder (rb) Management Tool")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # Policy subcommand
+    policy_parser = subparsers.add_parser("policy")
+    policy_subparsers = policy_parser.add_subparsers(dest="policy_command", required=True)
+    
+    verify_parser = policy_subparsers.add_parser("verify")
+    verify_parser.add_argument("--run-id", help="Run ID")
+    verify_parser.add_argument("--strict", action="store_true", help="Enable strict mode")
+
+    # Env subcommand (Phase C)
+    env_parser = subparsers.add_parser("env")
+    env_subparsers = env_parser.add_subparsers(dest="env_command", required=True)
+    
+    nix_opts_parser = env_subparsers.add_parser("nix-opts")
+    nix_opts_parser.add_argument("--mode", choices=["online-sync", "offline", "mirror-only"], required=True)
+    
+    assert_sandbox_parser = env_subparsers.add_parser("assert-sandbox")
+
+    # Offline Proof subcommand (Phase D)
+    proof_parser = subparsers.add_parser("offline-proof")
+    proof_parser.add_argument("--run-id", required=True)
+    proof_parser.add_argument("--scope", choices=["graph", "build", "all"], default="all")
+
+    # Helper commands
+    sync_mirrors_parser = subparsers.add_parser("sync-mirrors")
+    prefetch_flake_parser = subparsers.add_parser("prefetch-flake-inputs")
+
+    args = parser.parse_args()
+    repo_root = Path.cwd() # Assume running from root or find root
+
+    # Ensure we are in repo root or find it
+    if not (repo_root / "flake.nix").exists():
+        # Try parent
+        if (repo_root.parent / "flake.nix").exists():
+            repo_root = repo_root.parent
+        # Else warn?
+
+    if args.command == "policy":
+        if args.policy_command == "verify":
+            policy_fence.verify(repo_root, args.run_id, args.strict)
+    
+    elif args.command == "env":
+        from env_manager import handle_nix_opts, handle_assert_sandbox
+        if args.env_command == "nix-opts":
+            handle_nix_opts(args.mode)
+        elif args.env_command == "assert-sandbox":
+            handle_assert_sandbox(repo_root)
+
+    elif args.command == "offline-proof":
+         from offline_proof import run_proof
+         run_proof(repo_root, args.run_id, args.scope)
+         
+    elif args.command == "sync-mirrors":
+        sync_mirrors(repo_root)
+
+    elif args.command == "prefetch-flake-inputs":
+        prefetch_flake(repo_root)
+
+if __name__ == "__main__":
+    main()

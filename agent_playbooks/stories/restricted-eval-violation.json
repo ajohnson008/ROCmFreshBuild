@@ -1,0 +1,54 @@
+{
+    "story_id": "restricted-eval-violation",
+    "title": "Restricted Evaluation Blocks URI",
+    "severity": "high",
+    "phase": "offline-proof",
+    "trigger": {
+        "condition": "nix_eval_failure",
+        "error_pattern": "access to URI .* is forbidden",
+        "violation_type": "network_access_in_restricted_mode",
+        "affected_tool": "nix eval"
+    },
+    "symptoms": [
+        "Nix eval fails with 'restricted mode' error",
+        "Evidence log shows offender URI"
+    ],
+    "diagnosis_steps": [
+        {
+            "step": 1,
+            "action": "identify_uri",
+            "target": "reports/offline-proof.json",
+            "look_for": "offender_uris"
+        },
+        {
+            "step": 2,
+            "action": "classify_uri",
+            "logic": "Is URI 'file://' and inside repo/mirrors? Or is it remote (http/https)?"
+        }
+    ],
+    "resolution_options": [
+        {
+            "option": "A",
+            "condition": "URI is local mirror path (file://) but missing from allowlist",
+            "actions": [
+                "Verify path exists",
+                "Update tools/env_manager.py to include this path in allowlist",
+                "Re-run offline-proof"
+            ]
+        },
+        {
+            "option": "B",
+            "condition": "URI is remote (http/https/git)",
+            "actions": [
+                "Identified as policy violation: Build step attempting network access",
+                "Check flake.nix/lock for unpinned input or non-fixed-output derivation",
+                "Convert input to use 'pinned-rocm' or prefetch",
+                "Do NOT add to allowlist"
+            ]
+        }
+    ],
+    "prohibited_actions": [
+        "DO NOT add remote URIs to allowlist",
+        "DO NOT disable restrict-eval to bypass"
+    ]
+}

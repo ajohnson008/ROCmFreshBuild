@@ -1,0 +1,31 @@
+{
+  "run_id": "test-run-1",
+  "start_time": "2026-01-27T00:57:45.522065+00:00",
+  "status": "pending",
+  "phases": {
+    "policy_verify": {
+      "status": "success",
+      "timestamp": "2026-01-27T00:57:45.526647+00:00",
+      "details": {
+        "violation_count": 0
+      }
+    }
+  },
+  "policy": {
+    "decisions": [
+      {
+        "decision": "allowed",
+        "timestamp": "2026-01-27T00:57:45.526171+00:00",
+        "strict_mode": false,
+        "violations": []
+      }
+    ]
+  },
+  "artifacts": [],
+  "system_info": {
+    "platform": "Linux",
+    "release": "6.18.6-200.fc43.x86_64",
+    "machine": "x86_64",
+    "cwd": "/home/thenexussidekick/code/test/prd3"
+  }
+}
