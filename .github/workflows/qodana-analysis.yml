@@ -61,13 +61,11 @@ jobs:
         uses: JetBrains/qodana-action@v2023.3.0
         with:
           args: >
-            --baseline,qodana.sarif.json
-            --baseline-include-absent
-            --config,qodana-global-configurations.yaml
-            --source-directory,.
-            --fail-threshold,0
-            --report-dir,${{ runner.temp }}/qodana/results
-            --cache-dir,${{ runner.temp }}/qodana/cache
+            --config=./qodana-global-configurations.yaml
+            --source-directory=.
+            --fail-threshold=0
+            --report-dir=${{ runner.temp }}/qodana/results
+            --cache-dir=${{ runner.temp }}/qodana/cache
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
 
