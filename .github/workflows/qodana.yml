@@ -70,10 +70,14 @@ jobs:
       - name: Qodana analysis
         uses: JetBrains/qodana-action@v2025.2
         with:
-          linter: jetbrains/qodana-cpp:2025.3
-          additional-cache-key: rocm-build-7.2.0
-          args: --save-report --show-report
-          token: ${{ secrets.QODANA_TOKEN }}
+          args: >
+            --config,qodana-global-configurations.yaml \
+            --source-directory,. \
+            --fail-threshold,0 \
+            --report-dir,${{ runner.temp }}/qodana/results \
+            --cache-dir,${{ runner.temp }}/qodana/cache
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
       
       - name: Upload Qodana report
         uses: actions/upload-artifact@v4
