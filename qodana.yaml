@@ -1,20 +1,100 @@
 version: "1.0"
 
-project:
-  name: "TheRockBuilder"
+# Linter selection (auto-detected if not specified)
+# Use Python linter for this project
+linter: jetbrains/qodana-python:2025.3
 
-# Use the global configuration file
-include:
-  - qodana-global-configurations.yaml
-
-# Default profile
+# Profile configuration
 profile:
-  name: "default"
-  path: ".qodana/default.yaml"
+  name: qodana.recommended
+  # Or use custom profile:
+  # path: .qodana/profiles/rocm-profile.yaml
 
-# Exclude patterns (additional to global)
+# Python-specific settings
+python:
+  venv: .venv
+  pythonPath: /usr/bin/python3
+  
+  # Add custom module paths
+  additionalPaths:
+    - lib
+    - scripts
+    - tools
+
+# Project structure
+projectJDK: |
+  name: Python 3.11
+  type: Python SDK
+
+# Include specific paths for analysis
+include:
+  - scripts
+  - lib
+  - tools
+  - agent_playbooks
+  - "*.py"
+  - "*.sh"
+
+# Exclude patterns
 exclude:
-  - "**/test/**"
-  - "**/*_test.py"
-  - "**/conftest.py"
-  - "**/migrations/**"
+  - name: All
+    paths:
+      # Version control
+      - .git
+      - .github/workflows
+      
+      # IDE/Editor
+      - .qodana
+      - .vscode
+      
+      # Build artifacts
+      - build
+      - dist
+      - result
+      - .nix-store
+      - "*.log"
+      - "*_pid.txt"
+      
+      # Vendor/external code
+      - repos
+      - mirrors
+      - pinned-rocm
+      - pinned/rocm
+      - contracts
+      
+      # Generated/lock files
+      - flake.lock
+      - SBOM.spdx.json
+      - verified_sources.json
+      - repo_bundle.txt
+      - "*.hash"
+      
+      # Python environments
+      - .venv
+      - venv
+      - __pycache__
+      - "*.pyc"
+      
+      # Documentation (optional - remove if you want docs analyzed)
+      - "*.md"
+
+# Failure conditions (optional - adjust thresholds as needed)
+failureConditions:
+  severityThresholds:
+    critical: 0    # Fail if any critical issues
+    high: 10       # Fail if more than 10 high-severity issues
+    any: 100       # Fail if total issues exceed 100
+
+# License audit rules
+licenseRules:
+  # Allowed open-source licenses
+  - keys:
+      - MIT
+      - Apache-2.0
+      - BSD-2-Clause
+      - BSD-3-Clause
+      - ISC
+      - Python-2.0
+    prohibited: false
+  
+  # Prohibited copyleft licenses (adjust as needed)

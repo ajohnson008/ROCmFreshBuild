@@ -1,0 +1,40 @@
+name: "ROCm Build Profile"
+description: "Custom inspection profile optimized for ROCmFreshBuild project"
+baseProfile: qodana.recommended
+
+# Inspection configuration
+inspections:
+  # Python inspections - ENABLED
+  - group: "category:Python"
+    enabled: true
+  
+  # Shell script analysis - ENABLED
+  - group: "category:Shell script"
+    enabled: true
+  
+  # JavaScript for build scripts - ENABLED
+  - group: "category:JavaScript and TypeScript"
+    enabled: true
+  
+  # Security inspections - CRITICAL
+  - inspection: "SecurityVulnerabilityInspection"
+    enabled: true
+    severity: ERROR
+  
+  # Disable or downgrade noisy inspections
+  - inspection: "PyUnresolvedReferences"
+    enabled: true
+    severity: WARNING  # Downgrade from ERROR due to custom modules
+  
+  - inspection: "PyPackageRequirements"
+    enabled: false  # Disable - Nix manages dependencies
+  
+  - inspection: "PyInterpreterInspection"
+    enabled: false  # Disable - using Nix Python
+  
+  # Shell script specific configuration
+  - inspection: "ShellCheck"
+    enabled: true
+    severity: WARNING
+    options:
+      # Ignore common issues in Nix scripts
