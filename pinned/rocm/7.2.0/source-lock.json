@@ -1,0 +1,317 @@
+{
+  "rocm_release": "7.2.0",
+  "manifest_sha256": "8287fc986ed0cac2e8787e64a716ca1ef8c11d164da87fe4055a5946721551af",
+  "lock_sha256": "",
+  "generated_at": "2026-01-26T14:30:00Z",
+  "projects": [
+    {
+      "name": "ROCm/rocm-cmake",
+      "remote_url": "https://github.com/ROCm/rocm-cmake",
+      "commit_sha": "f2657238cb71df839c97807d5b0cb2c184075227",
+      "path": "rocm-cmake",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/ROCR-Runtime",
+      "remote_url": "https://github.com/ROCm/ROCR-Runtime",
+      "commit_sha": "51e6956eb97475f6139c6cf88b51fbebea4c987b",
+      "path": "ROCR-Runtime",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/clr",
+      "remote_url": "https://github.com/ROCm/clr",
+      "commit_sha": "2e88525d05192094bc39d4c76f24327f506ede38",
+      "path": "clr",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/HIP",
+      "remote_url": "https://github.com/ROCm/HIP",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "HIP",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/HIPIFY",
+      "remote_url": "https://github.com/ROCm/HIPIFY",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "HIPIFY",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/ROCdbgapi",
+      "remote_url": "https://github.com/ROCm/ROCdbgapi",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "ROCdbgapi",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/rocr_debug_agent",
+      "remote_url": "https://github.com/ROCm/rocr_debug_agent",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "rocr_debug_agent",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/roctracer",
+      "remote_url": "https://github.com/ROCm/roctracer",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "roctracer",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/rocprofiler-register",
+      "remote_url": "https://github.com/ROCm/rocprofiler-register",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "rocprofiler-register",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/rocprofiler-sdk",
+      "remote_url": "https://github.com/ROCm/rocprofiler-sdk",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "rocprofiler-sdk",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/rocm_smi_lib",
+      "remote_url": "https://github.com/ROCm/rocm_smi_lib",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "rocm_smi_lib",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/amdsmi",
+      "remote_url": "https://github.com/ROCm/amdsmi",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "amdsmi",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/rocminfo",
+      "remote_url": "https://github.com/ROCm/rocminfo",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "rocminfo",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/ROCT-Thunk-Interface",
+      "remote_url": "https://github.com/ROCm/ROCT-Thunk-Interface",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "ROCT-Thunk-Interface",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/llvm-project",
+      "remote_url": "https://github.com/ROCm/llvm-project",
+      "commit_sha": "3098435244119c38f6100dbd8d61e56c942a3c00",
+      "path": "llvm-project",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/ROCm-Device-Libs",
+      "remote_url": "https://github.com/ROCm/ROCm-Device-Libs",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "ROCm-Device-Libs",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/ROCm-CompilerSupport",
+      "remote_url": "https://github.com/ROCm/ROCm-CompilerSupport",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "ROCm-CompilerSupport",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/flang",
+      "remote_url": "https://github.com/ROCm/flang",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "flang",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/rocBLAS",
+      "remote_url": "https://github.com/ROCm/rocBLAS",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "rocBLAS",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/hipBLAS",
+      "remote_url": "https://github.com/ROCm/hipBLAS",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "hipBLAS",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/hipBLASLt",
+      "remote_url": "https://github.com/ROCm/hipBLASLt",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "hipBLASLt",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/rocSOLVER",
+      "remote_url": "https://github.com/ROCm/rocSOLVER",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "rocSOLVER",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/hipSOLVER",
+      "remote_url": "https://github.com/ROCm/hipSOLVER",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "hipSOLVER",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/rocSPARSE",
+      "remote_url": "https://github.com/ROCm/rocSPARSE",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "rocSPARSE",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/hipSPARSE",
+      "remote_url": "https://github.com/ROCm/hipSPARSE",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "hipSPARSE",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/hipSPARSELt",
+      "remote_url": "https://github.com/ROCm/hipSPARSELt",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "hipSPARSELt",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/rocFFT",
+      "remote_url": "https://github.com/ROCm/rocFFT",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "rocFFT",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/hipFFT",
+      "remote_url": "https://github.com/ROCm/hipFFT",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "hipFFT",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/rocRAND",
+      "remote_url": "https://github.com/ROCm/rocRAND",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "rocRAND",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/hipRAND",
+      "remote_url": "https://github.com/ROCm/hipRAND",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "hipRAND",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/rocALUTION",
+      "remote_url": "https://github.com/ROCm/rocALUTION",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "rocALUTION",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/rocPRIM",
+      "remote_url": "https://github.com/ROCm/rocPRIM",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "rocPRIM",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/hipCUB",
+      "remote_url": "https://github.com/ROCm/hipCUB",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "hipCUB",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/rocThrust",
+      "remote_url": "https://github.com/ROCm/rocThrust",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "rocThrust",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/hipTensor",
+      "remote_url": "https://github.com/ROCm/hipTensor",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "hipTensor",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/rccl",
+      "remote_url": "https://github.com/ROCm/rccl",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "rccl",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/MIOpen",
+      "remote_url": "https://github.com/ROCm/MIOpen",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "MIOpen",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/composable_kernel",
+      "remote_url": "https://github.com/ROCm/composable_kernel",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "composable_kernel",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/MIVisionX",
+      "remote_url": "https://github.com/ROCm/MIVisionX",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "MIVisionX",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/AMDMIGraphX",
+      "remote_url": "https://github.com/ROCm/AMDMIGraphX",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "AMDMIGraphX",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/MIGraphX",
+      "remote_url": "https://github.com/ROCm/MIGraphX",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "MIGraphX",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/rocm-systems",
+      "remote_url": "https://github.com/ROCm/rocm-systems",
+      "commit_sha": "da7ba12fd90f553f3d4629ffc9ca360545364ea0",
+      "path": "rocm-systems",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "RadeonOpenCompute/ROCK-Kernel-Driver",
+      "remote_url": "https://github.com/RadeonOpenCompute/ROCK-Kernel-Driver",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "ROCK-Kernel-Driver",
+      "revision_source": "default.xml"
+    },
+    {
+      "name": "ROCm/ROCm-OpenCL-Runtime",
+      "remote_url": "https://github.com/ROCm/ROCm-OpenCL-Runtime",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "path": "ROCm-OpenCL-Runtime",
+      "revision_source": "default.xml"
+    }
+  ],
+  "blobs": []
+}

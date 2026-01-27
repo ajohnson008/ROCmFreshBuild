@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "integrity-check.schema.json",
+  "title": "Integrity Check Report",
+  "description": "Hash verification of all sources",
+  "type": "object",
+  "required": ["version", "check_timestamp", "result", "sources"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "check_timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_lock_sha256": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string",
+      "enum": ["pass", "fail"]
+    },
+    "sources": {
+      "type": "object",
+      "required": ["total", "verified", "failed"],
+      "properties": {
+        "total": { "type": "integer" },
+        "verified": { "type": "integer" },
+        "failed": { "type": "integer" }
+      }
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "expected_hash", "actual_hash"],
+        "properties": {
+          "name": { "type": "string" },
+          "expected_hash": { "type": "string" },
+          "actual_hash": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "floating_refs_detected": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "ref"],
+        "properties": {
+          "name": { "type": "string" },
+          "ref": { "type": "string" }
+        }
+      }
+    }
+  }
+}

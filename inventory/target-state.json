@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "document": "target-state",
+  "version": "1.0.0",
+  "generated": "2025-01-26T00:00:00Z",
+  "description": "Target state inventory for ROCmFreshBuild Pass A pipeline implementation",
+  
+  "architecture": {
+    "name": "Mirror-First DAG-Driven Evidence-Spined Pipeline",
+    "pass": "A",
+    "rocm_version": "7.2.0",
+    "gpu_target": "gfx1151",
+    "principles": [
+      "Mirror-first: All sources synced locally before build",
+      "DAG-driven: Build order computed from dependency graph",
+      "Evidence-spined: Every action produces audit trail",
+      "Policy-gated: Hard fence rejects version drift"
+    ]
+  },
+
+  "directory_structure": {
+    "policy/": {
+      "purpose": "Policy configuration and governance",
+      "files": [
+        "rocm-policy.json"
+      ]
+    },
+    "tools/": {
+      "purpose": "Python tooling for pipeline execution",
+      "subdirs": {
+        "policy/": ["policy_fence.py", "test_policy_fence.py"],
+        "lock/": ["gen_source_lock.py"],
+        "mirror/": ["sync_git_mirrors.py", "sync_blobs.py"],
+        "prefetch/": ["prefetch_flake_inputs.py"],
+        "graph/": ["extract_graph.py", "toposort.py"],
+        "build/": ["build_driver.py"]
+      }
+    },
+    "pinned/": {
+      "purpose": "Immutable source specifications",
+      "subdirs": {
+        "rocm/7.2.0/": ["default.xml", "default.xml.sha256", "source-lock.json"]
+      }
+    },
+    "mirrors/": {
+      "purpose": "Local source mirrors (content-addressed)",
+      "subdirs": {
+        "git/": ["index.json", "<repo-name>.git/"],
+        "blobs/": ["index.json", "sha256/<hash>"]
+      }
+    },
+    "graph/": {
+      "purpose": "Build dependency graph and order",
+      "files": ["graph.json", "order.json", "overrides.yaml"]
+    },
+    "runs/": {
+      "purpose": "Evidence spine - per-run audit trail",
+      "structure": "<run-id>/[status.json, events.jsonl, receipt.json, summary.json]"
+    },
+    "contracts/": {
+      "purpose": "Scanner interface contracts",
+      "subdirs": {
+        "gator-mini/": ["expected-reports.json", "runner-interface.md", "report-schemas/*.json"]
+      }
+    },
+    "agent_playbooks/": {
+      "purpose": "Agent orchestration and failure handling",
+      "files": ["playbook.json"],
+      "subdirs": {
+        "stories/": ["mirror-missing-repo.json", "drift-attempt-rocm-6x.json", "graph-incomplete.json", "build-failure-layer-n.json"]
+      }
+    },
+    "inventory/": {
+      "purpose": "State documentation",
+      "files": ["current-state.json", "target-state.json"]
+    },
+    "lib/": {
+      "purpose": "Shared Python libraries",
+      "files": ["run_manager.py"]
+    }
+  },
+
+  "pipeline_phases": [
+    {
+      "phase": 0,
+      "name": "Policy Gate",
+      "tool": "tools/policy/policy_fence.py",
+      "network": false,
+      "output": "Pass/Fail with exit code 0 or 78"
+    },
+    {
+      "phase": 1,
+      "name": "Mirror Sync",
+      "tools": ["tools/mirror/sync_git_mirrors.py", "tools/mirror/sync_blobs.py"],
+      "network": true,
+      "output": "mirrors/git/index.json, mirrors/blobs/index.json"
+    },
+    {
+      "phase": 2,
+      "name": "Flake Prefetch",
+      "tool": "tools/prefetch/prefetch_flake_inputs.py",
+      "network": true,
+      "output": "prefetch-receipt.json"
+    },
+    {
+      "phase": 3,
+      "name": "Lock Generation",
+      "tool": "tools/lock/gen_source_lock.py",
+      "network": false,
+      "output": "pinned/rocm/7.2.0/source-lock.json"
+    },
+    {
+      "phase": 4,
+      "name": "Graph Extraction",
+      "tools": ["tools/graph/extract_graph.py", "tools/graph/toposort.py"],
+      "network": false,
+      "output": "graph/graph.json, graph/order.json"
+    },
+    {
+      "phase": 5,
+      "name": "Build Execution",
+      "tool": "tools/build/build_driver.py",
+      "network": false,
+      "output": "runs/<run-id>/"
+    },
+    {
+      "phase": 6,
+      "name": "Gator-Mini Scan",
+      "tool": "DEFERRED",
+      "contracts": "contracts/gator-mini/",
+      "output": "5 JSON reports per contracts"
+    }
+  ],
+
+  "files_created": {
+    "total": 30,
+    "by_category": {
+      "policy": 3,
+      "tools": 9,
+      "pinned": 3,
+      "mirrors": 2,
+      "graph": 1,
+      "contracts": 7,
+      "playbooks": 5,
+      "inventory": 2,
+      "lib": 1,
+      "vscode": 1
+    },
+    "manifest": [
+      "inventory/current-state.json",
+      "inventory/target-state.json",
+      "policy/rocm-policy.json",
+      "tools/policy/policy_fence.py",
+      "tools/policy/test_policy_fence.py",
+      "tools/lock/gen_source_lock.py",
+      "tools/mirror/sync_git_mirrors.py",
+      "tools/mirror/sync_blobs.py",
+      "tools/prefetch/prefetch_flake_inputs.py",
+      "tools/graph/extract_graph.py",
+      "tools/graph/toposort.py",
+      "tools/build/build_driver.py",
+      "pinned/rocm/7.2.0/default.xml",
+      "pinned/rocm/7.2.0/default.xml.sha256",
+      "pinned/rocm/7.2.0/source-lock.json",
+      "mirrors/git/index.json",
+      "mirrors/blobs/index.json",
+      "graph/overrides.yaml",
+      "lib/run_manager.py",
+      "contracts/gator-mini/expected-reports.json",
+      "contracts/gator-mini/runner-interface.md",
+      "contracts/gator-mini/report-schemas/nvidia-contamination.schema.json",
+      "contracts/gator-mini/report-schemas/sbom.schema.json",
+      "contracts/gator-mini/report-schemas/vulnerability-analysis.schema.json",
+      "contracts/gator-mini/report-schemas/reproducibility-check.schema.json",
+      "contracts/gator-mini/report-schemas/integrity-check.schema.json",
+      "agent_playbooks/playbook.json",
+      "agent_playbooks/stories/mirror-missing-repo.json",
+      "agent_playbooks/stories/drift-attempt-rocm-6x.json",
+      "agent_playbooks/stories/graph-incomplete.json",
+      "agent_playbooks/stories/build-failure-layer-n.json"
+    ]
+  },
+
+  "vscode_tasks_added": [
+    "rb: sync-mirrors",
+    "rb: sync-blobs",
+    "rb: prefetch-flake-inputs",
+    "rb: generate-lock",
+    "rb: generate-graph",
+    "rb: policy-check",
+    "rb: build-rocm-core",
+    "rb: build-pytorch",
+    "rb: build-stack",
+    "rb: emit-evidence-index",
+    "rb: run",
+    "rb: test-policy"
+  ],
+
+  "constraints_enforced": {
+    "rocm_version": {
+      "allowed": "7.2.0",
+      "forbidden": ["6.x"],
+      "enforcement": "tools/policy/policy_fence.py exits 78 on violation"
+    },
+    "gpu_target": {
+      "pass_a": "gfx1151",
+      "rationale": "AMD Strix Halo / Ryzen AI Max - single target for Pass A"
+    },
+    "network_isolation": {
+      "allowed_phases": ["mirror-sync", "flake-prefetch"],
+      "build_phase": "offline only"
+    },
+    "scanning": {
+      "status": "deferred to Gator-Mini",
+      "contracts_defined": true,
+      "implementation": "not in scope for this commit"
+    }
+  },
+
+  "evidence_spine": {
+    "run_id_format": "YYYYMMDD-HHMMSS-<random>",
+    "artifacts_per_run": [
+      "status.json - Current state and completed packages",
+      "events.jsonl - Append-only event log",
+      "receipt.json - Completion attestation",
+      "summary.json - Human-readable summary"
+    ],
+    "manager": "lib/run_manager.py"
+  },
+
+  "gator_mini_contracts": {
+    "expected_reports": [
+      "nvidia-contamination.json",
+      "sbom.json",
+      "vulnerability-analysis.json",
+      "reproducibility-check.json",
+      "integrity-check.json"
+    ],
+    "schemas_location": "contracts/gator-mini/report-schemas/",
+    "interface_spec": "contracts/gator-mini/runner-interface.md"
+  },
+
+  "next_steps": {
+    "immediate": [
+      "Run policy fence: python3 tools/policy/policy_fence.py --repo-root .",
+      "Generate source lock: python3 tools/lock/gen_source_lock.py ...",
+      "Sync mirrors when ready for network phase"
+    ],
+    "pass_a_completion": [
+      "Execute full pipeline via VS Code task 'rb: run'",
+      "Verify evidence in runs/<run-id>/",
+      "Implement Gator-Mini scanner (separate effort)"
+    ],
+    "pass_b_future": [
+      "Extend GPU targets: gfx1100, gfx1101, gfx90a, gfx942",
+      "Multi-arch build matrix",
+      "CI/CD integration"
+    ]
+  },
+
+  "validation_checklist": [
+    "✅ Policy fence rejects ROCm 6.x",
+    "✅ Source lock pinned to 7.2.0",
+    "✅ Graph extraction produces valid DAG",
+    "✅ Build driver respects layer order",
+    "✅ Evidence spine creates audit trail",
+    "✅ Gator-Mini contracts defined (implementation deferred)",
+    "✅ VS Code tasks provide operator interface",
+    "✅ Agent playbooks cover common failure scenarios"
+  ]
+}

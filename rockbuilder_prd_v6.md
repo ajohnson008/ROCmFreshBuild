@@ -1,17 +1,17 @@
-# TheRockBuilder PRD v6.1: Production-Grade Nix Reconstruction with 12-Step AI Pipeline
+# TheRockBuilder PRD v6.2: Production-Grade Nix Reconstruction with 12-Step AI Pipeline
 
 **Project Code**: THE_ROCK_BUILDER_REBOOT  
 **Target Platform**: AMD Strix Halo (gfx1151) on GMKtec EVO-X2  
 **Build Platform**: AMD Threadripper 3960X (24C/48T, 64GB RAM, RTX 3080 Ti)  
 **Build System**: Nix Flakes (Nix 2.31.2+)  
-**Version**: 6.1 (Supersedes v6.0)  
+**Version**: 6.2 (Supersedes v6.1)  
 **Document Date**: January 26, 2026
 
 ---
 
 ## 1. Executive Summary
 
-TheRockBuilder v6.1 is a **production-hardened, air-gapped AI infrastructure build system** designed to compile a bit-for-bit reproducible AI stack for AMD Strix Halo architecture. This version introduces:
+TheRockBuilder v6.2 is a **production-hardened, air-gapped AI infrastructure build system** designed to compile a bit-for-bit reproducible AI stack for AMD Strix Halo architecture. This version introduces:
 
 - **12-Step AI Pipeline**: Strict integration order from NumPy → PyTorch → vLLM → ONNX Runtime
 - **Zen 2 Safety Protocol**: Mandatory AVX-512 blocking to prevent crashes on Threadripper 3960X host
@@ -20,8 +20,12 @@ TheRockBuilder v6.1 is a **production-hardened, air-gapped AI infrastructure bui
 - **Integrated llama.cpp**: Dual variants (GPU with UMA, CPU without AVX-512) for maximum flexibility
 - **Advanced Safety Systems**: Pre-flight validation, build checkpointing, and intelligent error recovery
 - **Threadripper Optimization**: Parallel builds utilizing all 48 threads with memory-aware scheduling
+- **Pass A Pipeline Infrastructure** (NEW in v6.2): Mirror-first, DAG-driven, evidence-spined automation layer
+- **Policy Fence**: ROCm 7.2.0 hard gate with exit code 78 on version drift
+- **Gator-Mini Contracts**: JSON Schema contracts for external scanner integration
+- **Agent Playbooks**: AI orchestration with failure scenario handling
 
-Unlike v6.0's six-stage approach, v6.1 enforces a **strict 12-step build pipeline** with explicit version pinning from the PyTorch 2.10.0 compatibility matrix, ensuring stability on Zen 2 CPUs while maximizing Strix Halo performance.
+Unlike v6.0's six-stage approach, v6.2 enforces a **strict 12-step build pipeline** with explicit version pinning from the PyTorch 2.10.0 compatibility matrix, ensuring stability on Zen 2 CPUs while maximizing Strix Halo performance. The new Pass A infrastructure provides governance, provenance tracking, and AI agent coordination.
 
 ---
 
@@ -741,9 +745,220 @@ Phase 5: Integration testing (all cores, 15 min)
 
 **Run On**: All major components (GCC, ROCm, PyTorch, vLLM, llama.cpp)
 
-### 4.3 Deployment Systems
+### 4.3 Pass A Pipeline Infrastructure (NEW)
 
-#### 4.3.1 Offline Bundle Creator (bundle-creator)
+TheRockBuilder v6.1 introduces a **mirror-first, DAG-driven, evidence-spined** automation layer for reproducible, auditable builds. This infrastructure enforces policy gates, tracks provenance, and enables AI agent orchestration.
+
+#### 4.3.1 Policy Fence (ROCm 7.2.0 Hard Gate)
+
+**Location**: `policy/rocm-policy.json`, `tools/policy/policy_fence.py`
+
+**Purpose**: Hard-fail gate that rejects any ROCm 6.x references or version drift.
+
+**Enforcement**:
+- Exit code 78 (EX_CONFIG) on policy violation
+- Checks manifest, source-lock, flake.nix, and GPU targets
+- Runs BEFORE any build phase
+
+**Policy Configuration** (`policy/rocm-policy.json`):
+```json
+{
+  "allowed_release": "7.2.0",
+  "forbidden_releases": ["6.0.0", "6.1.0", "6.2.0", "6.3.0"],
+  "forbidden_patterns": ["6\\.\\d+"],
+  "pass_a_gpu_targets": ["gfx1151"]
+}
+```
+
+**Usage**:
+```bash
+python3 tools/policy/policy_fence.py --repo-root .
+# Exit 0 = pass, Exit 78 = violation
+```
+
+#### 4.3.2 Source Lock & Manifest Pinning
+
+**Location**: `pinned/rocm/7.2.0/`, `tools/lock/gen_source_lock.py`
+
+**Artifacts**:
+- `default.xml` - Archived ROCm 7.2.0 manifest (44 projects)
+- `default.xml.sha256` - Manifest integrity hash
+- `source-lock.json` - Generated lock with commit SHAs
+
+**Lock Generator**:
+```bash
+python3 tools/lock/gen_source_lock.py \
+  --manifest pinned/rocm/7.2.0/default.xml \
+  --output pinned/rocm/7.2.0/source-lock.json \
+  --release 7.2.0
+```
+
+#### 4.3.3 Mirror-First Architecture
+
+**Location**: `tools/mirror/`, `mirrors/git/`, `mirrors/blobs/`
+
+**Design**: All sources synced to local mirrors BEFORE build. Network allowed only during sync phases.
+
+**Git Mirror Sync**:
+```bash
+python3 tools/mirror/sync_git_mirrors.py \
+  --lock pinned/rocm/7.2.0/source-lock.json \
+  --output mirrors/git \
+  --workers 4
+```
+
+**Blob Sync** (content-addressed):
+```bash
+python3 tools/mirror/sync_blobs.py \
+  --lock pinned/rocm/7.2.0/source-lock.json \
+  --output mirrors/blobs \
+  --workers 4
+```
+
+**Index Files**:
+- `mirrors/git/index.json` - Git mirror status
+- `mirrors/blobs/index.json` - Blob mirror status (sha256-addressed)
+
+#### 4.3.4 Build Graph & DAG-Driven Order
+
+**Location**: `tools/graph/`, `graph/`
+
+**Graph Extraction**:
+```bash
+python3 tools/graph/extract_graph.py \
+  --source-lock pinned/rocm/7.2.0/source-lock.json \
+  --output graph/ \
+  --overrides graph/overrides.yaml
+```
+
+**Topological Sort**:
+```bash
+python3 tools/graph/toposort.py \
+  --graph graph/graph.json \
+  --output graph/order.json
+```
+
+**Outputs**:
+- `graph/graph.json` - Full dependency DAG
+- `graph/order.json` - Build layers (Kahn's algorithm)
+- `graph/overrides.yaml` - Manual edge additions/removals
+
+#### 4.3.5 Evidence Spine (Run Manager)
+
+**Location**: `lib/run_manager.py`, `runs/<run-id>/`
+
+**Purpose**: Every build action produces an audit trail. Run IDs follow `YYYYMMDD-HHMMSS-<random>` format.
+
+**Evidence Artifacts** (per run):
+| File | Purpose |
+|------|---------|
+| `status.json` | Current state, completed packages |
+| `events.jsonl` | Append-only event log |
+| `receipt.json` | Completion attestation |
+| `summary.json` | Human-readable summary |
+
+**Event Types**:
+- `RUN_STARTED`, `RUN_COMPLETED`, `RUN_FAILED`
+- `PHASE_STARTED`, `PHASE_COMPLETED`
+- `BUILD_STARTED`, `BUILD_COMPLETED`, `BUILD_FAILED`
+- `POLICY_VIOLATION`
+
+#### 4.3.6 Build Driver (Pass A Orchestrator)
+
+**Location**: `tools/build/build_driver.py`
+
+**Purpose**: Execute builds layer-by-layer per DAG order with evidence tracking.
+
+**Usage**:
+```bash
+python3 tools/build/build_driver.py \
+  --order graph/order.json \
+  --repo-root . \
+  --parallel 1
+```
+
+**Features**:
+- Respects layer dependencies from toposort
+- Creates run directory with evidence spine
+- Produces receipt even on failure
+- Maps project names to Nix attributes
+
+#### 4.3.7 Gator-Mini Scanner Contracts
+
+**Location**: `contracts/gator-mini/`
+
+**Purpose**: Define interface contracts for external scanner (Gator-Mini). Scanning logic is DEFERRED - only contracts implemented.
+
+**Expected Reports**:
+1. `nvidia-contamination.json` - NVIDIA symbol detection
+2. `sbom.json` - Software Bill of Materials
+3. `vulnerability-analysis.json` - CVE cross-reference
+4. `reproducibility-check.json` - Bit-for-bit verification
+5. `integrity-check.json` - Hash validation
+
+**Artifacts**:
+- `expected-reports.json` - Required report manifest
+- `report-schemas/*.schema.json` - JSON Schema (draft-07) for each report
+- `runner-interface.md` - Machine-oriented scanner interface spec
+
+#### 4.3.8 Agent Playbooks
+
+**Location**: `agent_playbooks/`
+
+**Purpose**: AI agent orchestration with failure scenario handling.
+
+**Main Playbook** (`playbook.json`):
+- 7 phases: policy-gate → mirror-sync → flake-prefetch → lock-generation → graph-extraction → build-pass-a → gator-mini-scan
+- Failure modes: ABORT, RETRY_3, CHECKPOINT
+
+**Failure Stories** (`stories/`):
+| Story | Scenario |
+|-------|----------|
+| `mirror-missing-repo.json` | Git clone fails, URL changed/deleted |
+| `drift-attempt-rocm-6x.json` | Policy fence rejects 6.x reference |
+| `graph-incomplete.json` | Missing edges, cycle detection |
+| `build-failure-layer-n.json` | Nix build fails mid-layer |
+
+#### 4.3.9 VS Code Tasks (Pass A Pipeline)
+
+**Location**: `.vscode/tasks.json` (rb: prefix)
+
+**New Tasks**:
+```
+rb: sync-mirrors        - Mirror ROCm git repos
+rb: sync-blobs          - Sync blobs to content-addressed store
+rb: prefetch-flake-inputs - Prefetch Nix flake inputs
+rb: generate-lock       - Generate source-lock.json
+rb: generate-graph      - Extract DAG and compute order
+rb: policy-check        - Run policy fence
+rb: build-rocm-core     - Build ROCm 7.2.0 core
+rb: build-pytorch       - Build PyTorch with ROCm
+rb: build-stack         - Build complete AI stack
+rb: run                 - Full Pass A pipeline (depends on policy-check)
+rb: test-policy         - Run policy fence unit tests
+rb: emit-evidence-index - Show latest run evidence path
+```
+
+#### 4.3.10 Pass A Pipeline Phases
+
+| Phase | Name | Network | Tool | Evidence |
+|-------|------|---------|------|----------|
+| 0 | Policy Gate | ❌ | `policy_fence.py` | Pass/Fail |
+| 1 | Mirror Sync | ✅ | `sync_git_mirrors.py`, `sync_blobs.py` | index.json |
+| 2 | Flake Prefetch | ✅ | `prefetch_flake_inputs.py` | receipt.json |
+| 3 | Lock Generation | ❌ | `gen_source_lock.py` | source-lock.json |
+| 4 | Graph Extraction | ❌ | `extract_graph.py`, `toposort.py` | graph.json, order.json |
+| 5 | Build Execution | ❌ | `build_driver.py` | runs/\<run-id\>/ |
+| 6 | Gator-Mini Scan | ❌ | DEFERRED | 5 JSON reports |
+
+**Pass A Constraints**:
+- ROCm 7.2.0 ONLY (6.x forbidden)
+- GPU target: gfx1151 only
+- Network: phases 1-2 only, offline thereafter
+
+### 4.4 Deployment Systems
+
+#### 4.4.1 Offline Bundle Creator (bundle-creator)
 **Output**: `rockbuilder-bundle-v6.1.tar.zst`
 
 **Contents**:
@@ -1373,6 +1588,22 @@ fi
 - ✅ Documentation answers common questions
 - ✅ Zen 2 safety audit script available in devShell
 
+### 9.6 Pass A Pipeline Infrastructure
+
+- ✅ Policy fence rejects ROCm 6.x references (exit code 78)
+- ✅ Policy fence validates gfx1151 GPU target
+- ✅ Source lock generator produces deterministic output from manifest
+- ✅ Git mirror sync handles 44+ ROCm repositories
+- ✅ Blob sync uses content-addressed storage (sha256)
+- ✅ Graph extraction produces valid DAG from source-lock
+- ✅ Topological sort computes correct layer ordering
+- ✅ Build driver respects layer dependencies
+- ✅ Evidence spine creates audit trail (status, events, receipt, summary)
+- ✅ Run IDs follow YYYYMMDD-HHMMSS-\<random\> format
+- ✅ Gator-Mini contracts define 5 report schemas (JSON Schema draft-07)
+- ✅ Agent playbooks cover 4 common failure scenarios
+- ✅ VS Code rb: tasks provide operator interface for all phases
+
 ---
 
 ## 10. Risk Management
@@ -1425,12 +1656,21 @@ fi
 
 ## 11. Future Enhancements (Post-v6.1)
 
-### 11.1 Completed in v6.1 (This Release)
+### 11.1 Completed in v6.2 (This Release)
 - ✅ **12-Step AI Pipeline**: Strict build order from NumPy to ONNX Runtime
 - ✅ **Zen 2 Safety Protocol**: AVX-512 blocking for Threadripper 3960X
 - ✅ **LPDDR5X/UMA Optimization**: Unified memory tuning for Strix Halo
 - ✅ **Expanded Component Matrix**: PyTorch 2.10.0 compatibility versions pinned
 - ✅ **Per-Component Smoke Tests**: All 12 pipeline steps validated
+- ✅ **Pass A Pipeline Infrastructure**: Mirror-first, DAG-driven, evidence-spined automation
+- ✅ **Policy Fence**: ROCm 7.2.0 hard gate (exit 78 on 6.x drift)
+- ✅ **Source Lock Generator**: Deterministic pinning from ROCm manifest
+- ✅ **Mirror-First Architecture**: Local git/blob mirrors before build
+- ✅ **Build Graph Extraction**: DAG with topological sort for layer ordering
+- ✅ **Evidence Spine**: Run manager producing audit trail per build
+- ✅ **Gator-Mini Contracts**: JSON Schema for 5 scanner reports (implementation deferred)
+- ✅ **Agent Playbooks**: AI orchestration with 4 failure scenario stories
+- ✅ **VS Code rb: Tasks**: 12 new tasks for Pass A pipeline operations
 
 ### 11.2 Planned for v6.2
 - **Multi-GPU Support**: Build for systems with multiple Strix Halo chips
@@ -1451,13 +1691,21 @@ fi
 ### 12.1 Glossary
 
 - **AVX-512**: Advanced Vector Extensions 512-bit, SIMD instruction set NOT supported on Zen 2
+- **DAG**: Directed Acyclic Graph, used for build dependency ordering
+- **Evidence Spine**: Audit trail produced by each build run (status, events, receipt, summary)
+- **Gator-Mini**: External scanner for contamination detection and SBOM generation (contracts defined, implementation deferred)
 - **gfx1151**: AMD GPU architecture identifier for Strix Halo
 - **HIPify**: Process of converting CUDA code to HIP (ROCm-compatible)
 - **LPDDR5X**: Low Power DDR5 Extended, high-bandwidth unified memory in Strix Halo
 - **MIOpen**: AMD's deep learning primitives library (ROCm equivalent of cuDNN)
 - **NAR**: Nix Archive, serialized package format for store paths
+- **Pass A**: Single-target build pass (gfx1151 only, ROCm 7.2.0 only)
+- **Policy Fence**: Hard-fail gate that rejects version drift (exit code 78 on violation)
 - **PSI**: Pressure Stall Information, Linux kernel memory pressure metrics
+- **Run ID**: Unique identifier for build runs (format: YYYYMMDD-HHMMSS-\<random\>)
 - **SBOM**: Software Bill of Materials, security inventory
+- **Source Lock**: Deterministic pinning of source repositories to specific commits
+- **Toposort**: Topological sort algorithm (Kahn's) for computing build layer order
 - **UMA**: Unified Memory Architecture, CPU and GPU share physical memory
 - **XNACK**: Memory page retry mechanism for unified memory architectures
 - **Zen 2**: AMD CPU microarchitecture (Threadripper 3960X), lacks AVX-512
@@ -1481,6 +1729,7 @@ fi
 - **v5.0**: Initial pure Nix implementation
 - **v6.0**: Added quad-layer isolation, llama.cpp, safety systems, Threadripper optimization
 - **v6.1**: 12-step AI pipeline, Zen 2 safety protocol (AVX-512 blocking), LPDDR5X/UMA optimization, PyTorch 2.10.0 compatibility matrix
+- **v6.2**: Pass A pipeline infrastructure (mirror-first, DAG-driven, evidence-spined), policy fence, Gator-Mini contracts, agent playbooks, VS Code rb: tasks
 
 ---
 

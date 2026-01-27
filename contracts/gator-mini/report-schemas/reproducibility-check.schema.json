@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "reproducibility-check.schema.json",
+  "title": "Reproducibility Check Report",
+  "description": "Double-build reproducibility comparison",
+  "type": "object",
+  "required": ["version", "check_timestamp", "result", "builds"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "check_timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "result": {
+      "type": "string",
+      "enum": ["reproducible", "non-reproducible", "partial"]
+    },
+    "builds": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["build_id", "output_hash", "timestamp"],
+        "properties": {
+          "build_id": { "type": "string" },
+          "output_hash": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "differences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["file", "reason"],
+        "properties": {
+          "file": { "type": "string" },
+          "reason": { "type": "string" },
+          "diff_type": {
+            "type": "string",
+            "enum": ["content", "timestamp", "permissions", "missing"]
+          }
+        }
+      }
+    },
+    "explained_nondeterminism": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "reason", "acceptable"],
+        "properties": {
+          "source": { "type": "string" },
+          "reason": { "type": "string" },
+          "acceptable": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

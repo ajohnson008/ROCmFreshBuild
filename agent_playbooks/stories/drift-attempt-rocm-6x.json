@@ -1,0 +1,104 @@
+{
+  "story_id": "drift-attempt-rocm-6x",
+  "title": "Policy Fence Rejects ROCm 6.x Version Drift",
+  "severity": "critical",
+  "phase": "policy-gate",
+  "trigger": {
+    "condition": "policy_violation",
+    "error_code": 78,
+    "violation_type": "forbidden_version",
+    "affected_tool": "policy_fence.py"
+  },
+  "symptoms": [
+    "policy_fence.py exits with code 78 (EX_CONFIG)",
+    "Output contains 'VIOLATION' and '6.' version reference",
+    "Pipeline halts at policy-gate phase"
+  ],
+  "diagnosis_steps": [
+    {
+      "step": 1,
+      "action": "read_output",
+      "target": "policy_fence.py stderr/stdout",
+      "look_for": "Specific violation details (file, line, pattern)"
+    },
+    {
+      "step": 2,
+      "action": "identify_source",
+      "check_files": [
+        "flake.nix - look for rocm version strings",
+        "pinned/rocm/*/source-lock.json - check release field",
+        "repos/*/CMakeLists.txt - look for ROCM_VERSION"
+      ]
+    },
+    {
+      "step": 3,
+      "action": "determine_intent",
+      "questions": [
+        "Was this an accidental edit?",
+        "Was this a merge conflict resolution?",
+        "Is there a reason to need 6.x?"
+      ]
+    }
+  ],
+  "resolution_options": [
+    {
+      "option": "A",
+      "condition": "Accidental edit in flake.nix",
+      "actions": [
+        "git diff flake.nix to see changes",
+        "git checkout flake.nix to revert",
+        "Re-run policy check"
+      ]
+    },
+    {
+      "option": "B",
+      "condition": "Wrong manifest pinned",
+      "actions": [
+        "Verify pinned/rocm/7.2.0/default.xml is correct",
+        "Check default.xml.sha256 matches expected",
+        "If corrupted, restore from known-good source"
+      ]
+    },
+    {
+      "option": "C",
+      "condition": "Upstream dependency requires 6.x",
+      "actions": [
+        "This is a HARD STOP - ROCm 6.x is forbidden",
+        "Document the dependency conflict",
+        "Escalate to human: 'Component X requires ROCm 6.x, incompatible with Pass A policy'",
+        "Do NOT proceed with build"
+      ]
+    },
+    {
+      "option": "D",
+      "condition": "Merge conflict brought in 6.x reference",
+      "actions": [
+        "Identify the conflicting branch/commit",
+        "Resolve conflict keeping 7.2.0 only",
+        "git add and amend commit",
+        "Re-run policy check"
+      ]
+    }
+  ],
+  "prohibited_actions": [
+    "DO NOT modify policy/rocm-policy.json to allow 6.x",
+    "DO NOT bypass policy_fence.py",
+    "DO NOT proceed with build if policy fails"
+  ],
+  "evidence_to_preserve": [
+    "policy_fence.py full output",
+    "git diff of affected files",
+    "Current content of files with violations"
+  ],
+  "escalation": {
+    "when": "Any 6.x dependency is genuinely required",
+    "to": "human operator",
+    "provide": [
+      "Component requiring 6.x",
+      "Reason for requirement",
+      "Impact on Pass A goals",
+      "Recommendation: skip component or defer to Pass B"
+    ],
+    "note": "Pass A is ROCm 7.2.0 ONLY. This is non-negotiable."
+  }
+}

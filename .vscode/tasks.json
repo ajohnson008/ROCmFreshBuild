@@ -2,6 +2,118 @@
   "version": "2.0.0",
   "tasks": [
     // ============================================================
+    // RB: PASS A PIPELINE TASKS
+    // ============================================================
+    {
+      "label": "rb: sync-mirrors",
+      "type": "shell",
+      "command": "python3 tools/mirror/sync_git_mirrors.py --lock pinned/rocm/7.2.0/source-lock.json --output mirrors/git --workers 4",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Sync all ROCm git mirrors with bounded parallelism",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "new",
+        "showReuseMessage": false
+      }
+    },
+    {
+      "label": "rb: sync-blobs",
+      "type": "shell",
+      "command": "python3 tools/mirror/sync_blobs.py --lock pinned/rocm/7.2.0/source-lock.json --output mirrors/blobs --workers 4",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Sync external blobs to content-addressed store"
+    },
+    {
+      "label": "rb: prefetch-flake-inputs",
+      "type": "shell",
+      "command": "python3 tools/prefetch/prefetch_flake_inputs.py --flake . --repo-root .",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Prefetch all flake inputs for offline builds"
+    },
+    {
+      "label": "rb: generate-lock",
+      "type": "shell",
+      "command": "python3 tools/lock/gen_source_lock.py --manifest pinned/rocm/7.2.0/default.xml --output pinned/rocm/7.2.0/source-lock.json --release 7.2.0",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Generate source-lock.json from manifest"
+    },
+    {
+      "label": "rb: generate-graph",
+      "type": "shell",
+      "command": "python3 tools/graph/extract_graph.py --source-lock pinned/rocm/7.2.0/source-lock.json --output graph/ --overrides graph/overrides.yaml && python3 tools/graph/toposort.py --graph graph/graph.json --output graph/order.json",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Extract build graph and generate order"
+    },
+    {
+      "label": "rb: policy-check",
+      "type": "shell",
+      "command": "python3 tools/policy/policy_fence.py --repo-root .",
+      "group": "test",
+      "problemMatcher": [],
+      "detail": "Run ROCm 7.2.0 policy fence check"
+    },
+    {
+      "label": "rb: build-rocm-core",
+      "type": "shell",
+      "command": "nix build .#rocm-core --print-build-logs",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Build ROCm 7.2.0 core stack"
+    },
+    {
+      "label": "rb: build-pytorch",
+      "type": "shell",
+      "command": "nix build .#pytorch-rocm --print-build-logs",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Build PyTorch with ROCm backend"
+    },
+    {
+      "label": "rb: build-stack",
+      "type": "shell",
+      "command": "nix build .#ai-stack --print-build-logs",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Build complete AI stack"
+    },
+    {
+      "label": "rb: emit-evidence-index",
+      "type": "shell",
+      "command": "python3 -c \"import json,os; run_id=sorted([d for d in os.listdir('runs') if os.path.isdir(f'runs/{d}')])[-1] if os.path.exists('runs') else 'none'; print(json.dumps({'latest_run': run_id, 'evidence_path': f'runs/{run_id}'}))\"",
+      "group": "none",
+      "problemMatcher": [],
+      "detail": "Emit compact evidence index for latest run"
+    },
+    {
+      "label": "rb: run",
+      "type": "shell",
+      "command": "python3 tools/build/build_driver.py --order graph/order.json --repo-root . --parallel 1",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Pass A orchestrator - full build sequence",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "dedicated",
+        "showReuseMessage": false
+      },
+      "dependsOn": ["rb: policy-check"]
+    },
+    {
+      "label": "rb: test-policy",
+      "type": "shell",
+      "command": "python3 -m pytest tools/policy/test_policy_fence.py -v",
+      "group": "test",
+      "problemMatcher": [],
+      "detail": "Run policy fence unit tests"
+    },
+    // ============================================================
     // STAGE BUILD TASKS
     // ============================================================
     {

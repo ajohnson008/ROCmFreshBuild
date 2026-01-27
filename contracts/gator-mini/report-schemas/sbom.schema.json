@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "sbom.schema.json",
+  "title": "SBOM Report",
+  "description": "Software Bill of Materials report metadata",
+  "type": "object",
+  "required": ["version", "format", "spec_version", "created", "packages_count"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "format": {
+      "type": "string",
+      "enum": ["spdx", "cyclonedx"]
+    },
+    "spec_version": {
+      "type": "string",
+      "description": "SPDX 2.3 or CycloneDX 1.4"
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "packages_count": {
+      "type": "integer"
+    },
+    "relationships_count": {
+      "type": "integer"
+    },
+    "sbom_file": {
+      "type": "string",
+      "description": "Path to full SBOM file"
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "total_packages": { "type": "integer" },
+        "by_type": {
+          "type": "object",
+          "additionalProperties": { "type": "integer" }
+        }
+      }
+    }
+  }
+}

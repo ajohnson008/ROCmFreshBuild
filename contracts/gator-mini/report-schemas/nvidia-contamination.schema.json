@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "nvidia-contamination.schema.json",
+  "title": "NVIDIA Contamination Report",
+  "description": "Report of NVIDIA/CUDA contamination scan",
+  "type": "object",
+  "required": ["version", "scan_timestamp", "target_path", "result", "checks"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "scan_timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "target_path": {
+      "type": "string",
+      "description": "Path or store reference scanned"
+    },
+    "result": {
+      "type": "string",
+      "enum": ["clean", "contaminated"]
+    },
+    "checks": {
+      "type": "object",
+      "required": ["dt_needed", "symbols", "strings", "closure"],
+      "properties": {
+        "dt_needed": {
+          "$ref": "#/definitions/check_result"
+        },
+        "symbols": {
+          "$ref": "#/definitions/check_result"
+        },
+        "strings": {
+          "$ref": "#/definitions/check_result"
+        },
+        "closure": {
+          "$ref": "#/definitions/check_result"
+        }
+      }
+    },
+    "offenders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["file", "check", "match"],
+        "properties": {
+          "file": { "type": "string" },
+          "check": { "type": "string" },
+          "match": { "type": "string" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "check_result": {
+      "type": "object",
+      "required": ["passed", "scanned_count"],
+      "properties": {
+        "passed": { "type": "boolean" },
+        "scanned_count": { "type": "integer" },
+        "match_count": { "type": "integer" }
+      }
+    }
+  }
+}

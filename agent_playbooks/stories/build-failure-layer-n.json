@@ -1,0 +1,154 @@
+{
+  "story_id": "build-failure-layer-n",
+  "title": "Build Fails at Layer N During Pass A Execution",
+  "severity": "high",
+  "phase": "build-pass-a",
+  "trigger": {
+    "condition": "nix_build_failure",
+    "indicators": [
+      "build_driver.py reports layer N failed",
+      "nix build exits non-zero",
+      "runs/<run-id>/status.json shows failed packages"
+    ],
+    "affected_tool": "build_driver.py"
+  },
+  "symptoms": [
+    "Build halts with error message",
+    "runs/<run-id>/events.jsonl shows BUILD_FAILED event",
+    "Nix build log contains compiler errors or missing dependencies"
+  ],
+  "diagnosis_steps": [
+    {
+      "step": 1,
+      "action": "read_status",
+      "target": "runs/<run-id>/status.json",
+      "look_for": [
+        "Which package failed",
+        "Which layer it was in",
+        "What packages succeeded before it"
+      ]
+    },
+    {
+      "step": 2,
+      "action": "read_events",
+      "target": "runs/<run-id>/events.jsonl",
+      "look_for": [
+        "BUILD_STARTED event for failed package",
+        "BUILD_FAILED event with error details",
+        "Timestamp to find relevant nix logs"
+      ]
+    },
+    {
+      "step": 3,
+      "action": "examine_nix_log",
+      "method": "nix log .#<failed-package>",
+      "look_for": [
+        "Compiler errors",
+        "Missing headers/libraries",
+        "Configuration failures",
+        "Hash mismatches"
+      ]
+    },
+    {
+      "step": 4,
+      "action": "categorize_failure",
+      "categories": [
+        "compile_error - Code doesn't compile",
+        "missing_dep - Runtime/build dependency not found",
+        "hash_mismatch - Source hash doesn't match",
+        "config_error - CMake/configure fails",
+        "resource_exhaustion - OOM or disk full"
+      ]
+    }
+  ],
+  "resolution_by_category": {
+    "compile_error": {
+      "actions": [
+        "Read the specific error from nix log",
+        "Check if this is a known issue in upstream",
+        "Look for patches in repos/<component>/patches/",
+        "If new issue, may need to add patch to flake.nix"
+      ],
+      "agent_capability": "limited - may need human for complex fixes"
+    },
+    "missing_dep": {
+      "actions": [
+        "Identify the missing library/header",
+        "Check if it's in the build inputs in flake.nix",
+        "If missing, add to buildInputs or propagatedBuildInputs",
+        "Re-run build"
+      ],
+      "agent_capability": "medium - can suggest fix"
+    },
+    "hash_mismatch": {
+      "actions": [
+        "Source file changed upstream",
+        "Run: nix-prefetch-url <source-url>",
+        "Update sha256 in flake.nix or source-lock.json",
+        "Re-run build"
+      ],
+      "agent_capability": "high - straightforward fix"
+    },
+    "config_error": {
+      "actions": [
+        "Read CMake/configure error",
+        "Check cmakeFlags in flake.nix",
+        "Verify all required dependencies present",
+        "May need to adjust configuration options"
+      ],
+      "agent_capability": "medium"
+    },
+    "resource_exhaustion": {
+      "actions": [
+        "Check available disk: df -h",
+        "Check memory: free -h",
+        "If OOM: reduce parallelism in NIX_BUILD_CORES",
+        "If disk: clean nix store with nix-collect-garbage",
+        "Re-run build"
+      ],
+      "agent_capability": "high - operational fix"
+    }
+  },
+  "checkpoint_and_resume": {
+    "checkpoint_created": "runs/<run-id>/checkpoint.json",
+    "contains": [
+      "completed_layers: list of finished layers",
+      "failed_package: which package failed",
+      "layer_state: state of current layer"
+    ],
+    "to_resume": [
+      "Fix the underlying issue",
+      "Run: python3 tools/build/build_driver.py --order graph/order.json --repo-root . --resume runs/<run-id>/checkpoint.json"
+    ]
+  },
+  "evidence_to_preserve": [
+    "runs/<run-id>/status.json",
+    "runs/<run-id>/events.jsonl",
+    "nix log output for failed package",
+    "System resource state (df, free)"
+  ],
+  "rollback_option": {
+    "when": "Build corruption suspected",
+    "actions": [
+      "Identify last successful git commit",
+      "git checkout <commit>",
+      "nix-collect-garbage -d",
+      "Re-run from mirror-sync phase"
+    ]
+  },
+  "escalation": {
+    "when": [
+      "Compile error requires code changes",
+      "Issue not in known patterns",
+      "3 retry attempts exhausted"
+    ],
+    "to": "human operator",
+    "provide": [
+      "Failed package name and layer",
+      "Error category",
+      "Nix log excerpt (last 100 lines)",
+      "What was attempted",
+      "Proposed fix (if any)"
+    ]
+  }
+}

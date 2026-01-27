@@ -1,0 +1,47 @@
+{
+  "policy_version": "1.0.0",
+  "policy_name": "rocm-7.2.0-only",
+  "description": "Hard policy fence: ROCm 7.2.0 is the only allowed release",
+  "rocm": {
+    "allowed_release": "7.2.0",
+    "forbidden_releases": ["6.0", "6.1", "6.2", "6.3", "7.0", "7.1", "latest", "develop", "master"],
+    "forbidden_patterns": [
+      "rocm-6\\.",
+      "rocm-[0-5]\\.",
+      "/6\\.[0-9]+/",
+      "refs/heads/develop",
+      "refs/heads/master",
+      "refs/heads/main"
+    ]
+  },
+  "gpu_targets": {
+    "pass_a": {
+      "allowed": ["gfx1151"],
+      "description": "AMD Strix Halo (Ryzen AI Max)"
+    },
+    "pass_b": {
+      "enabled": false,
+      "note": "Pass B deferred to NexusJr"
+    }
+  },
+  "source_requirements": {
+    "commit_sha_required": true,
+    "floating_refs_forbidden": true,
+    "tag_refs_forbidden": false,
+    "sha_length": 40
+  },
+  "manifest_requirements": {
+    "required_file": "pinned/rocm/7.2.0/default.xml",
+    "hash_file": "pinned/rocm/7.2.0/default.xml.sha256",
+    "lock_file": "pinned/rocm/7.2.0/source-lock.json"
+  },
+  "network_policy": {
+    "allowed_phases": ["mirror-sync", "flake-prefetch"],
+    "forbidden_phases": ["build", "test", "package"]
+  },
+  "enforcement": {
+    "fail_on_violation": true,
+    "exit_code_on_violation": 78,
+    "log_violations": true
+  }
+}

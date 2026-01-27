@@ -1,0 +1,125 @@
+{
+  "story_id": "graph-incomplete",
+  "title": "Build Graph Has Missing Edges or Unknown Nodes",
+  "severity": "medium",
+  "phase": "graph-extraction",
+  "trigger": {
+    "condition": "graph_validation_warning",
+    "indicators": [
+      "Nodes with zero incoming edges (unexpected roots)",
+      "Referenced dependencies not in node list",
+      "Cycle detected in DAG"
+    ],
+    "affected_tool": "extract_graph.py"
+  },
+  "symptoms": [
+    "extract_graph.py emits warnings about unknown dependencies",
+    "graph/graph.json has nodes with empty 'depends_on' that should have deps",
+    "toposort.py fails with cycle detection error",
+    "Build order seems incorrect (low-level deps after high-level)"
+  ],
+  "diagnosis_steps": [
+    {
+      "step": 1,
+      "action": "review_graph",
+      "target": "graph/graph.json",
+      "look_for": [
+        "Nodes with depends_on=[] that shouldn't be roots",
+        "Missing nodes that are referenced elsewhere"
+      ]
+    },
+    {
+      "step": 2,
+      "action": "check_overrides",
+      "target": "graph/overrides.yaml",
+      "look_for": [
+        "Incorrectly added edges",
+        "Incorrectly removed edges",
+        "Typos in node names"
+      ]
+    },
+    {
+      "step": 3,
+      "action": "inspect_source",
+      "targets": [
+        "repos/<component>/CMakeLists.txt",
+        "repos/<component>/requirements.txt",
+        "repos/<component>/setup.py"
+      ],
+      "look_for": "Actual dependencies declared"
+    },
+    {
+      "step": 4,
+      "action": "compare_with_known",
+      "reference": "Static dependency map in extract_graph.py",
+      "question": "Is this a new component not in the static map?"
+    }
+  ],
+  "resolution_options": [
+    {
+      "option": "A",
+      "condition": "Missing edge in static knowledge",
+      "actions": [
+        "Add edge to graph/overrides.yaml:",
+        "  add_edges:",
+        "    - from: <dependency>",
+        "      to: <dependent>",
+        "Re-run extract_graph.py and toposort.py"
+      ]
+    },
+    {
+      "option": "B",
+      "condition": "Spurious edge causing cycle",
+      "actions": [
+        "Identify the cycle path from toposort.py error",
+        "Determine which edge is incorrect",
+        "Add to graph/overrides.yaml:",
+        "  remove_edges:",
+        "    - from: <source>",
+        "      to: <target>",
+        "Re-run toposort.py"
+      ]
+    },
+    {
+      "option": "C",
+      "condition": "New component not in source-lock",
+      "actions": [
+        "Verify component should be in ROCm 7.2.0",
+        "If yes, check pinned/rocm/7.2.0/default.xml",
+        "If missing from manifest, this is a manifest issue",
+        "Add to source-lock.json manually if needed"
+      ]
+    },
+    {
+      "option": "D",
+      "condition": "Component renamed or reorganized",
+      "actions": [
+        "Add alias to graph/overrides.yaml:",
+        "  aliases:",
+        "    old_name: new_name",
+        "Re-run graph extraction"
+      ]
+    }
+  ],
+  "evidence_to_preserve": [
+    "graph/graph.json (before fix)",
+    "toposort.py error output",
+    "Relevant CMakeLists.txt sections"
+  ],
+  "testing_after_fix": [
+    "Run: python3 tools/graph/toposort.py --graph graph/graph.json --output graph/order.json",
+    "Verify: no cycles detected",
+    "Verify: order.json has sensible layer groupings",
+    "Sanity check: llvm-project should be in early layers, pytorch in late layers"
+  ],
+  "escalation": {
+    "when": "Cannot determine correct dependency relationship",
+    "to": "human operator",
+    "provide": [
+      "Affected components",
+      "Current graph state",
+      "What we know about their relationship",
+      "Proposed fix (if any)"
+    ]
+  }
+}

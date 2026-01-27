@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0",
+  "description": "Expected reports from Gator-Mini scanner",
+  "reports": [
+    {
+      "name": "nvidia-contamination.json",
+      "schema": "nvidia-contamination.schema.json",
+      "required": true,
+      "description": "NVIDIA/CUDA contamination scan results"
+    },
+    {
+      "name": "sbom.spdx.json",
+      "schema": "sbom.schema.json",
+      "required": true,
+      "description": "Software Bill of Materials in SPDX 2.3 format"
+    },
+    {
+      "name": "vulnerability-analysis.json",
+      "schema": "vulnerability-analysis.schema.json",
+      "required": true,
+      "description": "CVE analysis of all dependencies"
+    },
+    {
+      "name": "reproducibility-check.json",
+      "schema": "reproducibility-check.schema.json",
+      "required": false,
+      "description": "Double-build reproducibility comparison"
+    },
+    {
+      "name": "integrity-check.json",
+      "schema": "integrity-check.schema.json",
+      "required": true,
+      "description": "Hash verification of all sources"
+    }
+  ],
+  "report_directory": "runs/<run-id>/reports/",
+  "gator_mini_version": "0.1.0"
+}

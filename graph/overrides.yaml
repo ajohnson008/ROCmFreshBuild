@@ -1,0 +1,38 @@
+# Graph Overrides - Manual edge corrections
+#
+# Use this file to add or remove edges when automatic extraction
+# is incomplete or incorrect.
+#
+# All overrides MUST include a reason for traceability.
+# Overrides are hashed and included in build receipts.
+
+version: "1.0.0"
+description: "ROCm 7.2.0 Pass A graph overrides for gfx1151"
+
+# Add edges that automatic extraction missed
+add_edges:
+  # Example: MIOpen needs composable_kernel headers
+  - from: MIOpen
+    to: composable_kernel
+    reason: "MIOpen uses CK tensor operations"
+    class: headers
+    
+  # vLLM needs flash-attention kernels
+  - from: vllm
+    to: flash-attention
+    reason: "vLLM PagedAttention uses FlashAttention kernels"
+    class: link
+
+# Remove edges that are incorrect or optional
+remove_edges: []
+
+# Serial constraints (beyond what toposort derives)
+serial_constraints:
+  # Large memory builds should not overlap
+  - before: rocBLAS
+    after: pytorch
+    reason: "rocBLAS and PyTorch both use >20GB RAM during build"
+    
+  - before: pytorch
+    after: vllm
+    reason: "vLLM build imports PyTorch"

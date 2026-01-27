@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ROCm 7.2.0 Release Manifest
+  
+  This is the archived manifest for ROCm 7.2.0 release.
+  Source: https://github.com/ROCm/ROCm/blob/rocm-7.2.0/default.xml
+  
+  DO NOT MODIFY - This file is archived for reproducibility.
+  Any changes must go through the manifest update process with
+  full hash verification.
+-->
+<manifest>
+  <remote name="rocm" fetch="https://github.com/ROCm"/>
+  <remote name="radeon" fetch="https://github.com/RadeonOpenCompute"/>
+  
+  <default revision="rocm-7.2.0" remote="rocm" sync-j="4"/>
+  
+  <!-- Core ROCm Components -->
+  <project name="ROCm/rocm-cmake" path="rocm-cmake" revision="rocm-7.2.0"/>
+  <project name="ROCm/ROCR-Runtime" path="ROCR-Runtime" revision="rocm-7.2.0"/>
+  <project name="ROCm/clr" path="clr" revision="rocm-7.2.0"/>
+  <project name="ROCm/HIP" path="HIP" revision="rocm-7.2.0"/>
+  <project name="ROCm/HIPIFY" path="HIPIFY" revision="rocm-7.2.0"/>
+  <project name="ROCm/ROCdbgapi" path="ROCdbgapi" revision="rocm-7.2.0"/>
+  <project name="ROCm/rocr_debug_agent" path="rocr_debug_agent" revision="rocm-7.2.0"/>
+  <project name="ROCm/roctracer" path="roctracer" revision="rocm-7.2.0"/>
+  <project name="ROCm/rocprofiler-register" path="rocprofiler-register" revision="rocm-7.2.0"/>
+  <project name="ROCm/rocprofiler-sdk" path="rocprofiler-sdk" revision="rocm-7.2.0"/>
+  <project name="ROCm/rocm_smi_lib" path="rocm_smi_lib" revision="rocm-7.2.0"/>
+  <project name="ROCm/amdsmi" path="amdsmi" revision="rocm-7.2.0"/>
+  <project name="ROCm/rocminfo" path="rocminfo" revision="rocm-7.2.0"/>
+  <project name="ROCm/ROCT-Thunk-Interface" path="ROCT-Thunk-Interface" revision="rocm-7.2.0"/>
+  
+  <!-- LLVM/Clang Compiler -->
+  <project name="ROCm/llvm-project" path="llvm-project" revision="rocm-7.2.0"/>
+  <project name="ROCm/ROCm-Device-Libs" path="ROCm-Device-Libs" revision="rocm-7.2.0"/>
+  <project name="ROCm/ROCm-CompilerSupport" path="ROCm-CompilerSupport" revision="rocm-7.2.0"/>
+  <project name="ROCm/flang" path="flang" revision="rocm-7.2.0"/>
+  
+  <!-- Math Libraries -->
+  <project name="ROCm/rocBLAS" path="rocBLAS" revision="rocm-7.2.0"/>
+  <project name="ROCm/hipBLAS" path="hipBLAS" revision="rocm-7.2.0"/>
+  <project name="ROCm/hipBLASLt" path="hipBLASLt" revision="rocm-7.2.0"/>
+  <project name="ROCm/rocSOLVER" path="rocSOLVER" revision="rocm-7.2.0"/>
+  <project name="ROCm/hipSOLVER" path="hipSOLVER" revision="rocm-7.2.0"/>
+  <project name="ROCm/rocSPARSE" path="rocSPARSE" revision="rocm-7.2.0"/>
+  <project name="ROCm/hipSPARSE" path="hipSPARSE" revision="rocm-7.2.0"/>
+  <project name="ROCm/hipSPARSELt" path="hipSPARSELt" revision="rocm-7.2.0"/>
+  <project name="ROCm/rocFFT" path="rocFFT" revision="rocm-7.2.0"/>
+  <project name="ROCm/hipFFT" path="hipFFT" revision="rocm-7.2.0"/>
+  <project name="ROCm/rocRAND" path="rocRAND" revision="rocm-7.2.0"/>
+  <project name="ROCm/hipRAND" path="hipRAND" revision="rocm-7.2.0"/>
+  <project name="ROCm/rocALUTION" path="rocALUTION" revision="rocm-7.2.0"/>
+  <project name="ROCm/rocPRIM" path="rocPRIM" revision="rocm-7.2.0"/>
+  <project name="ROCm/hipCUB" path="hipCUB" revision="rocm-7.2.0"/>
+  <project name="ROCm/rocThrust" path="rocThrust" revision="rocm-7.2.0"/>
+  <project name="ROCm/hipTensor" path="hipTensor" revision="rocm-7.2.0"/>
+  
+  <!-- Communication Libraries -->
+  <project name="ROCm/rccl" path="rccl" revision="rocm-7.2.0"/>
+  
+  <!-- ML/DL Libraries -->
+  <project name="ROCm/MIOpen" path="MIOpen" revision="rocm-7.2.0"/>
+  <project name="ROCm/composable_kernel" path="composable_kernel" revision="rocm-7.2.0"/>
+  <project name="ROCm/MIVisionX" path="MIVisionX" revision="rocm-7.2.0"/>
+  <project name="ROCm/AMDMIGraphX" path="AMDMIGraphX" revision="rocm-7.2.0"/>
+  <project name="ROCm/MIGraphX" path="MIGraphX" revision="rocm-7.2.0"/>
+  
+  <!-- System Components -->
+  <project name="ROCm/rocm-systems" path="rocm-systems" revision="rocm-7.2.0"/>
+  <project name="RadeonOpenCompute/ROCK-Kernel-Driver" path="ROCK-Kernel-Driver" revision="rocm-7.2.0" remote="radeon"/>
+  
+  <!-- OpenCL Runtime (optional) -->
+  <project name="ROCm/ROCm-OpenCL-Runtime" path="ROCm-OpenCL-Runtime" revision="rocm-7.2.0"/>
+  
+</manifest>
