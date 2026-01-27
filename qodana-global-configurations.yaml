@@ -1,0 +1,44 @@
+# Qodana Global Configurations
+# This file contains global configuration for Qodana code quality analysis
+
+version: "1.0"
+
+# Global configuration for all projects
+global:
+  # Exclude patterns
+  exclude:
+    - "**/node_modules/**"
+    - "**/build/**"
+    - "**/dist/**"
+    - "**/.git/**"
+    - "**/__pycache__/**"
+    - "**/*.pyc"
+    - "**/result/**"
+    - "**/mirrors/**"
+    - "**/pinned/**"
+    - "**/runs/**"
+    - "**/repos/**"
+
+  # Include patterns (if needed)
+  include:
+    - "**/*.py"
+    - "**/*.sh"
+    - "**/*.nix"
+    - "**/*.md"
+
+# Project-specific configurations
+projects:
+  - name: "TheRockBuilder"
+    path: "."
+    profile:
+      name: "Default"
+      path: ".qodana/default.yaml"
+
+# Inspection profiles
+profiles:
+  - name: "Python"
+    path: ".qodana/python.yaml"
+  - name: "Shell"
+    path: ".qodana/shell.yaml"
+  - name: "Nix"
+    path: ".qodana/nix.yaml"

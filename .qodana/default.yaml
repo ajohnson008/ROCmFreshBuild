@@ -1,0 +1,29 @@
+# Default Qodana Profile
+# General code quality inspections
+
+inspections:
+  # Python inspections
+  - name: "Python"
+    enabled: true
+    severity: "WARNING"
+
+  # Shell script inspections
+  - name: "ShellCheck"
+    enabled: true
+    severity: "WARNING"
+
+  # General code quality
+  - name: "CodeSmell"
+    enabled: true
+    severity: "INFO"
+
+  # Security issues
+  - name: "Security"
+    enabled: true
+    severity: "ERROR"
+
+# Exclude patterns for this profile
+exclude:
+  - "**/test/**"
+  - "**/*_test.py"
+  - "**/conftest.py"

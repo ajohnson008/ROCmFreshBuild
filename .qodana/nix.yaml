@@ -1,0 +1,32 @@
+# Nix Language Qodana Profile
+
+inspections:
+  # Nix language syntax and style
+  - name: "NixSyntax"
+    enabled: true
+    severity: "ERROR"
+
+  # Nix best practices
+  - name: "NixBestPractices"
+    enabled: true
+    severity: "WARNING"
+
+  # Package management issues
+  - name: "NixPackageIssues"
+    enabled: true
+    severity: "WARNING"
+
+  # Security vulnerabilities
+  - name: "NixSecurity"
+    enabled: true
+    severity: "ERROR"
+
+  # Performance issues
+  - name: "NixPerformance"
+    enabled: true
+    severity: "INFO"
+
+# Nix-specific exclude patterns
+exclude:
+  - "**/flake.lock"
+  - "**/result/**"

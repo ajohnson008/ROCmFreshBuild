@@ -1,0 +1,39 @@
+# Python-specific Qodana Profile
+
+inspections:
+  # PEP 8 style guide
+  - name: "PEP8"
+    enabled: true
+    severity: "WARNING"
+
+  # Type checking
+  - name: "TypeChecker"
+    enabled: true
+    severity: "WARNING"
+
+  # Import issues
+  - name: "UnresolvedImport"
+    enabled: true
+    severity: "ERROR"
+
+  - name: "UnusedImport"
+    enabled: true
+    severity: "WARNING"
+
+  # Code complexity
+  - name: "CyclomaticComplexity"
+    enabled: true
+    severity: "INFO"
+    parameters:
+      maxComplexity: 10
+
+  # Security vulnerabilities
+  - name: "PythonSecurity"
+    enabled: true
+    severity: "ERROR"
+
+# Python-specific exclude patterns
+exclude:
+  - "**/migrations/**"
+  - "**/settings.py"  # Often has many warnings
+  - "**/manage.py"

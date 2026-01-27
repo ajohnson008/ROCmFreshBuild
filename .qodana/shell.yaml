@@ -1,0 +1,32 @@
+# Shell Script Qodana Profile
+
+inspections:
+  # ShellCheck integration
+  - name: "ShellCheck"
+    enabled: true
+    severity: "WARNING"
+
+  # Shell script best practices
+  - name: "ShellBestPractices"
+    enabled: true
+    severity: "WARNING"
+
+  # Error handling
+  - name: "ShellErrorHandling"
+    enabled: true
+    severity: "ERROR"
+
+  # Security issues
+  - name: "ShellSecurity"
+    enabled: true
+    severity: "ERROR"
+
+  # Code style
+  - name: "ShellStyle"
+    enabled: true
+    severity: "INFO"
+
+# Shell-specific exclude patterns
+exclude:
+  - "**/*.env"
+  - "**/scripts/generated/**"
