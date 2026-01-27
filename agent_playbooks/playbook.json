@@ -16,7 +16,7 @@
       "name": "Policy Fence Gate",
       "order": 0,
       "network_allowed": false,
-      "tool": "tools/rb",
+      "tool": "./rb",
       "args": [
         "policy",
         "verify",
@@ -36,8 +36,8 @@
       "network_allowed": true,
       "tools": [
         {
-          "name": "rb sync-mirrors",
-          "path": "tools/rb",
+          "name": "./rb sync-mirrors",
+          "path": "./rb",
           "args": [
             "sync-mirrors"
           ]
@@ -55,7 +55,7 @@
       "name": "Flake Input Prefetch",
       "order": 2,
       "network_allowed": true,
-      "tool": "tools/rb",
+      "tool": "./rb",
       "args": [
         "prefetch-flake-inputs"
       ],
@@ -70,7 +70,7 @@
       "name": "Offline Proof Gate",
       "order": 3,
       "network_allowed": false,
-      "tool": "tools/rb",
+      "tool": "./rb",
       "args": [
         "offline-proof",
         "--scope",

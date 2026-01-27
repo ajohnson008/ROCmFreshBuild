@@ -3,7 +3,7 @@
 Command
 
 ```bash
-python tools/rb sync-mirrors --run-id $RUN_ID
+./rb sync-mirrors --run-id $RUN_ID
 ```
 
 (Or run components directly)
@@ -26,7 +26,7 @@ Success Criteria
 Failure Actions
 
 - Retry (playbook uses RETRY_3).
-- If repo missing, re-run `rb sync-mirrors`; do NOT fetch upstream during offline runs.
+- If repo missing, re-run `./rb sync-mirrors`; do NOT fetch upstream during offline runs.
 - Check `agent_playbooks/stories/mirror-missing-repo.json` for remediation steps.
 
 Quick commands

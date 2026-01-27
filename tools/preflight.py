@@ -188,19 +188,26 @@ def run_preflight(
         for rel in required_files:
             if not (repo_root / rel).exists():
                 missing.append(rel)
-    if missing:
-        add_check(
-            "required_files",
-            "FAIL",
-            "Missing required repo files",
-            {"missing": missing},
-        )
+        if missing:
+            add_check(
+                "required_files",
+                "FAIL",
+                "Missing required repo files",
+                {"missing": missing},
+            )
+        else:
+            add_check(
+                "required_files",
+                "PASS",
+                "Required repo files present",
+                {"files": required_files},
+            )
     else:
         add_check(
             "required_files",
-            "PASS",
-            "Required repo files present",
-            {"files": required_files},
+            "FAIL",
+            "Repo root not found; cannot verify required files",
+            {"missing": required_files},
         )
 
     nix_path = shutil.which("nix")

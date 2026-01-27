@@ -13,25 +13,25 @@ echo $RUN_ID
 - Policy check (must pass):
 
 ```bash
-python tools/rb policy verify --strict --run-id $RUN_ID
+./rb policy verify --strict --run-id $RUN_ID
 ```
 
 - Mirror sync (git + blobs):
 
 ```bash
-python tools/rb sync-mirrors --run-id $RUN_ID
+./rb sync-mirrors --run-id $RUN_ID
 ```
 
 - Prefetch flake inputs:
 
 ```bash
-python tools/rb prefetch-flake-inputs --run-id $RUN_ID
+./rb prefetch-flake-inputs --run-id $RUN_ID
 ```
 
 - Offline proof (no network):
 
 ```bash
-python tools/rb offline-proof --run-id $RUN_ID --scope all
+./rb offline-proof --run-id $RUN_ID --scope all
 ```
 
 - Generate source lock:
@@ -79,7 +79,7 @@ python tools/build/build_driver.py --order graph/order.json --repo-root . --resu
 - Network phases (mirror, prefetch): **RETRY_3** with backoff; inspect mirrors indices for failures.
 - Build failures: **CHECKPOINT**. Preserve `runs/$RUN_ID/checkpoint.json` then diagnose:
   - Hash mismatch: run `nix-prefetch-url <URL>`, update hash, re-run
-  - Missing mirror: `rb sync-mirrors` (do not fetch from upstream in offline run)
+  - Missing mirror: `./rb sync-mirrors` (do not fetch from upstream in offline run)
   - OOM / resource: reduce `--parallel`, check `free -h` and `df -h`
   - Config/compile: run `nix log .#<failed-package>` and capture last 200 lines
 

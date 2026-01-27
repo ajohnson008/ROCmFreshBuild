@@ -3,7 +3,7 @@
 Command
 
 ```bash
-python tools/rb prefetch-flake-inputs --run-id $RUN_ID
+./rb prefetch-flake-inputs --run-id $RUN_ID
 ```
 
 Evidence

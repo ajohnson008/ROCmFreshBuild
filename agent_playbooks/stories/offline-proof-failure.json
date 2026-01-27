@@ -5,10 +5,10 @@
     "phase": "offline-proof",
     "trigger": {
         "condition": "proof_gate_failure",
-        "affected_tool": "tools/rb offline-proof"
+        "affected_tool": "./rb offline-proof"
     },
     "symptoms": [
-        "rb offline-proof command exits with non-zero",
+        "./rb offline-proof command exits with non-zero",
         "Report shows status: failed"
     ],
     "diagnosis_steps": [

@@ -7,7 +7,7 @@ Enforce Nexus State:
 Execute: bash scripts/jules/enforce_nexus_state.sh
 Goal: Verify repository hygiene and audit AGENTS.md vs. filesystem reality using audit_omnibook.py.
 Policy Gate:
-Execute: python3.11 tools/rb policy verify --strict
+Execute: ./rb policy verify --strict
 Goal: Confirm pinned/rocm/7.2.0/default.xml does not contain forbidden 6.x versions or drift.
 Evidence: reports/policy-report.json.
 Phase 2: Source Harvesting & Hash Verification
@@ -16,10 +16,10 @@ Execute: python3.11 verify_sources.py
 Goal: Concurrently prefetch and verify SHA256 hashes for all components defined in the ROCm 7.2.0 manifest.
 Evidence: verified_sources.json.
 Mirror Synchronization:
-Execute: python3.11 tools/rb sync-mirrors
+Execute: ./rb sync-mirrors
 Goal: Ensure all git repositories and binary blobs are downloaded to the local mirrors/ directory.
 Flake Input Prefetch:
-Execute: python3.11 tools/rb prefetch-flake-inputs
+Execute: ./rb prefetch-flake-inputs
 Goal: Recursively fetch and cache all Nix flake inputs to ensure zero network usage during eval.
 Phase 3: Locking & Offline Proof
 Source Lock Generation:

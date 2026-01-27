@@ -26,7 +26,7 @@
       "condition": "Repo missing from mirror",
       "actions": [
         "Do NOT fetch from upstream during build",
-        "Run 'rb sync-mirrors' to populate missing repo",
+        "Run './rb sync-mirrors' to populate missing repo",
         "Verify source-lock.json includes the repo"
       ]
     }

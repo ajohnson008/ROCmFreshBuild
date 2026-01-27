@@ -3,7 +3,7 @@
 Command
 
 ```bash
-python tools/rb policy verify --strict --run-id $RUN_ID
+./rb policy verify --strict --run-id $RUN_ID
 ```
 
 Evidence

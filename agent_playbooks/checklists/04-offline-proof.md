@@ -3,7 +3,7 @@
 Command
 
 ```bash
-python tools/rb offline-proof --run-id $RUN_ID --scope all
+./rb offline-proof --run-id $RUN_ID --scope all
 ```
 
 Evidence

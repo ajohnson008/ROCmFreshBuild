@@ -46,18 +46,29 @@ jobs:
           print('Documentation pointers valid')
           PY
 
+      - name: Preflight (fast gate)
+        run: |
+          set -e
+          ./rb preflight --no-preflight || [ $? -eq 3 ]
+
+      - name: Acceptance tests
+        run: |
+          scripts/tests/check_entrypoint_refs.sh
+          scripts/tests/test_preflight_json.sh
+          scripts/tests/test_preflight_missing_file.sh
+
       - name: Create RUN_ID
         run: echo "RUN_ID=ci-$(date +%Y%m%d-%H%M%S)-$GITHUB_RUN_ID" >> $GITHUB_ENV
 
       - name: Policy verify (dry-run)
-        run: python tools/rb policy verify --strict --run-id $RUN_ID
+        run: ./rb policy verify --strict --run-id $RUN_ID
 
       - name: Offline proof (dry-run, non-fatal)
         continue-on-error: true
         run: |
           set -e
           echo "Running offline-proof (non-fatal)"
-          python tools/rb offline-proof --run-id $RUN_ID --scope graph || echo "offline-proof failed (allowed in CI)" 
+          ./rb offline-proof --run-id $RUN_ID --scope graph || echo "offline-proof failed (allowed in CI)" 
 
       - name: Upload run artifacts (if any)
         if: always()
