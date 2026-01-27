@@ -51,7 +51,10 @@ def cmd_prep(args):
     run_command(["python3.11", "tools/offline_proof.py", run_id])
 
     # Generate locks
-    run_command(["python3.11", "tools/lock/gen_source_lock.py"])
+    run_command(["python3.11", "tools/lock/gen_source_lock.py",
+                "--manifest", "pinned/rocm/7.2.0/default.xml",
+                "--output", "pinned/rocm/7.2.0/source-lock.json",
+                "--run-id", run_id])
 
     print("=== Prep Pipeline Complete ===")
 
@@ -61,12 +64,14 @@ def cmd_build(args):
     print("=== Running Build Pipeline ===")
     
     run_id = args.run_id if hasattr(args, 'run_id') and args.run_id else f"run-{int(time.time())}"
+    target = os.environ.get("ROCM_BUILD_TARGET", "gfx110x")
 
     # Use the build driver
     run_command(["python3.11", "tools/build/build_driver.py",
                 "--order", "graph/order.json",
                 "--repo-root", ".",
-                "--run-id", run_id])
+                "--run-id", run_id,
+                "--target", target])
 
     print("=== Build Pipeline Complete ===")
 

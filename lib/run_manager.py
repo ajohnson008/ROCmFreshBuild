@@ -112,8 +112,26 @@ class RunManager:
         
         if self.run_id:
             self.run_dir = self.runs_dir / self.run_id
+            self._ensure_run_dir()
             self._load_status()
+            if self.status is None:
+                # Initialize status if it doesn't exist
+                self.started_at = datetime.now(timezone.utc).isoformat()
+                self.status = RunStatus(
+                    run_id=self.run_id,
+                    status="running",
+                    phase="init",
+                    started_at=self.started_at,
+                    updated_at=self.started_at
+                )
             
+    def _ensure_run_dir(self):
+        """Ensure run directory and subdirectories exist"""
+        if self.run_dir:
+            self.run_dir.mkdir(parents=True, exist_ok=True)
+            (self.run_dir / "reports").mkdir(exist_ok=True)
+            (self.run_dir / "artifacts").mkdir(exist_ok=True)
+
     def _load_status(self):
         """Load status from status.json if exists"""
         if self.run_dir and (self.run_dir / "status.json").exists():
@@ -138,11 +156,7 @@ class RunManager:
             self.run_id = self.generate_run_id()
             
         self.run_dir = self.runs_dir / self.run_id
-        self.run_dir.mkdir(parents=True, exist_ok=True)
-        
-        # Create subdirectories
-        (self.run_dir / "reports").mkdir(exist_ok=True)
-        (self.run_dir / "artifacts").mkdir(exist_ok=True)
+        self._ensure_run_dir()
         
         # Initialize status
         self.started_at = datetime.now(timezone.utc).isoformat()
@@ -238,7 +252,8 @@ class RunManager:
         policy_hash: str = "",
         manifest_sha256: str = "",
         source_lock_sha256: str = "",
-        flake_lock_sha256: str = ""
+        flake_lock_sha256: str = "",
+        gpu_targets: List[str] = None
     ):
         """Finalize run and generate receipt"""
         if self.run_dir is None:
@@ -267,7 +282,7 @@ class RunManager:
                 "flake_lock_sha256": flake_lock_sha256
             },
             targets={
-                "gpu_targets": ["gfx1151"],
+                "gpu_targets": gpu_targets or ["gfx1151"],
                 "pass": "A"
             },
             phases=self.phases,

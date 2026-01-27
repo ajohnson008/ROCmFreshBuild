@@ -72,12 +72,14 @@ class BuildDriver:
         repo_root: Path,
         order_path: Path,
         run_manager: RunManager,
+        target: str = "gfx110x",
         max_parallel: int = 1,
         dry_run: bool = False
     ):
         self.repo_root = repo_root
         self.order_path = order_path
         self.run_manager = run_manager
+        self.target = target
         self.max_parallel = max_parallel
         self.dry_run = dry_run
         self.order = self._load_order()
@@ -88,7 +90,16 @@ class BuildDriver:
             
     def _get_nix_attr(self, node_id: str) -> Optional[str]:
         """Get Nix attribute for a node"""
-        return NIX_ATTRS.get(node_id)
+        base_attr = NIX_ATTRS.get(node_id)
+        if not base_attr:
+            return None
+            
+        # Target-independent tools
+        if node_id in ["gcc14"]:
+            return base_attr
+            
+        # Append target suffix
+        return f"{base_attr}-{self.target}"
         
     def _build_node(self, node_id: str) -> BuildResult:
         """Build a single node"""
@@ -218,7 +229,7 @@ class BuildDriver:
         
         print(f"Build Driver - Pass A")
         print(f"  Layers: {len(layers)}")
-        print(f"  GPU target: gfx1151")
+        print(f"  GPU target: {self.target}")
         print(f"  Parallel: {self.max_parallel}")
         print()
         
@@ -294,6 +305,11 @@ def main():
         help="Max parallel builds per layer"
     )
     parser.add_argument(
+        "--target",
+        default=os.environ.get("ROCM_BUILD_TARGET", "gfx110x"),
+        help="GPU target variant"
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Don't actually build"
@@ -319,6 +335,7 @@ def main():
         repo_root=args.repo_root,
         order_path=args.order,
         run_manager=run_mgr,
+        target=args.target,
         max_parallel=args.parallel,
         dry_run=args.dry_run
     )
@@ -330,7 +347,8 @@ def main():
         status="success" if success else "failed",
         manifest_sha256="",  # Would load from source-lock
         source_lock_sha256="",
-        flake_lock_sha256=""
+        flake_lock_sha256="",
+        gpu_targets=[args.target]
     )
     
     print()
