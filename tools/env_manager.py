@@ -11,7 +11,7 @@ from tools.lib.common import RunContext
 
 def get_allowlist(repo_root: Path) -> List[str]:
     """Generates the allowed URIs list."""
-    allowlist = ["file://"]
+    allowlist = ["file://", "github:", "https://github.com"]
     
     # Add local mirror directory
     mirrors_dir = repo_root / "mirrors"
@@ -26,34 +26,28 @@ def get_allowlist(repo_root: Path) -> List[str]:
     # Future: Add HTTP local mirrors if config exists
     return allowlist
 
-def handle_nix_opts(mode: str):
-    """Emits Nix options based on the requested mode."""
+def handle_nix_opts(mode: str) -> List[str]:
+    """Returns Nix options based on the requested mode."""
     repo_root = Path.cwd()
     opts = []
     
     # Common options
-    # max-substitution-jobs knob (Phase E) - defaulting to 4
     opts.extend(["--option", "max-substitution-jobs", "4"]) 
     opts.extend(["--option", "max-jobs", "auto"])
 
     if mode == "online-sync":
-        # Allow network
         pass
         
     elif mode in ["offline", "mirror-only"]:
-        # Restrict evaluation
         opts.extend(["--option", "restrict-eval", "true"])
         
-        # Build allowlist
         allowlist = get_allowlist(repo_root)
         opts.extend(["--option", "allowed-uris", " ".join(allowlist)])
         
-        # Disable substitution from cache.nixos.org if strictly offline
         if mode == "offline":
              opts.extend(["--option", "substituters", ""])
     
-    # Emit as space-separated string for consumption by shell
-    print(" ".join(opts))
+    return opts
 
 def handle_assert_sandbox(repo_root: Path):
     """Asserts that sandbox is enabled."""

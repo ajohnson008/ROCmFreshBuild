@@ -1,9 +1,363 @@
 {
   "version": "1.0.0",
-  "last_updated": "2026-01-26T00:00:00Z",
+  "last_updated": "2026-01-27T03:58:15.631511+00:00",
   "source_lock_sha256": "",
-  "total_count": 0,
-  "synced_count": 0,
-  "failed_count": 0,
-  "mirrors": []
+  "total_count": 44,
+  "synced_count": 43,
+  "failed_count": 1,
+  "mirrors": [
+    {
+      "name": "ROCm/AMDMIGraphX",
+      "remote_url": "https://github.com/ROCm/AMDMIGraphX",
+      "mirror_path": "mirrors/git/ROCm_AMDMIGraphX.mirror",
+      "last_sync": "2026-01-27T03:53:06.525956+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/HIP",
+      "remote_url": "https://github.com/ROCm/HIP",
+      "mirror_path": "mirrors/git/ROCm_HIP.mirror",
+      "last_sync": "2026-01-27T03:53:01.478479+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/HIPIFY",
+      "remote_url": "https://github.com/ROCm/HIPIFY",
+      "mirror_path": "mirrors/git/ROCm_HIPIFY.mirror",
+      "last_sync": "2026-01-27T03:53:01.689888+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/MIGraphX",
+      "remote_url": "https://github.com/ROCm/MIGraphX",
+      "mirror_path": "mirrors/git/ROCm_MIGraphX.mirror",
+      "last_sync": "2026-01-27T03:53:06.527430+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "failed",
+      "error": "fatal: not a git repository: 'mirrors/git/ROCm_MIGraphX.mirror'\n"
+    },
+    {
+      "name": "ROCm/MIOpen",
+      "remote_url": "https://github.com/ROCm/MIOpen",
+      "mirror_path": "mirrors/git/ROCm_MIOpen.mirror",
+      "last_sync": "2026-01-27T03:55:21.665794+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/MIVisionX",
+      "remote_url": "https://github.com/ROCm/MIVisionX",
+      "mirror_path": "mirrors/git/ROCm_MIVisionX.mirror",
+      "last_sync": "2026-01-27T03:53:06.034068+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/ROCR-Runtime",
+      "remote_url": "https://github.com/ROCm/ROCR-Runtime",
+      "mirror_path": "mirrors/git/ROCm_ROCR-Runtime.mirror",
+      "last_sync": "2026-01-27T03:53:01.354217+00:00",
+      "commit_sha": "51e6956eb97475f6139c6cf88b51fbebea4c987b",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/ROCT-Thunk-Interface",
+      "remote_url": "https://github.com/ROCm/ROCT-Thunk-Interface",
+      "mirror_path": "mirrors/git/ROCm_ROCT-Thunk-Interface.mirror",
+      "last_sync": "2026-01-27T03:53:02.076226+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/ROCdbgapi",
+      "remote_url": "https://github.com/ROCm/ROCdbgapi",
+      "mirror_path": "mirrors/git/ROCm_ROCdbgapi.mirror",
+      "last_sync": "2026-01-27T03:53:01.578911+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/ROCm-CompilerSupport",
+      "remote_url": "https://github.com/ROCm/ROCm-CompilerSupport",
+      "mirror_path": "mirrors/git/ROCm_ROCm-CompilerSupport.mirror",
+      "last_sync": "2026-01-27T03:53:02.407417+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/ROCm-Device-Libs",
+      "remote_url": "https://github.com/ROCm/ROCm-Device-Libs",
+      "mirror_path": "mirrors/git/ROCm_ROCm-Device-Libs.mirror",
+      "last_sync": "2026-01-27T03:53:02.225511+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/ROCm-OpenCL-Runtime",
+      "remote_url": "https://github.com/ROCm/ROCm-OpenCL-Runtime",
+      "mirror_path": "mirrors/git/ROCm_ROCm-OpenCL-Runtime.mirror",
+      "last_sync": "2026-01-27T03:55:22.262682+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/amdsmi",
+      "remote_url": "https://github.com/ROCm/amdsmi",
+      "mirror_path": "mirrors/git/ROCm_amdsmi.mirror",
+      "last_sync": "2026-01-27T03:53:01.984405+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/clr",
+      "remote_url": "https://github.com/ROCm/clr",
+      "mirror_path": "mirrors/git/ROCm_clr.mirror",
+      "last_sync": "2026-01-27T03:53:01.358219+00:00",
+      "commit_sha": "2e88525d05192094bc39d4c76f24327f506ede38",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/composable_kernel",
+      "remote_url": "https://github.com/ROCm/composable_kernel",
+      "mirror_path": "mirrors/git/ROCm_composable_kernel.mirror",
+      "last_sync": "2026-01-27T03:53:05.713535+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/flang",
+      "remote_url": "https://github.com/ROCm/flang",
+      "mirror_path": "mirrors/git/ROCm_flang.mirror",
+      "last_sync": "2026-01-27T03:53:02.360240+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/hipBLAS",
+      "remote_url": "https://github.com/ROCm/hipBLAS",
+      "mirror_path": "mirrors/git/ROCm_hipBLAS.mirror",
+      "last_sync": "2026-01-27T03:53:02.686305+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/hipBLASLt",
+      "remote_url": "https://github.com/ROCm/hipBLASLt",
+      "mirror_path": "mirrors/git/ROCm_hipBLASLt.mirror",
+      "last_sync": "2026-01-27T03:57:51.775229+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/hipCUB",
+      "remote_url": "https://github.com/ROCm/hipCUB",
+      "mirror_path": "mirrors/git/ROCm_hipCUB.mirror",
+      "last_sync": "2026-01-27T03:53:04.421917+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/hipFFT",
+      "remote_url": "https://github.com/ROCm/hipFFT",
+      "mirror_path": "mirrors/git/ROCm_hipFFT.mirror",
+      "last_sync": "2026-01-27T03:53:03.771747+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/hipRAND",
+      "remote_url": "https://github.com/ROCm/hipRAND",
+      "mirror_path": "mirrors/git/ROCm_hipRAND.mirror",
+      "last_sync": "2026-01-27T03:53:04.049611+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/hipSOLVER",
+      "remote_url": "https://github.com/ROCm/hipSOLVER",
+      "mirror_path": "mirrors/git/ROCm_hipSOLVER.mirror",
+      "last_sync": "2026-01-27T03:53:02.958946+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/hipSPARSE",
+      "remote_url": "https://github.com/ROCm/hipSPARSE",
+      "mirror_path": "mirrors/git/ROCm_hipSPARSE.mirror",
+      "last_sync": "2026-01-27T03:53:03.267745+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/hipSPARSELt",
+      "remote_url": "https://github.com/ROCm/hipSPARSELt",
+      "mirror_path": "mirrors/git/ROCm_hipSPARSELt.mirror",
+      "last_sync": "2026-01-27T03:53:03.461872+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/hipTensor",
+      "remote_url": "https://github.com/ROCm/hipTensor",
+      "mirror_path": "mirrors/git/ROCm_hipTensor.mirror",
+      "last_sync": "2026-01-27T03:53:04.736416+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/llvm-project",
+      "remote_url": "https://github.com/ROCm/llvm-project",
+      "mirror_path": "mirrors/git/ROCm_llvm-project.mirror",
+      "last_sync": "2026-01-27T03:56:28.633858+00:00",
+      "commit_sha": "3098435244119c38f6100dbd8d61e56c942a3c00",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rccl",
+      "remote_url": "https://github.com/ROCm/rccl",
+      "mirror_path": "mirrors/git/ROCm_rccl.mirror",
+      "last_sync": "2026-01-27T03:53:05.055616+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rocALUTION",
+      "remote_url": "https://github.com/ROCm/rocALUTION",
+      "mirror_path": "mirrors/git/ROCm_rocALUTION.mirror",
+      "last_sync": "2026-01-27T03:53:04.141669+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rocBLAS",
+      "remote_url": "https://github.com/ROCm/rocBLAS",
+      "mirror_path": "mirrors/git/ROCm_rocBLAS.mirror",
+      "last_sync": "2026-01-27T03:53:02.555345+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rocFFT",
+      "remote_url": "https://github.com/ROCm/rocFFT",
+      "mirror_path": "mirrors/git/ROCm_rocFFT.mirror",
+      "last_sync": "2026-01-27T03:53:03.533707+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rocPRIM",
+      "remote_url": "https://github.com/ROCm/rocPRIM",
+      "mirror_path": "mirrors/git/ROCm_rocPRIM.mirror",
+      "last_sync": "2026-01-27T03:53:04.343404+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rocRAND",
+      "remote_url": "https://github.com/ROCm/rocRAND",
+      "mirror_path": "mirrors/git/ROCm_rocRAND.mirror",
+      "last_sync": "2026-01-27T03:53:03.855152+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rocSOLVER",
+      "remote_url": "https://github.com/ROCm/rocSOLVER",
+      "mirror_path": "mirrors/git/ROCm_rocSOLVER.mirror",
+      "last_sync": "2026-01-27T03:53:02.917092+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rocSPARSE",
+      "remote_url": "https://github.com/ROCm/rocSPARSE",
+      "mirror_path": "mirrors/git/ROCm_rocSPARSE.mirror",
+      "last_sync": "2026-01-27T03:53:03.201666+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rocThrust",
+      "remote_url": "https://github.com/ROCm/rocThrust",
+      "mirror_path": "mirrors/git/ROCm_rocThrust.mirror",
+      "last_sync": "2026-01-27T03:53:04.681868+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rocm-cmake",
+      "remote_url": "https://github.com/ROCm/rocm-cmake",
+      "mirror_path": "mirrors/git/ROCm_rocm-cmake.mirror",
+      "last_sync": "2026-01-27T03:53:01.340013+00:00",
+      "commit_sha": "f2657238cb71df839c97807d5b0cb2c184075227",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rocm-systems",
+      "remote_url": "https://github.com/ROCm/rocm-systems",
+      "mirror_path": "mirrors/git/ROCm_rocm-systems.mirror",
+      "last_sync": "2026-01-27T03:53:48.527462+00:00",
+      "commit_sha": "da7ba12fd90f553f3d4629ffc9ca360545364ea0",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rocm_smi_lib",
+      "remote_url": "https://github.com/ROCm/rocm_smi_lib",
+      "mirror_path": "mirrors/git/ROCm_rocm_smi_lib.mirror",
+      "last_sync": "2026-01-27T03:53:01.988421+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rocminfo",
+      "remote_url": "https://github.com/ROCm/rocminfo",
+      "mirror_path": "mirrors/git/ROCm_rocminfo.mirror",
+      "last_sync": "2026-01-27T03:53:02.094120+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rocprofiler-register",
+      "remote_url": "https://github.com/ROCm/rocprofiler-register",
+      "mirror_path": "mirrors/git/ROCm_rocprofiler-register.mirror",
+      "last_sync": "2026-01-27T03:53:01.841367+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rocprofiler-sdk",
+      "remote_url": "https://github.com/ROCm/rocprofiler-sdk",
+      "mirror_path": "mirrors/git/ROCm_rocprofiler-sdk.mirror",
+      "last_sync": "2026-01-27T03:53:01.840337+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/rocr_debug_agent",
+      "remote_url": "https://github.com/ROCm/rocr_debug_agent",
+      "mirror_path": "mirrors/git/ROCm_rocr_debug_agent.mirror",
+      "last_sync": "2026-01-27T03:53:01.591965+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "ROCm/roctracer",
+      "remote_url": "https://github.com/ROCm/roctracer",
+      "mirror_path": "mirrors/git/ROCm_roctracer.mirror",
+      "last_sync": "2026-01-27T03:53:01.698243+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    },
+    {
+      "name": "RadeonOpenCompute/ROCK-Kernel-Driver",
+      "remote_url": "https://github.com/RadeonOpenCompute/ROCK-Kernel-Driver",
+      "mirror_path": "mirrors/git/RadeonOpenCompute_ROCK-Kernel-Driver.mirror",
+      "last_sync": "2026-01-27T03:58:15.631061+00:00",
+      "commit_sha": "0000000000000000000000000000000000000000",
+      "status": "synced"
+    }
+  ]
 }

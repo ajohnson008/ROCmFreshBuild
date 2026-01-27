@@ -162,10 +162,16 @@ class SHAResolver:
         if cls.is_sha(ref):
             return ref
             
+        # Inject GITHUB_TOKEN if available to avoid interactive prompts
+        auth_url = remote_url
+        github_token = os.environ.get("GITHUB_TOKEN")
+        if github_token and remote_url.startswith("https://github.com"):
+            auth_url = remote_url.replace("https://github.com", f"https://{github_token}@github.com")
+
         try:
             # Try tag first
             result = subprocess.run(
-                ['git', 'ls-remote', '--tags', remote_url, f'refs/tags/{ref}'],
+                ['git', 'ls-remote', '--tags', auth_url, f'refs/tags/{ref}'],
                 capture_output=True,
                 text=True,
                 timeout=30
@@ -178,7 +184,7 @@ class SHAResolver:
                     
             # Try branch
             result = subprocess.run(
-                ['git', 'ls-remote', '--heads', remote_url, f'refs/heads/{ref}'],
+                ['git', 'ls-remote', '--heads', auth_url, f'refs/heads/{ref}'],
                 capture_output=True,
                 text=True,
                 timeout=30
@@ -192,6 +198,7 @@ class SHAResolver:
         except subprocess.TimeoutExpired:
             pass
         except Exception as e:
+            # Use original URL in error message to avoid leaking token
             print(f"Warning: Failed to resolve {ref} from {remote_url}: {e}", file=sys.stderr)
             
         return None

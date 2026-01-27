@@ -23,14 +23,8 @@ def run_proof(repo_root: Path, run_id: str, scope: str = "all"):
     print(f"Starting Offline Proof (Run ID: {run_id})")
     
     # 2. Get Offline Options
-    # Capture output of env_manager.handle_nix_opts
-    old_stdout = sys.stdout
-    sys.stdout = mystdout = StringIO()
-    env_manager.handle_nix_opts("mirror-only")
-    sys.stdout = old_stdout
-    nix_flags_str = mystdout.getvalue().strip()
-    # Basic split, logic might need to be more robust for quoted args if complex
-    nix_flags = [x for x in nix_flags_str.split(" ") if x]
+    nix_flags = env_manager.handle_nix_opts("mirror-only")
+    nix_flags_str = " ".join(nix_flags)
     
     # 3. Execute Proof (Nix Eval)
     # We evaluate the graph of the 'ai-stack' or 'rocm-core' to prove we can build the graph offline.

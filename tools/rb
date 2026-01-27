@@ -103,7 +103,8 @@ def main():
     elif args.command == "env":
         from env_manager import handle_nix_opts, handle_assert_sandbox
         if args.env_command == "nix-opts":
-            handle_nix_opts(args.mode)
+            opts = handle_nix_opts(args.mode)
+            print(" ".join(opts))
         elif args.env_command == "assert-sandbox":
             handle_assert_sandbox(repo_root)
 
