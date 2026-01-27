@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.11
 """
 Sync Git Mirrors - Mirror all ROCm repositories with bounded parallelism
 

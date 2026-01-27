@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.11
 """
 Sync Blobs - Download external blobs to content-addressed store
 

@@ -1,6 +1,7 @@
 
 import subprocess
 import json
+import os
 import sys
 import hashlib
 from pathlib import Path
@@ -29,7 +30,8 @@ def run_proof(repo_root: Path, run_id: str, scope: str = "all"):
     # 3. Execute Proof (Nix Eval)
     # We evaluate the graph of the 'ai-stack' or 'rocm-core' to prove we can build the graph offline.
     # Using 'rocm-core' as a representative target.
-    target_attr = ".#packages.x86_64-linux.rocm-core"
+    target = os.environ.get("ROCM_BUILD_TARGET", "gfx110x")
+    target_attr = f".#packages.x86_64-linux.rocm-core-{target}"
     
     proof_cmd = ["nix", "eval", "--raw", target_attr + ".drvPath"] + nix_flags
     

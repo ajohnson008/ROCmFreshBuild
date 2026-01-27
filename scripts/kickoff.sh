@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Scripts/kickoff.sh - Wrapper for TheRockBuilder
+# Scripts/kickoff.sh - Wrapper for TheRockBuilder with GPU target support
 
 # Default values
 LOG_DIR="runs"
@@ -10,6 +10,7 @@ ARCHIVE_TO=""
 DRY_RUN=false
 CMD=""
 ARGS=()
+TARGET="${ROCM_BUILD_TARGET:-gfx110x}"  # Default to gfx110x (better performance)
 
 usage() {
     echo "Usage: $0 [prep-full|build-full|full] [options]"
@@ -24,7 +25,20 @@ usage() {
     echo "  --archive-to <path> Path to archive flake inputs (prep only)"
     echo "  --force             Bypass warnings (not hard fails)"
     echo "  --log-dir <path>    Directory for logs (default: runs/)"
+    echo "  --target <name>     GPU target variant (default: gfx110x)"
     echo "  --help              Show this help"
+    echo ""
+    echo "GPU Targets:"
+    echo "  gfx110x   RDNA3 GPUs (RX 7900/7800/7700) - DEFAULT (2-6X faster)"
+    echo "  gfx1151   Strix Halo (Ryzen AI Max+) - Legacy support"
+    echo ""
+    echo "Environment Variables:"
+    echo "  ROCM_BUILD_TARGET   Override default target (gfx110x or gfx1151)"
+    echo ""
+    echo "Examples:"
+    echo "  $0 full                         # Build gfx110x (default)"
+    echo "  $0 full --target gfx1151        # Build for Strix Halo"
+    echo "  ROCM_BUILD_TARGET=gfx1151 $0 full  # Same as above"
     exit 1
 }
 
@@ -47,6 +61,23 @@ while [[ $# -gt 0 ]]; do
             ;;
         --dry-run)
             DRY_RUN=true
+            shift
+            ;;
+        --target)
+            TARGET="$2"
+            case "$TARGET" in
+                gfx110x|gfx1151)
+                    # Valid target
+                    ;;
+                *)
+                    echo "Error: Invalid target '$TARGET'"
+                    echo "Valid targets: gfx110x, gfx1151"
+                    exit 1
+                    ;;
+            esac
+            shift 2
+            ;;
+        --)
             shift
             ;;
         --archive-to)
@@ -80,6 +111,28 @@ mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/kickoff_$(date +%Y%m%d_%H%M%S).log"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
+
+# Export target for downstream scripts
+export ROCM_BUILD_TARGET="$TARGET"
+
+# Display target info
+case "$TARGET" in
+    gfx110x)
+        echo "╔════════════════════════════════════════════════════════╗"
+        echo "║  GPU Target: gfx110X-all (RDNA3)                       ║"
+        echo "║  Hardware: RX 7900 XTX/XT, 7800 XT, 7700 XT, etc.     ║"
+        echo "║  Performance: 2-6X faster than gfx1151                 ║"
+        echo "╚════════════════════════════════════════════════════════╝"
+        ;;
+    gfx1151)
+        echo "╔════════════════════════════════════════════════════════╗"
+        echo "║  GPU Target: gfx1151 (Strix Halo)                     ║"
+        echo "║  Hardware: Ryzen AI Max+ (Radeon 890M integrated)     ║"
+        echo "║  Note: Legacy target, use gfx110x for better perf     ║"
+        echo "╚════════════════════════════════════════════════════════╝"
+        ;;
+esac
+echo ""
 echo "=== Kickoff Started at $(date) ==="
 echo "Command: $CMD"
 echo "Log file: $LOG_FILE"

@@ -1,6 +1,7 @@
-# TheRockBuilder v6.0
+# TheRockBuilder v6.1+
 
 > **Production-Grade, Reproducible AMD ROCm AI Stack Builder**
+> **NEW in v6.1+**: Dual GPU target support (gfx110X-all + gfx1151)
 
 Build a complete, air-gapped deployable AI inference stack (ROCm 7.2.0 + PyTorch 2.10.0 + vLLM 0.14.0 + llama.cpp) with guaranteed reproducibility and zero NVIDIA contamination.
 
@@ -14,11 +15,32 @@ Build a complete, air-gapped deployable AI inference stack (ROCm 7.2.0 + PyTorch
 
 TheRockBuilder is a **Pure Nix Flake** system that compiles a complete AMD ROCm AI stack from source with:
 
+- **Dual GPU target support** - RDNA3 (gfx110X-all) and Strix Halo (gfx1151) variants
 - **Bit-for-bit reproducibility** - Rebuild identical binaries years later
 - **Quad-layer NVIDIA isolation** - Guaranteed zero CUDA contamination when building on NVIDIA systems
 - **Air-gapped deployment** - Single offline bundle, no internet required on target
 - **Security auditing** - Automatic SBOM generation with CVE scanning
 - **Production hardened** - Memory-aware builds, comprehensive validation, rollback capabilities
+
+### GPU Target Support
+
+TheRockBuilder v6.1+ supports two GPU target variants:
+
+| Variant | GPU Target | Best For | Performance |
+|---------|-----------|----------|-------------|
+| **gfx110X-all** (DEFAULT) | RDNA3 desktop GPUs<br/>(RX 7900 XTX/XT, 7800 XT, 7700 XT) | Production workloads,<br/>high-performance inference | **2-6X faster**<br/>than gfx1151 |
+| **gfx1151** (Legacy) | Strix Halo integrated<br/>(Ryzen AI Max+, Radeon 890M) | Portable/laptop deployments,<br/>unified memory systems | Baseline |
+
+**Quick Start**:
+```bash
+# RDNA3 Desktop GPU (default, faster)
+nix build .#ai-stack
+
+# Strix Halo Laptop
+nix build .#ai-stack-gfx1151
+```
+
+See [TARGETS.md](TARGETS.md) for complete target documentation.
 
 ### Why?
 
@@ -42,7 +64,8 @@ nix build .#default              # Cryptographically verified dependencies ✅
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  TheRockBuilder v6.0 - Pure Nix Flake                   │
+│  TheRockBuilder v6.1+ - Pure Nix Flake                  │
+│  DUAL TARGET SUPPORT: gfx110X-all | gfx1151             │
 ├─────────────────────────────────────────────────────────┤
 │                                                          │
 │  ┌─────────────┐  ┌──────────────┐  ┌──────────────┐   │
@@ -52,10 +75,15 @@ nix build .#default              # Cryptographically verified dependencies ✅
 │         │                │                  │            │
 │         └────────────────┴──────────────────┘            │
 │                          │                               │
-│                  ┌───────▼────────┐                      │
-│                  │  ROCm 7.2.0    │                      │
-│                  │  (gfx1151)     │                      │
-│                  └───────┬────────┘                      │
+│           ┌──────────────┴──────────────┐                │
+│           │                             │                │
+│   ┌───────▼────────┐          ┌────────▼──────┐         │
+│   │  ROCm 7.2.0    │          │  ROCm 7.2.0   │         │
+│   │  (gfx110X-all) │          │  (gfx1151)    │         │
+│   │  [DEFAULT]     │          │  [Legacy]     │         │
+│   └───────┬────────┘          └────────┬──────┘         │
+│           │                            │                │
+│           └──────────────┬─────────────┘                │
 │                          │                               │
 │                  ┌───────▼────────┐                      │
 │                  │  GCC 14.2.1    │                      │
@@ -68,6 +96,7 @@ nix build .#default              # Cryptographically verified dependencies ✅
 │  • Binary contamination scanning                         │
 │  • SBOM generation + CVE auditing                        │
 │  • Reproducibility validation                            │
+│  • Multi-target build independence                       │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -139,15 +168,55 @@ Prevents OOM kills on memory-constrained systems:
 
 ### Prerequisites
 
-**Build System**:
-- Nix 2.31.2+
-- 24+ CPU cores (Threadripper 3960X recommended)
-- 64GB+ RAM (128GB ideal for PyTorch)
-- 200GB+ free disk space
+- **Nix** 2.31.2+ with flakes enabled
+- **64GB+ RAM** (for PyTorch compilation)
+- **200GB+ free disk space** (/nix/store)
+- **AMD GPU**: RDNA3 (gfx110X) or Strix Halo (gfx1151)
+- **Linux** kernel 6.18+ (for ROCm 7.2.0)
 
-**Target System**:
-- AMD Strix Halo (gfx1151) or compatible
-- Linux kernel 6.18.6+
+### Build Complete AI Stack
+
+```bash
+# Clone repository
+git clone https://github.com/TheKiserNexus/ROCmFreshBuild.git
+cd ROCmFreshBuild
+
+# Check your GPU
+rocminfo | grep "Name:"
+# If gfx1100/gfx1101/gfx1102/gfx1103 → use gfx110x (default)
+# If gfx1151 → use gfx1151 variant
+
+# Build for RDNA3 (RX 7900/7800/7700) - DEFAULT
+nix build .#ai-stack
+# Build time: 8-12 hours on 48-thread Threadripper
+
+# OR build for Strix Halo (Ryzen AI Max+)
+nix build .#ai-stack-gfx1151
+
+# Test installation
+./result/bin/rocminfo
+./result/bin/python3 -c "import torch; print(torch.cuda.is_available())"
+```
+
+### Build Individual Components
+
+```bash
+# ROCm 7.2.0 Core
+nix build .#rocm-core-gfx110x      # For RDNA3
+nix build .#rocm-core-gfx1151      # For Strix Halo
+
+# PyTorch 2.10.0
+nix build .#pytorch-rocm-gfx110x   # For RDNA3
+nix build .#pytorch-rocm-gfx1151   # For Strix Halo
+
+# vLLM 0.14.0
+nix build .#vllm-gfx110x           # For RDNA3 (native kernels)
+nix build .#vllm-gfx1151           # For Strix Halo (slower, uses fallback)
+
+# llama.cpp
+nix build .#llamacpp-gpu-gfx110x   # For RDNA3 (dedicated VRAM)
+nix build .#llamacpp-gpu-gfx1151   # For Strix Halo (UMA-optimized)
+```
 - 128GB RAM (for large models)
 
 ### Installation

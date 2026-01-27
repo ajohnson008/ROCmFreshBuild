@@ -85,11 +85,12 @@
 **Opus responds**:
 1. Confirms receipt of all three documents
 2. Verifies prerequisites (Nix version, disk space, RAM)
-3. Extracts Stage 1 code from prompt pack
-4. Creates flake.nix with Stage 1 code
-5. Runs build: `nix build .#gcc14`
-6. Executes all validation tests
-7. Reports results
+3. **Asks which target**: "Which GPU target? (gfx110x [recommended] / gfx1151)"
+4. Extracts Stage 1 code from prompt pack
+5. Creates flake.nix with Stage 1 code
+6. Runs build: `nix build .#gcc14`
+7. Executes all validation tests
+8. Reports results
 
 **Expected output**:
 ```
@@ -239,6 +240,36 @@ Decision framework:
 ---
 
 ## 📐 Code Contribution Guidelines for AI
+
+### When Building with Specific Targets
+
+**AI agents should always consider GPU target selection:**
+
+```bash
+# ALWAYS ask user which target (unless context is clear)
+"Which ROCm target are you building for?
+  - gfx110x (RDNA3 desktop - 2-6X faster, recommended)
+  - gfx1151 (Strix Halo laptop - UMA optimized)"
+
+# Specify target in build commands
+nix build .#rocm-core-gfx110x  # Explicit target
+nix build .#pytorch-rocm-gfx1151  # Explicit target
+
+# Or set environment variable
+export ROCM_BUILD_TARGET=gfx110x
+./scripts/kickoff.sh full
+```
+
+**Target-aware validation**:
+```bash
+# After build, verify correct target
+./result/bin/rocminfo | grep "gfx110"  # For gfx110x
+./result/bin/rocminfo | grep "gfx1151"  # For gfx1151
+
+# Run target-specific validation
+./scripts/validate-targets.sh gfx110x
+./tools/validate-gfx110x.sh $(nix build --print-out-paths .#ai-stack-gfx110x)
+```
 
 ### When Modifying flake.nix
 

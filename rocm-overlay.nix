@@ -1,7 +1,7 @@
 # rocm-overlay.nix
-# ROCm 7.2.0 overlay with gfx1151 support + monorepo extraction
+# ROCm 7.2.0 overlay with multi-target support
 # Verified against AMD sources as of Jan 27, 2026
-self: super:
+target: self: super:
 
 let
   # ============================================================================
@@ -103,7 +103,7 @@ in
     cmakeFlags = (old.cmakeFlags or []) ++ [
       "-DDEVICE_LIBS_SRC_DIR="
       "-DLLVM_TARGETS_TO_BUILD=AMDGPU;X86"
-      "-DAMDGPU_TARGETS=gfx900;gfx906;gfx908;gfx90a;gfx1030;gfx1100;gfx1103;gfx1151"
+      "-DAMDGPU_TARGETS=${target.rocmTargets}"
       "-DLLVM_ENABLE_PROJECTS=clang;lld;compiler-rt"
       "-DUSE_CUDA=OFF"  # Prevent NVIDIA contamination
       "-DHIP_PLATFORM=amd"
@@ -142,18 +142,17 @@ in
       subdir = "llvm-project-${llvmProjectRev}/amd/device-libs";
     };
     
-    # gfx1151 (Strix Halo) target support - EXPLICIT FLAGS REQUIRED
+    # Target support - EXPLICIT FLAGS REQUIRED
     cmakeFlags = [
       "-DCMAKE_INSTALL_PREFIX=${placeholder "out"}"
       "-DCMAKE_C_COMPILER=${gcc12}/bin/gcc"
       "-DCMAKE_CXX_COMPILER=${gcc12}/bin/g++"
-      "-DLLVM_AMDGPU_ALLOW_NAKED_POINTER=true"  # Required for gfx1151 experimental support
       "-DTARGETS_TO_BUILD=AMDGPU"
-      "-DAMDGCN_TARGETS=gfx900;gfx906;gfx908;gfx90a;gfx1030;gfx1100;gfx1103;gfx1151"
-      "-DGCN_TARGETS=gfx900;gfx906;gfx908;gfx90a;gfx1030;gfx1100;gfx1103;gfx1151"
+      "-DAMDGCN_TARGETS=${target.rocmTargets}"
+      "-DGCN_TARGETS=${target.rocmTargets}"
       "-DUSE_CUDA=OFF"
       "-DHIP_PLATFORM=amd"
-    ];
+    ] ++ (if target.name == "gfx1151" then [ "-DLLVM_AMDGPU_ALLOW_NAKED_POINTER=true" ] else []);
     
     nativeBuildInputs = [
       gcc12
@@ -171,20 +170,20 @@ in
     dontPatch = true;  # Disable broken nixpkgs postPatch
     
     postInstall = ''
-      echo "=== Verifying gfx1151 bitcode generation ==="
+      echo "=== Verifying ${target.displayName} bitcode generation ==="
       if [ ! -f $out/amdgcn/bitcode/ocml.bc ]; then
         echo "ERROR: No bitcode generated!" >&2
         exit 1
       fi
       # Optional verification
-      if command -v llvm-dis &>/dev/null && ! llvm-dis $out/amdgcn/bitcode/ocml.bc 2>/dev/null | grep -q "gfx1151"; then
-        echo "WARNING: gfx1151 intrinsics not detected in bitcode (may still work)"
+      if command -v llvm-dis &>/dev/null && ! llvm-dis $out/amdgcn/bitcode/ocml.bc 2>/dev/null | grep -q "${target.name}"; then
+        echo "WARNING: ${target.name} intrinsics not detected in bitcode (may still work)"
       fi
-      echo "SUCCESS: rocm-device-libs built with gfx1151 support"
+      echo "SUCCESS: rocm-device-libs built with ${target.displayName} support"
     '';
     
     meta = {
-      description = "ROCm Device Libraries (extracted from llvm-project) with gfx1151 support";
+      description = "ROCm Device Libraries (extracted from llvm-project) with ${target.displayName} support";
       license = super.lib.licenses.mit;
       platforms = [ "x86_64-linux" ];
     };
@@ -204,7 +203,7 @@ in
     cmakeFlags = (old.cmakeFlags or []) ++ [
       "-DDEVICE_LIBS_SRC_DIR=${self.rocm-device-libs}/amdgcn/bitcode"
       "-DLLVM_TARGETS_TO_BUILD=AMDGPU;X86"
-      "-DAMDGPU_TARGETS=gfx900;gfx906;gfx908;gfx90a;gfx1030;gfx1100;gfx1103;gfx1151"
+      "-DAMDGPU_TARGETS=${target.rocmTargets}"
       "-DLLVM_ENABLE_PROJECTS=clang;lld;compiler-rt"
       "-DUSE_CUDA=OFF"
       "-DHIP_PLATFORM=amd"
@@ -239,7 +238,7 @@ in
       "-DHIP_PLATFORM=amd"
       "-DHIP_COMPILER=clang"
       "-DHIP_RUNTIME=ROCclr"
-      "-DAMDGPU_TARGETS=gfx900;gfx906;gfx908;gfx90a;gfx1030;gfx1100;gfx1103;gfx1151"
+      "-DAMDGPU_TARGETS=${target.rocmTargets}"
     ];
     
     nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ gcc12 ];
@@ -278,9 +277,8 @@ in
           "-DROCM_PATH=${self.rocm-core}"
           "-DCMAKE_CXX_COMPILER=${gcc14}/bin/g++"
           "-DCMAKE_C_COMPILER=${gcc14}/bin/gcc"
-          "-DAMDGPU_TARGETS=gfx900;gfx906;gfx908;gfx90a;gfx1030;gfx1100;gfx1103;gfx1151"
-          "-DUSE_RCCL=OFF"  # RCCL broken for gfx1151 - disable
-        ];
+          "-DAMDGPU_TARGETS=${target.rocmTargets}"
+        ] ++ (target.patches.pytorch.additionalFlags or []);
         
         # Critical: Prevent HIP from detecting NVIDIA
         env = old.env // {
@@ -289,7 +287,7 @@ in
           CUDA_HOME = "";
           HSA_PATH = "${self.hsakmt-roct}/lib";
           ROCM_PATH = "${self.rocm-core}";
-        };
+        } // (target.envVars or {});
         
         # Post-install validation
         postInstall = (old.postInstall or "") + ''
@@ -300,37 +298,36 @@ in
           assert torch.cuda.is_available(), "ROCm not detected!"
           print(f"PyTorch {torch.__version__} + ROCm detected: {torch.cuda.is_available()}")
           print(f"GPU: {torch.cuda.get_device_name(0)}")
-          # gfx1151 may report as gfx1103 - accept either
+          # Architecture check
           assert "gfx11" in torch.cuda.get_device_name(0).lower(), "Wrong GPU architecture"
-          print("SUCCESS: PyTorch built with gfx11xx support")
+          print(f"SUCCESS: PyTorch built with ${target.displayName} support")
           VALIDATION
         '';
       });
       
-      # vLLM 0.14.0: Force gfx1103 fallback kernels (gfx1151 kernels missing)
+      # vLLM 0.14.0: Support for multiple targets
       vllm = super.vllm.overrideAttrs (old: {
         nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ gcc14 self.cmake self.ninja ];
         
-        # Patch CMake to accept gfx1103 kernels for gfx1151
-        postPatch = (old.postPatch or "") + ''
-          # Force gfx1103 kernel compatibility for gfx1151
-          substituteInPlace cmake/ROCM.cmake \
-            --replace "gfx1151" "gfx1103" || true
-          
-          # Disable RCCL (broken for gfx1151)
-          substituteInPlace CMakeLists.txt \
-            --replace "find_package(RCCL)" "# find_package(RCCL)"
-        '';
+        # Patch CMake based on target needs
+        postPatch = (old.postPatch or "") + (
+          if target.name == "gfx1151" then ''
+            # Force gfx1103 kernel compatibility for gfx1151
+            substituteInPlace cmake/ROCM.cmake \
+              --replace "gfx1151" "gfx1103" || true
+            
+            # Disable RCCL (broken for gfx1151)
+            substituteInPlace CMakeLists.txt \
+              --replace "find_package(RCCL)" "# find_package(RCCL)"
+          '' else ""
+        );
         
         env = old.env // {
           HIP_PLATFORM = "amd";
           CUDA_PATH = "";
           CUDA_HOME = "";
-          AMDGPU_TARGETS = "gfx900;gfx906;gfx908;gfx90a;gfx1030;gfx1100;gfx1103;gfx1151";
-          # Critical: Disable SDMA for unified memory stability on gfx1151
-          HSA_ENABLE_SDMA = "0";
-          HSA_DISABLE_GWS = "1";
-        };
+          AMDGPU_TARGETS = target.rocmTargets;
+        } // (target.envVars or {});
       });
     };
   };

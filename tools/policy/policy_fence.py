@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.11
 """
 ROCm 7.2.0 Policy Fence - Hard-fail gate for version drift
 """
@@ -170,18 +170,19 @@ def verify(repo_root: Path, run_id: Optional[str], strict: bool):
 
     if result.passed:
         # Machine-readable header per prompt
+        target = os.environ.get("ROCM_BUILD_TARGET", "gfx110x")
         header = {
             "rocm_release": ROCmPolicyFence.ALLOWED_RELEASE,
             "manifest_sha256": "verified-in-check", 
-            "gpu_targets": "gfx1151",
+            "gpu_targets": target,
             "run_id": ctx.run_id,
             "evidence_path": str(report_path)
         }
         print(json.dumps(header))
-        print("✅ Policy Verification Passed (ROCm 7.2.0 Fence)")
+        print(f"✅ Policy Verification Passed (ROCm 7.2.0 Fence - Target: {target})")
         # Do NOT log success for the *run* yet, just the phase
         ctx.record_phase("policy_verify", "success", {"violation_count": 0})
-        sys.exit(0)
+        return
     else:
         print("❌ Policy Verification Failed")
         for v in result.violations:

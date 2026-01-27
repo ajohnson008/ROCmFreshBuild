@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.11
 """
 Generate source-lock.json from ROCm default.xml manifest
 
