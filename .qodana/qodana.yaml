@@ -49,4 +49,4 @@ global:
     - name: ".github/**/*"
   failThreshold: 0
   security:
-    token: "${QODANA_CONFIGURATIONS_TOKEN:-}"
+    token: "${QODANA_TOKEN:-}"

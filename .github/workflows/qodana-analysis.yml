@@ -69,7 +69,7 @@ jobs:
             --report-dir,${{ runner.temp }}/qodana/results
             --cache-dir,${{ runner.temp }}/qodana/cache
         env:
-          QODANA_TOKEN: ${{ secrets.QODANA_CONFIGURATIONS_TOKEN }}
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
 
       - name: Upload Qodana SARIF
         if: always()
