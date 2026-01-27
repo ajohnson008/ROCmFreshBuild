@@ -1,0 +1,67 @@
+name: CI Agent Validate
+
+on:
+  push:
+    paths:
+      - 'agent_playbooks/**'
+      - 'tools/**'
+      - 'flake.nix'
+  pull_request:
+    paths:
+      - 'agent_playbooks/**'
+      - 'tools/**'
+      - 'flake.nix'
+
+jobs:
+  validate:
+    name: Validate Playbook & Dry-run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Validate playbook JSON
+        run: python -m json.tool agent_playbooks/playbook.json
+
+      - name: Validate documentation pointers
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          p = pathlib.Path('agent_playbooks/playbook.json')
+          j = json.loads(p.read_text())
+          doc = j.get('documentation', {})
+          runbook = doc.get('runbook')
+          checklists = doc.get('checklists_dir')
+          if not runbook or not pathlib.Path(runbook).exists():
+              print(f"Missing runbook: {runbook}")
+              sys.exit(2)
+          if not checklists or not pathlib.Path(checklists).is_dir():
+              print(f"Missing checklists dir: {checklists}")
+              sys.exit(2)
+          print('Documentation pointers valid')
+          PY
+
+      - name: Create RUN_ID
+        run: echo "RUN_ID=ci-$(date +%Y%m%d-%H%M%S)-$GITHUB_RUN_ID" >> $GITHUB_ENV
+
+      - name: Policy verify (dry-run)
+        run: python tools/rb policy verify --strict --run-id $RUN_ID
+
+      - name: Offline proof (dry-run, non-fatal)
+        continue-on-error: true
+        run: |
+          set -e
+          echo "Running offline-proof (non-fatal)"
+          python tools/rb offline-proof --run-id $RUN_ID --scope graph || echo "offline-proof failed (allowed in CI)" 
+
+      - name: Upload run artifacts (if any)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-run-artifacts
+          path: runs/${{ env.RUN_ID }}
