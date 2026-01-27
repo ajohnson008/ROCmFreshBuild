@@ -27,7 +27,10 @@ final: prev: {
       # Add numactl for numa.h header (needed by libhsakmt/src/fmm.c)
       buildInputs = (old.buildInputs or []) ++ [ final.numactl.dev ];
       patches = [];
-      postPatch = "";
+      postPatch = ''
+        # Fix shebang in blit shader generation script
+        patchShebangs runtime/hsa-runtime/core/runtime/blit_shaders/create_blit_shader_header.sh
+      '';
       # Help the internal clang calls find device libs
       cmakeFlags = (old.cmakeFlags or []) ++ [
         "-DCMAKE_PREFIX_PATH=${finalScope.rocm-device-libs}"
