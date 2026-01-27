@@ -1,40 +1,10 @@
-# Minimal Qodana Configuration for ROCmFreshBuild
-# Version: 2023.3 Compatible
-# This is the SIMPLEST configuration that will work
+####################################################################################################################
+# WARNING: Do not store sensitive information in this file, as its contents will be included in the Qodana report. #
+####################################################################################################################
 
 version: "1.0"
-
-# Specify Python linter
-linter: jetbrains/qodana-python:2023.3
-
-# Use recommended profile
+linter: jetbrains/qodana-python:2025.2
 profile:
   name: qodana.recommended
-
-# Exclude paths (2023.3 format - note the structure!)
-exclude:
-  - name: "All exclusions"
-    paths:
-      - build
-      - dist
-      - result
-      - .nix-store
-      - repos
-      - mirrors
-      - pinned-rocm
-      - pinned
-      - contracts
-      - flake.lock
-      - .venv
-      - venv
-      - __pycache__
-      - .qodana
-      - .git
-      - .vscode
-      - .idea
-
-# Disable noisy inspections
-disabledInspections:
-  - PyPackageRequirements
-  - PyInterpreterInspection
-  - SpellCheckingInspection
+include:
+  - name: CheckDependencyLicenses
