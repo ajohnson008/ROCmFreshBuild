@@ -2,3 +2,25 @@ result
 rockbuilder-bundle-*.tar.gz
 rockbuilder-bundle-v6.0/
 repos/
+
+# Build artifacts and temporary files
+result-man
+rb
+build_results/
+contracts/
+graph/
+inventory/
+lib/
+mirrors/
+pinned/
+pinned-rocm/
+runs/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Logs
+*.log
