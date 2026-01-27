@@ -1,28 +1,52 @@
-name: Qodana
+name: Qodana Python Analysis
+
 on:
-  workflow_dispatch:
-  pull_request:
   push:
-    branches: # Specify your branches here
-      - main # The 'main' branch
-      - 'releases/*' # The release branches
+    branches: [ main, develop ]
+    paths:
+      - '**/*.py'
+      - '.qodana/**'
+      - 'qodana.yaml'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   qodana:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    
     permissions:
-      contents: write
-      pull-requests: write
-      checks: write
+      contents: read
+      security-events: write
+    
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
-          fetch-depth: 0  # a full history is required for pull request analysis
-      - name: 'Qodana Scan'
+          submodules: recursive
+      
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      
+      - name: Run Qodana Python analysis
         uses: JetBrains/qodana-action@v2025.2
         with:
-          pr-mode: false
-        env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1588042285 }}
-          QODANA_ENDPOINT: 'https://qodana.cloud'
+          linter: jetbrains/qodana-python:2025.3
+          args: --skip-pull --fail-threshold 0  # Offline-safe
+          project-dir: .
+      
+      - name: Upload SARIF report to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ github.workspace }}/.qodana/results/qodana.sarif.json
+        if: always()
+      
+      - name: Archive analysis results
+        uses: actions/upload-artifact@v4
+        with:
+          name: qodana-python-report
+          path: ${{ github.workspace }}/.qodana/results/
+          retention-days: 7
+        if: always()
