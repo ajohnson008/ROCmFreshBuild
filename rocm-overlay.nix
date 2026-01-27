@@ -41,7 +41,7 @@ final: prev: {
         substituteInPlace runtime/hsa-runtime/image/blit_src/CMakeLists.txt \
           --replace-fail \
             '"-O2 -x cl -Xclang -finclude-default-header -cl-denorms-are-zero -cl-std=CL2.0' \
-            '"-O2 --rocm-device-lib-path=${finalScope.rocm-device-libs}/lib -x cl -Xclang -finclude-default-header -cl-denorms-are-zero -cl-std=CL2.0'
+            '"-O2 --rocm-device-lib-path=${finalScope.rocm-device-libs}/amdgcn/bitcode -x cl -Xclang -finclude-default-header -cl-denorms-are-zero -cl-std=CL2.0'
       '';
       postInstall = (old.postInstall or "") + ''
         if [[ "$out" == *"6.0.2"* ]]; then
