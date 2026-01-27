@@ -25,15 +25,15 @@ final: prev: {
       };
       sourceRoot = "rocm-runtime-src";
       # Add numactl for numa.h header (needed by libhsakmt/src/fmm.c)
-      buildInputs = (old.buildInputs or []) ++ [ final.numactl ];
+      buildInputs = (old.buildInputs or []) ++ [ final.numactl.dev ];
       patches = [];
       postPatch = "";
       # Help the internal clang calls find device libs
       cmakeFlags = (old.cmakeFlags or []) ++ [
         "-DCMAKE_PREFIX_PATH=${finalScope.rocm-device-libs}"
         "-DROCM_DEVICE_LIB_DIR=${finalScope.rocm-device-libs}/lib"
-        "-DCMAKE_C_FLAGS=-I${final.numactl}/include"
-        "-DCMAKE_CXX_FLAGS=-I${final.numactl}/include"
+        "-DCMAKE_C_FLAGS=-I${final.numactl.dev}/include"
+        "-DCMAKE_CXX_FLAGS=-I${final.numactl.dev}/include"
       ];
       # Manual injection of device lib path for the bitcode compiler calls
       preConfigure = (old.preConfigure or "") + ''
