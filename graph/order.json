@@ -1,0 +1,92 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-01-27T04:05:09.173532+00:00",
+  "graph_sha256": "11ff2feacbb729a72f0b1070698f5b11a924a5335570317e262ad46aef9927d1",
+  "layers": [
+    [
+      "gcc14",
+      "numpy"
+    ],
+    [
+      "AMDMIGraphX",
+      "HIPIFY",
+      "MIGraphX",
+      "MIVisionX",
+      "ROCK-Kernel-Driver",
+      "ROCT-Thunk-Interface",
+      "ROCdbgapi",
+      "ROCm-CompilerSupport",
+      "ROCm-OpenCL-Runtime",
+      "flang",
+      "hipSPARSELt",
+      "hipTensor",
+      "onnxruntime",
+      "rocALUTION",
+      "rocm-cmake",
+      "rocm-systems",
+      "rocm_smi_lib",
+      "rocprofiler-register",
+      "rocprofiler-sdk",
+      "rocr_debug_agent",
+      "roctracer"
+    ],
+    [
+      "ROCR-Runtime",
+      "amdsmi",
+      "llvm-project"
+    ],
+    [
+      "ROCm-Device-Libs",
+      "rocminfo"
+    ],
+    [
+      "clr"
+    ],
+    [
+      "HIP",
+      "composable_kernel",
+      "llama-cpp",
+      "rccl",
+      "rocBLAS",
+      "rocFFT",
+      "rocPRIM",
+      "rocRAND",
+      "rocSPARSE"
+    ],
+    [
+      "MIOpen",
+      "hipBLAS",
+      "hipCUB",
+      "hipFFT",
+      "hipRAND",
+      "hipSPARSE",
+      "rocSOLVER",
+      "rocThrust"
+    ],
+    [
+      "hipBLASLt",
+      "hipSOLVER",
+      "pytorch"
+    ],
+    [
+      "bitsandbytes",
+      "deepspeed",
+      "flash-attention",
+      "torchaudio",
+      "torchvision"
+    ],
+    [
+      "xformers"
+    ],
+    [
+      "vllm"
+    ]
+  ],
+  "serial_constraints": [
+    {
+      "before": "MIOpen",
+      "after": "pytorch",
+      "reason": "MIOpen must complete before PyTorch for kernel linking"
+    }
+  ]
+}

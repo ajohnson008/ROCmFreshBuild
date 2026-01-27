@@ -1,0 +1,41 @@
+Objective: Execute the Pass A Pre-Flight & Evidence Gathering Protocol. Target State: NEXUS_PREPPED (All sources locked, hashed, mirrored, and proven offline-capable). Strict Constraints: ROCm 7.2.0 | gfx1151 | Air-Gap Strict Mode.
+
+You are authorized to autonomously execute the following sequential workflow. Stop immediately if any step returns a non-zero exit code.
+
+Phase 1: Nexus Integrity & Audit
+Enforce Nexus State:
+Execute: bash scripts/jules/enforce_nexus_state.sh
+Goal: Verify repository hygiene and audit AGENTS.md vs. filesystem reality using audit_omnibook.py.
+Policy Gate:
+Execute: python3.11 tools/rb policy verify --strict
+Goal: Confirm pinned/rocm/7.2.0/default.xml does not contain forbidden 6.x versions or drift.
+Evidence: reports/policy-report.json.
+Phase 2: Source Harvesting & Hash Verification
+Verify Component Hashes:
+Execute: python3.11 verify_sources.py
+Goal: Concurrently prefetch and verify SHA256 hashes for all components defined in the ROCm 7.2.0 manifest.
+Evidence: verified_sources.json.
+Mirror Synchronization:
+Execute: python3.11 tools/rb sync-mirrors
+Goal: Ensure all git repositories and binary blobs are downloaded to the local mirrors/ directory.
+Flake Input Prefetch:
+Execute: python3.11 tools/rb prefetch-flake-inputs
+Goal: Recursively fetch and cache all Nix flake inputs to ensure zero network usage during eval.
+Phase 3: Locking & Offline Proof
+Source Lock Generation:
+Execute: python3.11 tools/lock/gen_source_lock.py --manifest pinned/rocm/7.2.0/default.xml --output pinned/rocm/7.2.0/source-lock.json --release 7.2.0
+Goal: Generate the immutable source-lock.json that will drive the build DAG.
+Build Graph Extraction:
+Execute: python3.11 tools/graph/extract_graph.py --source-lock pinned/rocm/7.2.0/source-lock.json --output graph/ --overrides graph/overrides.yaml
+Goal: Generate the topological build order (graph/order.json).
+Offline Proof (The Final Gate):
+Execute: python3.11 tools/offline_proof.py (Scope: All)
+Goal: Perform a restricted nix eval on the graph to prove that the build can proceed without a network connection.
+Evidence: reports/offline-proof.json with Proof Hash.
+Final Output Requirement
+Upon completion, generate a summary report confirming:
+
+Verification Status: Pass/Fail for all 53 components.
+Evidence Location: List the absolute paths to verified_sources.json, source-lock.json, and reports/offline-proof.json.
+Readiness: Declare the system READY_FOR_COMPILATION or HALTED.
+Begin execution immediately.

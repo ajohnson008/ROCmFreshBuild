@@ -1,0 +1,922 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-01-27T04:05:09.087309+00:00",
+  "source_lock_sha256": "11ff2feacbb729a72f0b1070698f5b11a924a5335570317e262ad46aef9927d1",
+  "nodes": [
+    {
+      "id": "gcc14",
+      "kind": "toolchain",
+      "path": "",
+      "outputs": [
+        "gcc"
+      ]
+    },
+    {
+      "id": "AMDMIGraphX",
+      "kind": "rocm_repo",
+      "path": "AMDMIGraphX"
+    },
+    {
+      "id": "HIP",
+      "kind": "rocm_repo",
+      "path": "HIP"
+    },
+    {
+      "id": "HIPIFY",
+      "kind": "rocm_repo",
+      "path": "HIPIFY"
+    },
+    {
+      "id": "MIGraphX",
+      "kind": "rocm_repo",
+      "path": "MIGraphX"
+    },
+    {
+      "id": "MIOpen",
+      "kind": "rocm_repo",
+      "path": "MIOpen"
+    },
+    {
+      "id": "MIVisionX",
+      "kind": "rocm_repo",
+      "path": "MIVisionX"
+    },
+    {
+      "id": "ROCR-Runtime",
+      "kind": "rocm_repo",
+      "path": "ROCR-Runtime"
+    },
+    {
+      "id": "ROCT-Thunk-Interface",
+      "kind": "rocm_repo",
+      "path": "ROCT-Thunk-Interface"
+    },
+    {
+      "id": "ROCdbgapi",
+      "kind": "rocm_repo",
+      "path": "ROCdbgapi"
+    },
+    {
+      "id": "ROCm-CompilerSupport",
+      "kind": "rocm_repo",
+      "path": "ROCm-CompilerSupport"
+    },
+    {
+      "id": "ROCm-Device-Libs",
+      "kind": "rocm_repo",
+      "path": "ROCm-Device-Libs"
+    },
+    {
+      "id": "ROCm-OpenCL-Runtime",
+      "kind": "rocm_repo",
+      "path": "ROCm-OpenCL-Runtime"
+    },
+    {
+      "id": "amdsmi",
+      "kind": "rocm_repo",
+      "path": "amdsmi"
+    },
+    {
+      "id": "clr",
+      "kind": "rocm_repo",
+      "path": "clr"
+    },
+    {
+      "id": "composable_kernel",
+      "kind": "rocm_repo",
+      "path": "composable_kernel"
+    },
+    {
+      "id": "flang",
+      "kind": "rocm_repo",
+      "path": "flang"
+    },
+    {
+      "id": "hipBLAS",
+      "kind": "rocm_repo",
+      "path": "hipBLAS"
+    },
+    {
+      "id": "hipBLASLt",
+      "kind": "rocm_repo",
+      "path": "hipBLASLt"
+    },
+    {
+      "id": "hipCUB",
+      "kind": "rocm_repo",
+      "path": "hipCUB"
+    },
+    {
+      "id": "hipFFT",
+      "kind": "rocm_repo",
+      "path": "hipFFT"
+    },
+    {
+      "id": "hipRAND",
+      "kind": "rocm_repo",
+      "path": "hipRAND"
+    },
+    {
+      "id": "hipSOLVER",
+      "kind": "rocm_repo",
+      "path": "hipSOLVER"
+    },
+    {
+      "id": "hipSPARSE",
+      "kind": "rocm_repo",
+      "path": "hipSPARSE"
+    },
+    {
+      "id": "hipSPARSELt",
+      "kind": "rocm_repo",
+      "path": "hipSPARSELt"
+    },
+    {
+      "id": "hipTensor",
+      "kind": "rocm_repo",
+      "path": "hipTensor"
+    },
+    {
+      "id": "llvm-project",
+      "kind": "rocm_repo",
+      "path": "llvm-project"
+    },
+    {
+      "id": "rccl",
+      "kind": "rocm_repo",
+      "path": "rccl"
+    },
+    {
+      "id": "rocALUTION",
+      "kind": "rocm_repo",
+      "path": "rocALUTION"
+    },
+    {
+      "id": "rocBLAS",
+      "kind": "rocm_repo",
+      "path": "rocBLAS"
+    },
+    {
+      "id": "rocFFT",
+      "kind": "rocm_repo",
+      "path": "rocFFT"
+    },
+    {
+      "id": "rocPRIM",
+      "kind": "rocm_repo",
+      "path": "rocPRIM"
+    },
+    {
+      "id": "rocRAND",
+      "kind": "rocm_repo",
+      "path": "rocRAND"
+    },
+    {
+      "id": "rocSOLVER",
+      "kind": "rocm_repo",
+      "path": "rocSOLVER"
+    },
+    {
+      "id": "rocSPARSE",
+      "kind": "rocm_repo",
+      "path": "rocSPARSE"
+    },
+    {
+      "id": "rocThrust",
+      "kind": "rocm_repo",
+      "path": "rocThrust"
+    },
+    {
+      "id": "rocm-cmake",
+      "kind": "rocm_repo",
+      "path": "rocm-cmake"
+    },
+    {
+      "id": "rocm-systems",
+      "kind": "rocm_repo",
+      "path": "rocm-systems"
+    },
+    {
+      "id": "rocm_smi_lib",
+      "kind": "rocm_repo",
+      "path": "rocm_smi_lib"
+    },
+    {
+      "id": "rocminfo",
+      "kind": "rocm_repo",
+      "path": "rocminfo"
+    },
+    {
+      "id": "rocprofiler-register",
+      "kind": "rocm_repo",
+      "path": "rocprofiler-register"
+    },
+    {
+      "id": "rocprofiler-sdk",
+      "kind": "rocm_repo",
+      "path": "rocprofiler-sdk"
+    },
+    {
+      "id": "rocr_debug_agent",
+      "kind": "rocm_repo",
+      "path": "rocr_debug_agent"
+    },
+    {
+      "id": "roctracer",
+      "kind": "rocm_repo",
+      "path": "roctracer"
+    },
+    {
+      "id": "ROCK-Kernel-Driver",
+      "kind": "rocm_repo",
+      "path": "ROCK-Kernel-Driver"
+    },
+    {
+      "id": "numpy",
+      "kind": "python_pkg",
+      "path": "python-packages/numpy"
+    },
+    {
+      "id": "pytorch",
+      "kind": "python_pkg",
+      "path": "python-packages/pytorch"
+    },
+    {
+      "id": "torchvision",
+      "kind": "python_pkg",
+      "path": "python-packages/torchvision"
+    },
+    {
+      "id": "torchaudio",
+      "kind": "python_pkg",
+      "path": "python-packages/torchaudio"
+    },
+    {
+      "id": "flash-attention",
+      "kind": "python_pkg",
+      "path": "python-packages/flash-attention"
+    },
+    {
+      "id": "xformers",
+      "kind": "python_pkg",
+      "path": "python-packages/xformers"
+    },
+    {
+      "id": "deepspeed",
+      "kind": "python_pkg",
+      "path": "python-packages/deepspeed"
+    },
+    {
+      "id": "bitsandbytes",
+      "kind": "python_pkg",
+      "path": "python-packages/bitsandbytes"
+    },
+    {
+      "id": "vllm",
+      "kind": "python_pkg",
+      "path": "python-packages/vllm"
+    },
+    {
+      "id": "llama-cpp",
+      "kind": "python_pkg",
+      "path": "python-packages/llama-cpp"
+    },
+    {
+      "id": "onnxruntime",
+      "kind": "python_pkg",
+      "path": "python-packages/onnxruntime"
+    }
+  ],
+  "edges": [
+    {
+      "from": "ROCR-Runtime",
+      "to": "ROCT-Thunk-Interface",
+      "reason": "find_package(ROCT-Thunk-Interface)",
+      "class": "build"
+    },
+    {
+      "from": "ROCR-Runtime",
+      "to": "rocm-cmake",
+      "reason": "find_package(rocm-cmake)",
+      "class": "build"
+    },
+    {
+      "from": "ROCm-Device-Libs",
+      "to": "llvm-project",
+      "reason": "find_package(llvm-project)",
+      "class": "build"
+    },
+    {
+      "from": "ROCm-Device-Libs",
+      "to": "rocm-cmake",
+      "reason": "find_package(rocm-cmake)",
+      "class": "build"
+    },
+    {
+      "from": "clr",
+      "to": "ROCR-Runtime",
+      "reason": "find_package(ROCR-Runtime)",
+      "class": "build"
+    },
+    {
+      "from": "clr",
+      "to": "ROCm-Device-Libs",
+      "reason": "find_package(ROCm-Device-Libs)",
+      "class": "build"
+    },
+    {
+      "from": "clr",
+      "to": "rocm-cmake",
+      "reason": "find_package(rocm-cmake)",
+      "class": "build"
+    },
+    {
+      "from": "HIP",
+      "to": "clr",
+      "reason": "find_package(clr)",
+      "class": "build"
+    },
+    {
+      "from": "HIP",
+      "to": "rocm-cmake",
+      "reason": "find_package(rocm-cmake)",
+      "class": "build"
+    },
+    {
+      "from": "rocminfo",
+      "to": "ROCR-Runtime",
+      "reason": "find_package(ROCR-Runtime)",
+      "class": "build"
+    },
+    {
+      "from": "amdsmi",
+      "to": "rocm_smi_lib",
+      "reason": "find_package(rocm_smi_lib)",
+      "class": "build"
+    },
+    {
+      "from": "rocBLAS",
+      "to": "ROCR-Runtime",
+      "reason": "find_package(ROCR-Runtime)",
+      "class": "build"
+    },
+    {
+      "from": "rocBLAS",
+      "to": "clr",
+      "reason": "find_package(clr)",
+      "class": "build"
+    },
+    {
+      "from": "rocBLAS",
+      "to": "rocm-cmake",
+      "reason": "find_package(rocm-cmake)",
+      "class": "build"
+    },
+    {
+      "from": "hipBLAS",
+      "to": "rocBLAS",
+      "reason": "find_package(rocBLAS)",
+      "class": "build"
+    },
+    {
+      "from": "hipBLAS",
+      "to": "clr",
+      "reason": "find_package(clr)",
+      "class": "build"
+    },
+    {
+      "from": "hipBLASLt",
+      "to": "hipBLAS",
+      "reason": "find_package(hipBLAS)",
+      "class": "build"
+    },
+    {
+      "from": "rocSOLVER",
+      "to": "rocBLAS",
+      "reason": "find_package(rocBLAS)",
+      "class": "build"
+    },
+    {
+      "from": "hipSOLVER",
+      "to": "rocSOLVER",
+      "reason": "find_package(rocSOLVER)",
+      "class": "build"
+    },
+    {
+      "from": "hipSOLVER",
+      "to": "hipBLAS",
+      "reason": "find_package(hipBLAS)",
+      "class": "build"
+    },
+    {
+      "from": "rocSPARSE",
+      "to": "ROCR-Runtime",
+      "reason": "find_package(ROCR-Runtime)",
+      "class": "build"
+    },
+    {
+      "from": "rocSPARSE",
+      "to": "clr",
+      "reason": "find_package(clr)",
+      "class": "build"
+    },
+    {
+      "from": "hipSPARSE",
+      "to": "rocSPARSE",
+      "reason": "find_package(rocSPARSE)",
+      "class": "build"
+    },
+    {
+      "from": "rocFFT",
+      "to": "ROCR-Runtime",
+      "reason": "find_package(ROCR-Runtime)",
+      "class": "build"
+    },
+    {
+      "from": "rocFFT",
+      "to": "clr",
+      "reason": "find_package(clr)",
+      "class": "build"
+    },
+    {
+      "from": "hipFFT",
+      "to": "rocFFT",
+      "reason": "find_package(rocFFT)",
+      "class": "build"
+    },
+    {
+      "from": "rocRAND",
+      "to": "ROCR-Runtime",
+      "reason": "find_package(ROCR-Runtime)",
+      "class": "build"
+    },
+    {
+      "from": "rocRAND",
+      "to": "clr",
+      "reason": "find_package(clr)",
+      "class": "build"
+    },
+    {
+      "from": "hipRAND",
+      "to": "rocRAND",
+      "reason": "find_package(rocRAND)",
+      "class": "build"
+    },
+    {
+      "from": "rocPRIM",
+      "to": "ROCR-Runtime",
+      "reason": "find_package(ROCR-Runtime)",
+      "class": "build"
+    },
+    {
+      "from": "rocPRIM",
+      "to": "clr",
+      "reason": "find_package(clr)",
+      "class": "build"
+    },
+    {
+      "from": "hipCUB",
+      "to": "rocPRIM",
+      "reason": "find_package(rocPRIM)",
+      "class": "build"
+    },
+    {
+      "from": "rocThrust",
+      "to": "rocPRIM",
+      "reason": "find_package(rocPRIM)",
+      "class": "build"
+    },
+    {
+      "from": "MIOpen",
+      "to": "rocBLAS",
+      "reason": "find_package(rocBLAS)",
+      "class": "build"
+    },
+    {
+      "from": "MIOpen",
+      "to": "composable_kernel",
+      "reason": "find_package(composable_kernel)",
+      "class": "build"
+    },
+    {
+      "from": "MIOpen",
+      "to": "clr",
+      "reason": "find_package(clr)",
+      "class": "build"
+    },
+    {
+      "from": "composable_kernel",
+      "to": "clr",
+      "reason": "find_package(clr)",
+      "class": "build"
+    },
+    {
+      "from": "composable_kernel",
+      "to": "rocm-cmake",
+      "reason": "find_package(rocm-cmake)",
+      "class": "build"
+    },
+    {
+      "from": "rccl",
+      "to": "ROCR-Runtime",
+      "reason": "find_package(ROCR-Runtime)",
+      "class": "build"
+    },
+    {
+      "from": "rccl",
+      "to": "clr",
+      "reason": "find_package(clr)",
+      "class": "build"
+    },
+    {
+      "from": "llvm-project",
+      "to": "rocm-cmake",
+      "reason": "find_package(rocm-cmake)",
+      "class": "build"
+    },
+    {
+      "from": "AMDMIGraphX",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "HIP",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "HIPIFY",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "MIGraphX",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "MIOpen",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "MIVisionX",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "ROCR-Runtime",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "ROCT-Thunk-Interface",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "ROCdbgapi",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "ROCm-CompilerSupport",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "ROCm-Device-Libs",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "ROCm-OpenCL-Runtime",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "amdsmi",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "clr",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "composable_kernel",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "flang",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "hipBLAS",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "hipBLASLt",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "hipCUB",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "hipFFT",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "hipRAND",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "hipSOLVER",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "hipSPARSE",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "hipSPARSELt",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "hipTensor",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "llvm-project",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rccl",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rocALUTION",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rocBLAS",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rocFFT",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rocPRIM",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rocRAND",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rocSOLVER",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rocSPARSE",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rocThrust",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rocm-cmake",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rocm-systems",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rocm_smi_lib",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rocminfo",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rocprofiler-register",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rocprofiler-sdk",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "rocr_debug_agent",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "roctracer",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "ROCK-Kernel-Driver",
+      "to": "gcc14",
+      "reason": "C/C++ compiler requirement",
+      "class": "toolchain"
+    },
+    {
+      "from": "pytorch",
+      "to": "numpy",
+      "reason": "build dependency",
+      "class": "python_build_req"
+    },
+    {
+      "from": "pytorch",
+      "to": "MIOpen",
+      "reason": "build dependency",
+      "class": "link"
+    },
+    {
+      "from": "pytorch",
+      "to": "rocBLAS",
+      "reason": "build dependency",
+      "class": "link"
+    },
+    {
+      "from": "pytorch",
+      "to": "rccl",
+      "reason": "build dependency",
+      "class": "link"
+    },
+    {
+      "from": "pytorch",
+      "to": "clr",
+      "reason": "build dependency",
+      "class": "link"
+    },
+    {
+      "from": "torchvision",
+      "to": "pytorch",
+      "reason": "build dependency",
+      "class": "python_build_req"
+    },
+    {
+      "from": "torchvision",
+      "to": "numpy",
+      "reason": "build dependency",
+      "class": "python_build_req"
+    },
+    {
+      "from": "torchaudio",
+      "to": "pytorch",
+      "reason": "build dependency",
+      "class": "python_build_req"
+    },
+    {
+      "from": "flash-attention",
+      "to": "pytorch",
+      "reason": "build dependency",
+      "class": "python_build_req"
+    },
+    {
+      "from": "xformers",
+      "to": "pytorch",
+      "reason": "build dependency",
+      "class": "python_build_req"
+    },
+    {
+      "from": "xformers",
+      "to": "flash-attention",
+      "reason": "build dependency",
+      "class": "python_build_req"
+    },
+    {
+      "from": "deepspeed",
+      "to": "pytorch",
+      "reason": "build dependency",
+      "class": "python_build_req"
+    },
+    {
+      "from": "bitsandbytes",
+      "to": "pytorch",
+      "reason": "build dependency",
+      "class": "python_build_req"
+    },
+    {
+      "from": "vllm",
+      "to": "pytorch",
+      "reason": "build dependency",
+      "class": "python_build_req"
+    },
+    {
+      "from": "vllm",
+      "to": "flash-attention",
+      "reason": "build dependency",
+      "class": "python_build_req"
+    },
+    {
+      "from": "vllm",
+      "to": "xformers",
+      "reason": "build dependency",
+      "class": "python_build_req"
+    },
+    {
+      "from": "llama-cpp",
+      "to": "clr",
+      "reason": "build dependency",
+      "class": "link"
+    },
+    {
+      "from": "onnxruntime",
+      "to": "numpy",
+      "reason": "build dependency",
+      "class": "python_build_req"
+    },
+    {
+      "from": "MIOpen",
+      "to": "composable_kernel",
+      "reason": "MIOpen uses CK tensor operations",
+      "class": "headers"
+    },
+    {
+      "from": "vllm",
+      "to": "flash-attention",
+      "reason": "vLLM PagedAttention uses FlashAttention kernels",
+      "class": "link"
+    }
+  ]
+}
