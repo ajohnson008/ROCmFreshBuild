@@ -89,15 +89,50 @@ def main():
     sync_mirrors_parser = subparsers.add_parser("sync-mirrors")
     prefetch_flake_parser = subparsers.add_parser("prefetch-flake-inputs")
 
-    args = parser.parse_args()
-    repo_root = Path.cwd() # Assume running from root or find root
+    preflight_parser = subparsers.add_parser("preflight")
+    preflight_parser.add_argument(
+        "--min-disk-gb",
+        type=int,
+        default=200,
+        help="Minimum free disk space in GB (default: 200)",
+    )
+    preflight_parser.add_argument(
+        "--json-out",
+        default="runs/preflight.json",
+        help="Path to write JSON report (default: runs/preflight.json)",
+    )
+    preflight_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Allow warnings (returns exit code 3)",
+    )
+    preflight_parser.add_argument(
+        "--no-preflight",
+        action="store_true",
+        help="Skip checks and return exit code 3",
+    )
 
-    # Ensure we are in repo root or find it
-    if not (repo_root / "flake.nix").exists():
-        # Try parent
-        if (repo_root.parent / "flake.nix").exists():
-            repo_root = repo_root.parent
-        # Else warn?
+    args = parser.parse_args()
+    from preflight import find_repo_root, run_preflight
+
+    repo_root = find_repo_root(Path.cwd())
+
+    if args.command == "preflight":
+        if args.force and args.no_preflight:
+            print("❌ --force and --no-preflight cannot be used together")
+            sys.exit(2)
+        exit_code = run_preflight(
+            Path.cwd(),
+            min_disk_gb=args.min_disk_gb,
+            json_out=Path(args.json_out),
+            force=args.force,
+            no_preflight=args.no_preflight,
+        )
+        sys.exit(exit_code)
+
+    if repo_root is None:
+        print("❌ Unable to locate repo root (flake.nix missing). Run from repo root.")
+        sys.exit(2)
 
     if args.command == "policy":
         if args.policy_command == "verify":

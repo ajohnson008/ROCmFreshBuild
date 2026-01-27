@@ -18,7 +18,16 @@ fi
 
 # Verify Pre-flight Checklist
 echo "📋 Verifying pre-flight checklist..."
-# Placeholder for pre-flight checklist
-echo "✅ Pre-flight checklist verified."
+if ./rb preflight "$@"; then
+    echo "✅ Pre-flight checklist verified."
+else
+    PREFLIGHT_RC=$?
+    if [ "$PREFLIGHT_RC" -eq 3 ]; then
+        echo "⚠️  Pre-flight warnings overridden (exit 3)."
+    else
+        echo "❌ Pre-flight checklist failed."
+        exit "$PREFLIGHT_RC"
+    fi
+fi
 
 echo "✅ Nexus State Enforced."
