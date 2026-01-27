@@ -67,7 +67,7 @@ echo ""
 echo "📦 Starting Phase 1: Mirror Sync..."
 python3.11 "$RUN_MANAGER" phase-start --run-id "$RUN_ID" --phase "$PHASE"
 
-if python3.11 "$RB_CMD" sync-mirrors; then
+if "$RB_CMD" sync-mirrors; then
     python3.11 "$RUN_MANAGER" phase-end --run-id "$RUN_ID" --phase "$PHASE" --status "success"
     echo "✅ Mirror Sync Complete"
 else
@@ -82,7 +82,7 @@ echo ""
 echo "📥 Starting Phase 2: Flake Input Prefetch..."
 python3.11 "$RUN_MANAGER" phase-start --run-id "$RUN_ID" --phase "$PHASE"
 
-if python3.11 "$RB_CMD" prefetch-flake-inputs; then
+if "$RB_CMD" prefetch-flake-inputs; then
     python3.11 "$RUN_MANAGER" phase-end --run-id "$RUN_ID" --phase "$PHASE" --status "success"
     echo "✅ Flake Prefetch Complete"
 else
@@ -97,7 +97,7 @@ echo ""
 echo "🛡️  Starting Phase 3: Offline Proof..."
 python3.11 "$RUN_MANAGER" phase-start --run-id "$RUN_ID" --phase "$PHASE"
 
-if python3.11 "$RB_CMD" offline-proof --run-id "$RUN_ID"; then
+if "$RB_CMD" offline-proof --run-id "$RUN_ID"; then
     python3.11 "$RUN_MANAGER" phase-end --run-id "$RUN_ID" --phase "$PHASE" --status "success"
     echo "✅ Offline Proof Accepted"
 else

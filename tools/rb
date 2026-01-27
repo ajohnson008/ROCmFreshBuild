@@ -11,6 +11,8 @@ from policy import policy_fence
 # from tooling import prefetch # Placeholder if needed, or inline
 # We'll rely on imports inside conditions to avoid circular issues or early failures
 
+RB_VERSION = "6.0"
+
 def sync_mirrors(repo_root):
     """
     Executes mirror synchronization for git and blobs.
@@ -58,6 +60,7 @@ def prefetch_flake(repo_root):
 
 def main():
     parser = argparse.ArgumentParser(description="TheRockBuilder (rb) Management Tool")
+    parser.add_argument("--version", action="version", version=f"rb {RB_VERSION}")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # Policy subcommand
