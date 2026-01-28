@@ -61,7 +61,7 @@ jobs:
         uses: JetBrains/qodana-action@v2023.3.0
         with:
           args: >
-            --config=./qodana-global-configurations.yaml
+            --project-dir=.
             --source-directory=.
             --fail-threshold=0
             --report-dir=${{ runner.temp }}/qodana/results
