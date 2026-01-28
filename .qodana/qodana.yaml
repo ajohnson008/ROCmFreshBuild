@@ -2,6 +2,12 @@ version: "1.0"
 linter: jetbrains/qodana-python:2023.3
 profile:
   name: qodana.recommended
+python:
+  python_files:
+    - lib/**/*.py
+    - scripts/**/*.py
+    - tools/**/*.py
+    - agent_playbooks/**/*.py
 exclude:
   - name: "All exclusions"
     paths:
