@@ -70,7 +70,6 @@ jobs:
       - name: Qodana analysis
         uses: JetBrains/qodana-action@v2025.2
         with:
-          linter: jetbrains/qodana-python:2023.3
           args: >
             --project-dir=. \
             --fail-threshold=0 \
