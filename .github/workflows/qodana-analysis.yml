@@ -60,12 +60,13 @@ jobs:
       - name: Qodana Scan
         uses: JetBrains/qodana-action@v2023.3.0
         with:
+          linter: jetbrains/qodana-python:2023.3
           args: >
             --project-dir=.
-            --source-directory=.
             --fail-threshold=0
             --report-dir=${{ runner.temp }}/qodana/results
             --cache-dir=${{ runner.temp }}/qodana/cache
+            --config=.qodana/qodana.yaml
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
 

@@ -1,52 +1,24 @@
-global:
-  version: "1.0"
-  linter: jetbrains/qodana-cpp:2025.3
-  projectJDK: "17"
-  bootstrap:
-    - name: "Install build dependencies (simulated for offline)"
-      command: |
-        echo "Qodana bootstrap: Skipping actual package installation (offline build requirement)"
-        echo "Build environment assumed pre-configured per TheRockBuilder specs"
-  python:
-    version: "3.11"
-    interpreter: "/usr/bin/python3.11"
-  clang:
-    compilationDatabase: "build/compile_commands.json"
-    includeDirs:
-      - "sources/llvm-project/include"
-      - "sources/hip/include"
-      - "sources/rocclr/include"
-    defines:
-      - "__HIP_PLATFORM_AMD__"
-      - "gfx1151"
-  profile:
-    name: "qodana-recommended"
-    disable:
-      - name: "MagicNumber"
-      - name: "HardcodedFileSeparators"
-      - name: "UnusedImport"
-      - name: "PyPep8Naming"
-    enable:
-      - name: "ClangTidy"
-      - name: "SecurityLint"
-      - name: "DockerLint"
-  exclude:
-    - name: "cache/**/*"
-    - name: "artifacts/**/*"
-    - name: "logs/**/*"
-    - name: "**/build/**/*"
-    - name: "**/third_party/**/*"
-    - name: "**/external/**/*"
-    - name: "**/*.o"
-    - name: "**/*.so"
-    - name: "**/*.a"
-    - name: "**/*.ll"
-    - name: "**/*.bc"
-    - name: "**/CMakeCache.txt"
-    - name: "**/CTestTestfile.cmake"
-    - name: "**/Makefile"
-    - name: ".git/**/*"
-    - name: ".github/**/*"
-  failThreshold: 0
-  security:
-    token: "${QODANA_TOKEN:-}"
+version: "1.0"
+linter: jetbrains/qodana-python:2023.3
+profile:
+  name: qodana.recommended
+exclude:
+  - name: "All exclusions"
+    paths:
+      - build
+      - dist
+      - result
+      - .nix-store
+      - repos
+      - mirrors
+      - pinned-rocm
+      - pinned
+      - contracts
+      - flake.lock
+      - .venv
+      - venv
+      - __pycache__
+      - .qodana
+      - .git
+      - .vscode
+      - .idea

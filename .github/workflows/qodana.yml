@@ -70,12 +70,13 @@ jobs:
       - name: Qodana analysis
         uses: JetBrains/qodana-action@v2025.2
         with:
+          linter: jetbrains/qodana-python:2023.3
           args: >
-            --config=qodana-global-configurations.yaml \
-            --source-directory=. \
+            --project-dir=. \
             --fail-threshold=0 \
             --report-dir=${{ runner.temp }}/qodana/results \
-            --cache-dir=${{ runner.temp }}/qodana/cache
+            --cache-dir=${{ runner.temp }}/qodana/cache \
+            --config=.qodana/qodana.yaml
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
       
