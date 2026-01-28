@@ -2,14 +2,6 @@ version: "1.0"
 linter: jetbrains/qodana-python:2023.3
 profile:
   name: qodana.recommended
-include:
-  - name: "Include Python source directories"
-    paths:
-      - lib
-      - scripts
-      - tools
-      - agent_playbooks
-      - "*.py"
 exclude:
   - name: "Exclude build and vendor directories"
     paths:
@@ -24,4 +16,11 @@ exclude:
       - contracts
       - runs
       - __pycache__
-      - "*.egg-info"
+      - ".pytest_cache"
+      - ".venv"
+      - "venv"
+      - "node_modules"
+      - ".git"
+      - ".github"
+      - ".idea"
+      - ".vscode"
