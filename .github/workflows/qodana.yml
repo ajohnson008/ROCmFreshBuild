@@ -70,12 +70,7 @@ jobs:
       - name: Qodana analysis
         uses: JetBrains/qodana-action@v2025.2
         with:
-          args: >
-            --project-dir=. \
-            --fail-threshold=0 \
-            --report-dir=${{ runner.temp }}/qodana/results \
-            --cache-dir=${{ runner.temp }}/qodana/cache \
-            --config=.qodana/qodana.yaml
+          args: --project-dir=. --config=.qodana/qodana.yaml
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
       

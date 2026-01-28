@@ -2,26 +2,3 @@ version: "1.0"
 linter: jetbrains/qodana-python:2023.3
 profile:
   name: qodana.recommended
-exclude:
-  - name: "Build and cache directories"
-    paths:
-      - build
-      - dist
-      - .nix-store
-      - repos
-      - mirrors
-      - pinned-rocm
-      - pinned
-      - contracts
-      - result
-      - cache
-      - .venv
-      - venv
-      - __pycache__
-      - .qodana
-      - .git
-      - .github
-      - .vscode
-      - .idea
-      - .pytest_cache
-      - node_modules
