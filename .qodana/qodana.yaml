@@ -2,29 +2,26 @@ version: "1.0"
 linter: jetbrains/qodana-python:2023.3
 profile:
   name: qodana.recommended
-python:
-  python_files:
-    - lib/**/*.py
-    - scripts/**/*.py
-    - tools/**/*.py
-    - agent_playbooks/**/*.py
 exclude:
-  - name: "All exclusions"
+  - name: "Build and cache directories"
     paths:
       - build
       - dist
-      - result
       - .nix-store
       - repos
       - mirrors
       - pinned-rocm
       - pinned
       - contracts
-      - flake.lock
+      - result
+      - cache
       - .venv
       - venv
       - __pycache__
       - .qodana
       - .git
+      - .github
       - .vscode
       - .idea
+      - .pytest_cache
+      - node_modules
